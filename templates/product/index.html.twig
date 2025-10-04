@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Products</h1>
+
+    <a href="{{ path('app_product_new') }}"
+       class="mb-4 inline-block px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+        ➕ Create New
+    </a>
+
+    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table class="min-w-full text-sm text-left text-gray-600">
+            <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-semibold">
+                <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Name</th>
+                    <th class="px-4 py-3">Brand</th>
+                    <th class="px-4 py-3">Description</th>
+                    <th class="px-4 py-3">Price</th>
+                    <th class="px-4 py-3">Stock</th>
+                    <!-- <th class="px-4 py-3">Created At</th> -->
+                    <th class="px-4 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3">{{ product.id }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-800">{{ product.name }}</td>
+                    <td class="px-4 py-3">{{ product.brand }}</td>
+                    <td class="px-4 py-3">{{ product.description|u.truncate(50, '...') }}</td>
+                    <td class="px-4 py-3 text-green-600 font-semibold">{{ product.price|number_format(2) }}</td>
+                    <td class="px-4 py-3">{{ product.stock }}</td>
+                    <!-- <td class="px-4 py-3">{{ product.createdAt ? product.createdAt|date('Y-m-d H:i') : '' }}</td> -->
+                    <td class="px-4 py-3 flex gap-2">
+                        <a href="{{ path('app_product_show', {'id': product.id}) }}"
+                           class="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-xs">Show</a>
+                        <a href="{{ path('app_product_edit', {'id': product.id}) }}"
+                           class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs">Edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="px-4 py-3 text-center text-gray-500">No records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+<div class="max-w-md mx-auto mt-12 bg-white shadow-lg rounded-lg p-8">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Login</h1>
+
+    {# Show error if login failed #}
+    {% if error %}
+        <div class="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    {# Flash success messages (e.g., after registration) #}
+    {% for message in app.flashes('success') %}
+        <div class="mb-4 p-3 text-sm text-green-700 bg-green-100 rounded-lg">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form method="post" class="space-y-4">
+        <input type="hidden" name="_csrf_token"
+            value="{{ csrf_token('authenticate') }}"
+        >
+            {# If you want to control the URL the user is redirected to on success
+                <input type="hidden" name="_target_path" value="/account">
+            #}
+        <div>
+            <label for="username" class="block text-gray-700 font-medium mb-2">Username</label>
+            <input type="text" value="{{ last_username }}" name="_username" id="username"
+                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   required autofocus>
+        </div>
+
+        <div>
+            <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
+            <input type="password" name="_password" id="password"
+                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   required>
+        </div>
+
+        {# Optional "Remember Me" checkbox #}
+        <div class="flex items-center">
+            <input type="checkbox" id="remember_me" name="_remember_me" class="mr-2">
+            <label for="remember_me" class="text-gray-700">Remember me</label>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+            Login
+        </button>
+    </form>
+</div>
+{% endblock %}

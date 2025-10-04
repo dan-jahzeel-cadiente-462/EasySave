@@ -1,0 +1,43 @@
+{{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+
+    {# Name field #}
+    <div>
+        {{ form_label(form.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.name, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    {# Brand field #}
+    <div>
+        {{ form_label(form.brand, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.brand, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+        {{ form_errors(form.brand) }}
+    </div>
+
+    {# Description field #}
+    <div>
+        {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.description, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    {# Price field #}
+    <div>
+        {{ form_label(form.price, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.price, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+        {{ form_errors(form.price) }}
+    </div>
+
+    {# Stock field #}
+    <div>
+        {{ form_label(form.stock, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.stock, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+        {{ form_errors(form.stock) }}
+    </div>
+
+    {# Submit button #}
+    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition">
+        {{ button_label|default('Save') }}
+    </button>
+
+{{ form_end(form) }}

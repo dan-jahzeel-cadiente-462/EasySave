@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product Details{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Product Details</h1>
+
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <table class="min-w-full text-sm text-gray-700">
+            <tbody class="divide-y divide-gray-200">
+                <tr class="hover:bg-gray-50">
+                    <th class="px-4 py-2 text-left font-medium">ID</th>
+                    <td class="px-4 py-2">{{ product.id }}</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                    <th class="px-4 py-2 text-left font-medium">Name</th>
+                    <td class="px-4 py-2">{{ product.name }}</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                    <th class="px-4 py-2 text-left font-medium">Brand</th>
+                    <td class="px-4 py-2">{{ product.brand }}</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                    <th class="px-4 py-2 text-left font-medium">Description</th>
+                    <td class="px-4 py-2">{{ product.description }}</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                    <th class="px-4 py-2 text-left font-medium">Price</th>
+                    <td class="px-4 py-2 text-green-600 font-semibold">{{ product.price|number_format(2) }}</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                    <th class="px-4 py-2 text-left font-medium">Stock</th>
+                    <td class="px-4 py-2">{{ product.stock }}</td>
+                </tr>
+                <!--
+                <tr class="hover:bg-gray-50">
+                    <th class="px-4 py-2 text-left font-medium">Created At</th>
+                    <td class="px-4 py-2">{{ product.createdAt ? product.createdAt|date('Y-m-d H:i') : '' }}</td>
+                </tr>
+                -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="{{ path('app_product_index') }}"
+           class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">
+           ← Back to list
+        </a>
+        <a href="{{ path('app_product_edit', {'id': product.id}) }}"
+           class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
+           Edit
+        </a>
+        {{ include('product/_delete_form.html.twig', {'class': 'px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition'}) }}
+    </div>
+</div>
+{% endblock %}
