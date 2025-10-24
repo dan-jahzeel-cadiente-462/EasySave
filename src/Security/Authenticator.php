@@ -28,15 +28,18 @@ class Authenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $username = $request->getPayload()->getString('username');
+        // The login form sends fields named _username and _password
+        $username = (string) $request->request->get('_username', '');
+        $password = (string) $request->request->get('_password', '');
+        $csrf = (string) $request->request->get('_csrf_token', '');
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $username);
 
         return new Passport(
             new UserBadge($username),
-            new PasswordCredentials($request->getPayload()->getString('password')),
+            new PasswordCredentials($password),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge('authenticate', $csrf),
                 new RememberMeBadge(),
             ]
         );
@@ -50,7 +53,7 @@ class Authenticator extends AbstractLoginFormAuthenticator
 
         // For example:
         // return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+        return new RedirectResponse($this->urlGenerator->generate('app_user_dashboard'));
     }
 
     protected function getLoginUrl(Request $request): string

@@ -1,0 +1,39 @@
+{% set user_base = is_granted('IS_AUTHENTICATED_FULLY') ? 'user/base.html.twig' : 'base.html.twig' %}
+{% extends user_base %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto py-12">
+    <h1 class="text-2xl font-bold mb-6">Your Cart</h1>
+
+    {% if items is empty %}
+        <p>Your cart is empty.</p>
+    {% else %}
+        <table class="w-full text-left">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in items %}
+                    <tr>
+                        <td>{{ p.name }}</td>
+                        <td>{{ cart[p.id] }}</td>
+                        <td>{{ p.price }}</td>
+                        <td><a href="{{ path('app_cart_remove', {'id': p.id}) }}">Remove</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-6">
+            <a href="{{ path('app_checkout') }}" class="px-4 py-2 bg-green-600 text-white rounded">Proceed to checkout</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

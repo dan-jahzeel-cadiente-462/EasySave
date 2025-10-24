@@ -1,0 +1,52 @@
+<header class="bg-white">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+    <div class="flex lg:flex-1">
+      <a href="{{ path('app_home') }}" class="-m-1.5 p-1.5">
+        <span class="sr-only">EasySave</span>
+        <img src="{{ asset('images/logos/Brand Logo without Text.png') }}" alt="EasySave Logo" class="h-8 w-auto" />
+      </a>
+    </div>
+    <div class="flex lg:hidden">
+      <!-- mobile menu button kept simple -->
+      <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+        <span class="sr-only">Open main menu</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-6">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
+  <a href="{{ path('app_user_shop') }}" class="text-sm font-semibold text-gray-900">Shop</a>
+  <a href="{{ path('app_user_cart') }}" class="text-sm font-semibold text-gray-900">Cart{% if app.session.get('cart') is defined and app.session.get('cart')|length > 0 %} ({{ app.session.get('cart')|length }}){% endif %}</a>
+      <a href="{{ path('app_user_dashboard') }}" class="text-sm font-semibold text-gray-900">Dashboard</a>
+      <a href="{{ path('app_user_profile')}}" class="text-sm font-semibold text-gray-900">Profile</a>
+      <form method="post" action="{{ path('app_logout') }}" style="display:inline">
+          <button type="submit" class="text-sm font-semibold text-red-600">Logout</button>
+      </form>
+    </div>
+  </nav>
+</header>
+{#
+<header class="bg-white">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+    <div class="flex lg:flex-1">
+      <a href="{{ path('app_home') }}" class="-m-1.5 p-1.5">
+        <span class="sr-only">EasySave</span>
+        <img src="{{ asset('images/logos/Brand Logo without Text.png') }}" alt="EasySave Logo" class="h-8 w-auto" />
+      </a>
+    </div>
+
+    <div class="hidden lg:flex lg:gap-x-12">
+      <a href="{{ path('app_dashboard') }}" class="text-sm font-semibold text-gray-900">Dashboard</a>
+      <a href="{{ path('app_services') }}" class="text-sm font-semibold text-gray-900">Shop</a>
+      <a href="{{ path('app_cart') }}" class="text-sm font-semibold text-gray-900">Cart</a>
+    </div>
+
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
+      <span class="text-sm text-gray-700 mr-2">Hi, {{ app.user.username }}</span>
+      <a href="{{ path('app_logout') }}" class="text-sm font-semibold text-red-600">Logout</a>
+    </div>
+  </nav>
+</header>
+#}

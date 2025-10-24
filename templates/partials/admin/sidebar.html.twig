@@ -1,0 +1,195 @@
+<!-- Sidebar Backdrop (Mobile Only) -->
+<div x-show="sidebarOpen && window.innerWidth < 1024"
+     @click="sidebarOpen = false"
+     class="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity duration-300 lg:hidden"
+     x-transition.opacity
+     x-cloak></div>
+
+<!-- Sidebar -->
+<div x-show="sidebarOpen"
+     x-transition:enter="transition ease-in-out duration-300"
+     x-transition:enter-start="-translate-x-full"
+     x-transition:enter-end="translate-x-0"
+     x-transition:leave="transition ease-in-out duration-300"
+     x-transition:leave-start="translate-x-0"
+     x-transition:leave-end="-translate-x-full"
+     class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out 
+            lg:translate-x-0 lg:static lg:inset-0 dark:bg-gray-900 dark:border-gray-800"
+     x-cloak>
+
+	<!-- Logo -->
+	<a href="{{ path('admin') }}" class="block px-4 mt-7">
+		<div class="flex items-center justify-center">
+			<img src="{{ asset('images/logos/Brand Logo without Text.png') }}" alt="Brand Logo" class="h-16 w-auto">
+		</div>
+	</a>
+
+	<!-- Navigation -->
+	<nav class="mt-4 overflow-y-auto h-[calc(100vh-8rem)]">
+
+		<!-- DASHBOARD -->
+		<ul class="border-t">
+			<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-2">
+				<a href="{{ path('admin') }}" class="flex items-center gap-3">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+						stroke-width="1.5" stroke="currentColor" class="size-5" width="16" height="16">
+						<path stroke-linecap="round" stroke-linejoin="round"
+							d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+						<path stroke-linecap="round" stroke-linejoin="round"
+							d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+					</svg>
+					Dashboard
+				</a>
+			</li>
+		</ul>
+
+		<!--
+		<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-1">
+			<a href="#" class="flex items-center gap-3">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+					stroke-width="1.5" stroke="currentColor" class="size-5" width="16" height="16">
+					<path stroke-linecap="round" stroke-linejoin="round"
+						d="M17.982 18.725A7.488 7.488 0 0 0 
+						12 15.75a7.488 7.488 0 0 0-5.982 
+						2.975m11.963 0a9 9 0 1 0-11.963 
+						0m11.963 0A8.966 8.966 0 0 1 
+						12 21a8.966 8.966 0 0 1-5.982-2.275M15 
+						9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 
+						0Z" />
+				</svg>
+				Reports and Analytics
+			</a>
+		</li>
+		--> 
+
+		{# User Management - visible only to super admins #}
+		{# {% if is_granted('ROLE_SUPER_ADMIN') %} #}
+		{#
+		<li x-data="{ openUser: false }" class="ml-2 mr-2 rounded">
+			<button @click="openUser = !openUser" :aria-expanded="openUser.toString()" class="w-full flex items-center gap-3 p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 rounded">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5" width="16" height="16">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.637 0 5.09.71 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+				</svg>
+				<span>User Managemen</span>
+				<svg :class="openUsert ? 'rotate-90' : ''" class="ml-auto transition-transform" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+					<path d="M6 4l8 6-8 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+				</svg>
+			</button>
+			<ul x-show="openUser" x-transition class="pl-8 mt-1 space-y-1" x-cloak>
+				<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 rounded">
+					<a href="{{ path('admin') }}" class="block">EasyAdmin Users</a>
+				</li>
+				<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 rounded">
+					<a href="{{ path('app_register') }}" class="block">Create User</a>
+				</li>
+			</ul>
+		</li>
+		{# {% endif %} #}
+
+		{#
+		<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-1">
+			<a href="{{ path('app_user_management') }}" class="flex items-center gap-3">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+					stroke-width="1.5" stroke="currentColor" class="size-5" width="16" height="16">
+					<path stroke-linecap="round" stroke-linejoin="round"
+						d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 
+						1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 
+						0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 
+						7.5h12.974c.576 0 1.059.435 1.119 
+						1.007ZM8.625 10.5a.375.375 0 1 1-.75 
+						0 .375.375 0 0 1 .75 0Zm7.5 
+						0a.375.375 0 1 1-.75 0 .375.375 
+						0 0 1 .75 0Z" />
+				</svg>
+				User Management
+			</a>
+		</li>
+		#}
+
+		<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-1">
+			<a href="{{ path('app_admin_user_management') }}" class="flex items-center gap-3">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+					stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+					<path stroke-linecap="round" stroke-linejoin="round" 
+						d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0
+						0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 
+						0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 
+						0 1 6 0Z" />
+				</svg>
+				Customers
+			</a>
+		</li>
+				
+
+
+		<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-1">
+			<a href="{{ path('app_product_index') }}" class="flex items-center gap-3">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+					stroke-width="1.5" stroke="currentColor" class="size-5" width="16" height="16">
+					<path stroke-linecap="round" stroke-linejoin="round"
+						d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 
+						1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 
+						0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 
+						7.5h12.974c.576 0 1.059.435 1.119 
+						1.007ZM8.625 10.5a.375.375 0 1 1-.75 
+						0 .375.375 0 0 1 .75 0Zm7.5 
+						0a.375.375 0 1 1-.75 0 .375.375 
+						0 0 1 .75 0Z" />
+				</svg>
+				Product Management
+			</a>
+		</li>
+
+		<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-1">
+			<a href="{{ path('app_category_index') }}" class="flex items-center gap-3">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+					stroke-width="1.5" stroke="currentColor" class="size-5" width="16" height="16">
+					<path stroke-linecap="round" stroke-linejoin="round" 
+						d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 
+						0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 
+						1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 
+						0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 
+						18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 
+						6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 
+						15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 
+						0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+				</svg>
+				Categories
+			</a>
+		</li>
+		
+		<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-1">
+			<a href="{{path('app_admin_order_index')}}" class="flex items-center gap-3">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+					<path stroke-linecap="round" stroke-linejoin="round" 
+						d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 
+						0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 
+						2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 
+						4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 
+						1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 
+						1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 
+						1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 
+						1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 
+						1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
+				</svg>
+				Order Management
+			</a>
+		</li>
+
+		<!--
+		<ul class="border-t mt-6">
+			<li class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-gray-200 text-sm ml-2 mr-2 rounded mt-2">
+				<a href="#" class="flex items-center gap-3">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+						stroke-width="1.5" stroke="currentColor" class="size-5" width="16" height="16">
+						<path stroke-linecap="round" stroke-linejoin="round"
+							d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 
+							0 1.02.398 1.11.94l.149.894..." />
+					</svg>
+					Settings
+				</a>
+			</li>
+		</ul>
+		-->
+	</nav>
+</div>

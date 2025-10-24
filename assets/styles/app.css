@@ -1,2 +1,14 @@
 @import "tailwindcss";
+@tailwind base; 
 @source not "../../public";
+
+/* assets/styles/app.css or similar */
+
+/* Force background color on buttons to override Bootstrap's transparent default */
+.action-button {
+    background-color: var(--tw-bg-opacity, 1) !important;
+    text-decoration: none !important;
+    display: inline-block; /* Ensures <a> tags behave like buttons */
+}
+
+/* 1. Tailwind base styles (resets) */

@@ -2,10 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Favorite;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Product
 {
     #[ORM\Id]
@@ -13,23 +18,52 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 50)]
     private ?string $brand = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imagePath = null;
 
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $stock = null;
+    #[ORM\Column]
+    private ?int $stock = 0;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $created_at = null;
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    /**
+     * @var Collection<int, ProductImage>
+     */
+    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $productImages;
+
+    /** */
+    /**
+     * @var Collection<int, Favorite>
+     */
+    #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'product')]
+    private Collection $favorites;
+
+    public function __construct()
+    {
+        $this->productImages = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -65,9 +99,21 @@ class Product
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): static
+    {
+        $this->imagePath = $imagePath;
 
         return $this;
     }
@@ -89,21 +135,140 @@ class Product
         return $this->stock;
     }
 
-    public function setStock(?int $stock): static
+    public function setStock(int $stock): static
     {
         $this->stock = $stock;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    /**
+     * Increases the stock quantity.
+     */
+    public function increaseStock(int $amount = 1): static
     {
-        return $this->created_at;
+        $this->stock += $amount;
+        return $this;
     }
 
-    public function setCreatedAt(?\DateTimeImmutable $created_at): static
+    /**
+     * Decreases the stock quantity, ensuring it never goes below zero.
+     */
+    public function decreaseStock(int $amount = 1): static
     {
-        $this->created_at = $created_at;
+        // Ensure stock does not go below zero
+        $this->stock = max(0, $this->stock - $amount);
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTimeImmutable();
+        if ($this->createdAt === null) {
+            $this->createdAt = $now;
+        }
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @return Collection<int, ProductImage>
+     */
+    public function getProductImages(): Collection
+    {
+        return $this->productImages;
+    }
+
+    public function addProductImage(ProductImage $productImage): static
+    {
+        if (!$this->productImages->contains($productImage)) {
+            $this->productImages->add($productImage);
+            $productImage->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductImage(ProductImage $productImage): static
+    {
+        if ($this->productImages->removeElement($productImage)) {
+            // set the owning side to null (unless already changed)
+            if ($productImage->getProduct() === $this) {
+                $productImage->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): static
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            // set the owning side to null (unless already changed)
+            if ($favorite->getProduct() === $this) {
+                $favorite->setProduct(null);
+            }
+        }
 
         return $this;
     }

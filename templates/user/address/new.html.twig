@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Address{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">Add a New Shipping Address</h1>
+
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+        {{ form_start(form) }}
+            <div class="space-y-4">
+                {{ form_widget(form) }}
+                <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors mt-6">
+                    {{ button_label|default('Save Address') }}
+                </button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,20 +1,135 @@
-{% extends 'base.html.twig' %}
+{% set user_base = is_granted('IS_AUTHENTICATED_FULLY') ? 'user/base.html.twig' : 'base.html.twig' %}
+{% extends user_base %}
 
-{% block title %}Hello ServicesController!{% endblock %}
+{% block title %}Available Products{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="bg-gray-100">
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <nav class="text-sm mb-6" aria-label="Breadcrumb">
+            <ol class="list-reset flex text-gray-600">
+                <li><a href="{{ path('app_home') }}" class="text-blue-600 hover:underline">Home</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li>Services</li>
+            </ol>
+        </nav>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-extrabold text-gray-900">Available Products</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/xampp/htdocs/easysave/src/Controller/ServicesController.php</code></li>
-        <li>Your template at <code>C:/xampp/htdocs/easysave/templates/services/index.html.twig</code></li>
-    </ul>
+            <div class="flex items-center gap-3">
+                <form method="get" action="{{ path('app_services') }}" class="flex items-center gap-2">
+                    <input type="text" name="q" value="{{ q|default('') }}" placeholder="Search..." class="px-3 py-2 border rounded-md">
+                    <select name="category" class="px-3 py-2 border rounded-md">
+                        <option value="">All categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if selectedCategory is defined and selectedCategory == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="sort" class="px-3 py-2 border rounded-md">
+                        <option value="">Sort</option>
+                        <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: low to high</option>
+                        <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: high to low</option>
+                        <option value="name" {% if sort == 'name' %}selected{% endif %}>Name</option>
+                    </select>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Filter</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {% for product in products %}
+                <div class="group relative bg-white p-4 rounded-lg shadow-md">
+                    {# Favorite button overlay (top-right) #}
+                    {#
+                    <div class="absolute top-2 right-2 z-20">
+                        {% set favs = app.session.get('favorites', []) %}
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <form action="{{ path('app_favorite_toggle', {'id': product.id}) }}" method="post" onsubmit="event.stopPropagation();">
+                                <button type="submit" onclick="event.stopPropagation();" class="p-2 rounded-full bg-white shadow hover:bg-red-50 border border-transparent focus:outline-none" title="Toggle favorite" style="background-color: rgba(255,255,255,0.9);">
+                                    {% if product.id in favs %}
+                                        <!-- filled heart -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" style="color: #ef4444;">
+                                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 18.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                        </svg>
+                                    {% else %}
+                                        <!-- outline heart -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="color: #6b7280;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.172 5.172a4 4 0 015.656 0L12 8.343l3.172-3.171a4 4 0 115.656 5.656L12 21.657 3.172 10.828a4 4 0 010-5.656z" />
+                                        </svg>
+                                    {% endif %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" onclick="event.stopPropagation();" class="p-2 rounded-full bg-white shadow border border-transparent" title="Login to favorite">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="color: #9ca3af;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.172 5.172a4 4 0 015.656 0L12 8.343l3.172-3.171a4 4 0 115.656 5.656L12 21.657 3.172 10.828a4 4 0 010-5.656z" />
+                                </svg>
+                            </a>
+                        {% endif %}
+                    </div>
+                    #}
+
+                    {# Product link wrapper #}
+
+                    <div class="aspect-square w-full overflow-hidden rounded-lg bg-gray-200">
+                        {% set img = product.imagePath ?: '/images/default-product.png' %}
+                        <img src="{{ asset(img) }}" alt="{{ product.name }}" class="h-full w-full object-cover object-center group-hover:opacity-75">
+                    </div>
+                    <a href="{{ path('app_services_product_show', {'id': product.id}) }}" class="mt-4 block">
+                        <h3 class="mt-4 text-sm text-gray-700">{{ product.name }}</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">{{ product.price|number_format(2) }} AED</p>
+                    </a>
+
+
+                    <div class="mt-2 flex items-center justify-between">
+                         <span class="text-xs text-gray-500">Stock: {{ product.stock }}</span>
+                         <div class="flex items-center gap-2">
+                            {% if product.stock > 0 %}
+                                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                                    <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="post" class="inline-block" onsubmit="event.stopPropagation();">
+                                        <button type="submit" onclick="event.stopPropagation();" class="inline-flex items-center bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 text-xs font-semibold focus:outline-none" style="background-color: #16a34a;">Add to cart</button>
+                                    </form>
+                                {% else %}
+                                    <a href="{{ path('app_login') }}" onclick="event.stopPropagation();" class="inline-flex items-center bg-gray-400 text-white py-1 px-3 rounded text-xs font-semibold" style="background-color: #9ca3af;">Login to buy</a>
+                                {% endif %}
+                            {% else %}
+                                <span class="inline-block bg-red-500 text-white py-1 px-2 rounded text-xs font-semibold">Sold Out</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="col-span-full text-center text-gray-500">No products found.</p>
+            {% endfor %}
+        </div>
+        {#
+
+        <a href="{{ path('app_services_product_show', {'id': product.id}) }}" class="group bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transform hover:scale-105 transition duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400" style="text-decoration: none;">
+            {% set img = product.imagePath ?: '/images/default-product.png' %}
+            <div class="h-48 bg-gray-200">
+                <img src="{{ asset(img) }}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+                <h2 class="text-xl font-semibold text-gray-800 group-hover:text-blue-700">{{ product.name }}</h2>
+                <p class="text-gray-600 mt-2 flex-1">{{ product.description|striptags|slice(0, 120) ~ (product.description|length > 120 ? '...' : '') }}</p>
+                <div class="mt-4 flex items-center justify-between">
+                    <span class="text-lg font-bold text-green-600">{{ product.price }} AED</span>
+                    <span class="inline-flex items-center gap-2">
+                        <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Stock: {{ product.stock }}</span>
+                    </span>
+                </div>
+                <div class="mt-4 flex items-center gap-2">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <a href="{{ path('app_cart_add', {'id': product.id}) }}" class="bg-green-600 text-white py-2 px-3 rounded hover:bg-green-700 text-sm" onclick="event.stopPropagation();">Add to cart</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="bg-gray-400 text-white py-2 px-3 rounded text-sm" onclick="event.stopPropagation();">Login to buy</a>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+
+        #}
+    </div>
 </div>
 {% endblock %}

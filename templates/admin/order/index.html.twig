@@ -1,0 +1,186 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Order Management{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 sm:px-8">
+    <div class="py-8">
+    
+        <div>
+            <h1 class="text-2xl font-semibold leading-tight text-gray-800">Order Management ({{ totalOrders }} Results)</h1>
+        </div>
+
+        {# --- 1. DATE FILTER FORM --- #}
+        <div class="my-4 p-4 bg-white shadow-lg rounded-lg border border-gray-200">
+            <h2 class="text-lg font-medium text-gray-700 mb-3">Filter Orders by Date</h2>
+            
+            {# Form sends a GET request to the current route ('app_admin_order_index') #}
+            <form method="GET" action="{{ path('app_admin_order_index') }}" class="flex flex-wrap items-end gap-4">
+                
+                {# Start Date Input #}
+                <div>
+                    <label for="start_date" class="block text-sm font-medium text-gray-700">From:</label>
+                    <input type="date" 
+                           id="start_date" 
+                           name="start_date" 
+                           value="{{ startDate|default('') }}" 
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm">
+                </div>
+
+                {# End Date Input #}
+                <div>
+                    <label for="end_date" class="block text-sm font-medium text-gray-700">To:</label>
+                    <input type="date" 
+                           id="end_date" 
+                           name="end_date" 
+                           value="{{ endDate|default('') }}" 
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm">
+                </div>
+                
+                {# Filter Button #}
+                <button type="submit" 
+                        class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Apply Filter
+                </button>
+
+                {# Clear Filter Button #}
+                <a href="{{ path('app_admin_order_index') }}" 
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md border border-gray-300 hover:bg-gray-200">
+                    Clear Filter
+                </a>
+            </form>
+        </div>
+        {# --- END DATE FILTER FORM --- #}
+
+        <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Order ID
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Customer
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Order Date
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Total
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    {{ order.id }}
+                                </td>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    {# Use username as it's more reliable than fullName #}
+                                    {{ order.customer.username|default('N/A') }}
+                                </td>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    {# --- 2. DISPLAYING THE DATE --- #}
+                                    {{ order.createdAt|date('M d, Y H:i A') }}
+                                </td>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    ${{ order.total|number_format(2, '.', ',') }}
+                                </td>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    <span class="relative inline-block px-3 py-1 font-semibold leading-tight 
+                                        {% if order.status == 'Delivered' %} text-green-900 bg-green-200 rounded-full
+                                        {% elseif order.status == 'Shipped' %} text-blue-900 bg-blue-200 rounded-full
+                                        {% elseif order.status == 'Pending' %} text-yellow-900 bg-yellow-200 rounded-full
+                                        {% else %} text-red-900 bg-red-200 rounded-full
+                                        {% endif %}">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right">
+                                    <a href="{{ path('app_admin_order_show', {'id': order.id}) }}" class="text-green-600 hover:text-green-900 font-medium">View</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-gray-500">
+                                    No orders found matching the criteria.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {# --- 3. PAGINATION BLOCK (Updated to preserve date filters) --- #}
+            {% if totalPages > 1 %}
+            <div class="mt-4 flex flex-col xs:flex-row items-center xs:justify-between">
+                <span class="text-sm text-gray-600">
+                    Showing page {{ currentPage }} of {{ totalPages }} ({{ totalOrders }} total orders)
+                </span>
+                <div class="inline-flex mt-2 xs:mt-0 space-x-1">
+                    
+                    {# Previous Page Link #}
+                    <a href="{{ path('app_admin_order_index', {
+                        'page': currentPage - 1, 
+                        'start_date': startDate, 
+                        'end_date': endDate 
+                    }) }}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-l-lg 
+                              {% if currentPage > 1 %} bg-green-600 text-white hover:bg-green-700 
+                              {% else %} bg-gray-200 text-gray-500 cursor-not-allowed {% endif %}">
+                        Prev
+                    </a>
+
+                    {# Page Number Links #}
+                    {% for i in 1..totalPages %}
+                        {# Only show the first page, the last page, the current page, and pages immediately around it #}
+                        {% set show_page = i == 1 or i == totalPages or (i >= currentPage - 1 and i <= currentPage + 1) %}
+                        
+                        {# Ensure parameters are passed to maintain the filter on page change #}
+                        {% set page_params = {
+                            'page': i, 
+                            'start_date': startDate, 
+                            'end_date': endDate 
+                        } %}
+
+                        {% if show_page %}
+                            <a href="{{ path('app_admin_order_index', page_params) }}"
+                               class="px-4 py-2 text-sm font-semibold 
+                                      {% if i == currentPage %} bg-green-500 text-white border border-green-700 
+                                      {% else %} bg-white text-green-600 border border-gray-300 hover:bg-gray-100 {% endif %}"
+                               style="border-radius: 0;">
+                                {{ i }}
+                            </a>
+                        {% elseif i == 2 and currentPage > 2 %}
+                            <span class="px-4 py-2 text-sm text-gray-500" style="border-radius: 0;">...</span>
+                        {% elseif i == totalPages - 1 and currentPage < totalPages - 1 %}
+                            <span class="px-4 py-2 text-sm text-gray-500" style="border-radius: 0;">...</span>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Next Page Link #}
+                    <a href="{{ path('app_admin_order_index', {
+                        'page': currentPage + 1, 
+                        'start_date': startDate, 
+                        'end_date': endDate 
+                    }) }}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-r-lg 
+                              {% if currentPage < totalPages %} bg-green-600 text-white hover:bg-green-700 
+                              {% else %} bg-gray-200 text-gray-500 cursor-not-allowed {% endif %}">
+                        Next
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            {# --- End Pagination Block --- #}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

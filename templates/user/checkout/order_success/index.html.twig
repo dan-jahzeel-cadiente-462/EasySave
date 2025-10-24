@@ -1,0 +1,22 @@
+{% extends 'user/base.html.twig' %}
+
+{% block title %}Order Successful{% endblock %}
+
+{% block user_body %}
+<div class="container mx-auto px-4 py-8 text-center">
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-4">Thank You!</h1>
+        <p class="text-lg mb-2">Your order has been placed successfully.</p>
+        <p class="mb-4">Your order number is: <strong class="font-mono">#{{ order.id }}</strong></p>
+        <p class="mb-6">We have received your order and will begin processing it shortly. You will receive an email confirmation soon.</p>
+        <div class="flex justify-center gap-4">
+            <a href="{{ path('app_user_shop') }}" class="bg-blue-600 text-white py-2 px-5 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                Continue Shopping
+            </a>
+            <a href="{{ path('app_user_dashboard') }}" class="bg-gray-600 text-white py-2 px-5 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                Go to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

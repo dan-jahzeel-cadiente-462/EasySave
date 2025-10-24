@@ -1,0 +1,121 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 sm:px-8 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-800">Order Details <span class="text-gray-500">#{{ order.id }}</span></h1>
+        <a href="{{ path('app_admin_order_index') }}" class="text-indigo-600 hover:text-indigo-900">&larr; Back to Orders</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Left Column: Order Info & Items -->
+        <div class="md:col-span-2 space-y-6">
+            <!-- Order Summary -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-3">Summary</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Order ID</p>
+                        <p class="font-semibold text-gray-800">#{{ order.id }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Date Placed</p>
+                        <p class="font-semibold text-gray-800">{{ order.createdAt|date('M d, Y H:i') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Total</p>
+                        <p class="font-semibold text-gray-800">€{{ order.total|number_format(2) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Status</p>
+                        {% set status_classes = {
+                            'Pending': 'bg-yellow-200 text-yellow-900',
+                            'Shipped': 'bg-green-200 text-green-900',
+                            'Delivered': 'bg-blue-200 text-blue-900',
+                            'Cancelled': 'bg-red-200 text-red-900'
+                        } %}
+                        {% set status_class = status_classes[order.status] ?? 'bg-gray-200 text-gray-900' %}
+                        <span class="relative inline-block px-3 py-1 font-semibold leading-tight {{ status_class }} rounded-full text-xs">
+                            {{ order.status }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-3">Items Ordered ({{ order.orderItems|length }})</h2>
+                <div class="space-y-4">
+                    {% for item in order.orderItems %}
+                        <div class="flex items-center justify-between pb-4 border-b last:border-b-0">
+                            <div class="flex items-center">
+                                {% set img = item.product.imagePath ? asset(item.product.imagePath) : asset('/images/default-product.png') %}
+                                <img src="{{ img }}" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded mr-4">
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ item.product.name }}</p>
+                                    <p class="text-sm text-gray-600">Price: €{{ item.price|number_format(2) }}</p>
+                                    <p class="text-sm text-gray-600">Qty: {{ item.quantity }}</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-gray-800">€{{ (item.price * item.quantity)|number_format(2) }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Customer, Shipping & Actions -->
+        <div class="space-y-6">
+            <!-- Customer & Shipping -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-3">Customer & Shipping</h2>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Customer</p>
+                        <p class="font-semibold text-gray-800">{{ order.customer.username }}</p>
+                        {# You could add a link to a user management page here #}
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Shipping Address</p>
+                        <p class="text-gray-800">{{ order.shippingAddress.fullAddress }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-3">Manage Order</h2>
+                
+                <!-- Update Status Form -->
+                <form action="{{ path('app_admin_order_update_status', {'id': order.id}) }}" method="post" class="space-y-4">
+                    <input type="hidden" name="_token" value="{{ csrf_token('update-status' ~ order.id) }}">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Update Status</label>
+                        <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            {% for status in ['Pending', 'Shipped', 'Delivered', 'Cancelled'] %}
+                                <option value="{{ status }}" {{ order.status == status ? 'selected' : '' }}>{{ status }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Update Status
+                    </button>
+                </form>
+
+                <div class="mt-6 border-t pt-6">
+                    <h3 class="text-lg font-medium text-red-600">Danger Zone</h3>
+                    <!-- Delete Order Form -->
+                    <form action="{{ path('app_admin_order_delete', {'id': order.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this order? This action cannot be undone.');" class="mt-4">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ order.id) }}">
+                        <button type="submit" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Delete Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

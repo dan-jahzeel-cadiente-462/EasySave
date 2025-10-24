@@ -1,5 +1,13 @@
-{{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
-
+{{ form_start(form, {'attr': {'class': 'space-y-4', 'enctype': 'multipart/form-data'}}) }}
+{% if form.vars.value is defined and form.vars.value.imagePath is not empty %}
+    {% set img = form.vars.value.imagePath ?: '/images/default-product.png' %}
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Current image</label>
+        <div class="w-40 h-40 mt-2 rounded overflow-hidden border">
+            <img src="{{ asset(img) }}" alt="preview" class="w-full h-full object-cover">
+        </div>
+    </div>
+{% endif %}
     {# Name field #}
     <div>
         {{ form_label(form.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
@@ -21,23 +29,36 @@
         {{ form_errors(form.description) }}
     </div>
 
-    {# Price field #}
+    {# Category field #}
     <div>
-        {{ form_label(form.price, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-        {{ form_widget(form.price, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
-        {{ form_errors(form.price) }}
+        {{ form_label(form.category, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.category, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+        {{ form_errors(form.category) }}
     </div>
 
-    {# Stock field #}
+    {# Image upload #}
     <div>
-        {{ form_label(form.stock, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-        {{ form_widget(form.stock, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
-        {{ form_errors(form.stock) }}
+        {{ form_label(form.imageFile, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+        {{ form_widget(form.imageFile, {'attr': {'class': 'mt-1'}}) }}
+        {{ form_errors(form.imageFile) }}
+    </div>
+
+    {# Price and Stock fields (side-by-side) #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            {{ form_label(form.price, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.price, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+            {{ form_errors(form.price) }}
+        </div>
+        <div>
+            {{ form_label(form.stock, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.stock, {'attr': {'class': 'mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none'}}) }}
+            {{ form_errors(form.stock) }}
+        </div>
     </div>
 
     {# Submit button #}
     <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition">
         {{ button_label|default('Save') }}
     </button>
-
 {{ form_end(form) }}

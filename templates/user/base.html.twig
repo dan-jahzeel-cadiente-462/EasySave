@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        {#<title>{% block title %}{% endblock %}</title>#}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body style="font-family: 'Poppins', sans-serif;">
+        {% include 'partials/user/user_header.html.twig' %}
+
+        <main>
+            {% block user_body %}{% endblock %}
+        </main>
+
+        {% include 'partials/footer.html.twig' %}
+    </body>
+</html>

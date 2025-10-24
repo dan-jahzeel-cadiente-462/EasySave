@@ -1,0 +1,163 @@
+{% extends 'user/base.html.twig' %}
+
+{% block title %}{{ product.name }} — Product Details{% endblock %}
+
+{% block user_body %}
+<div class="bg-white min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <nav class="mb-6 text-sm" aria-label="Breadcrumb">
+            <a href="{{ path('app_user_shop') }}" class="text-indigo-600 hover:text-indigo-800 transition font-medium">← Back to Shop</a>
+        </nav>
+
+        <div class="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
+            
+            {# ================================= #}
+            {# 1. PRODUCT IMAGE SLIDER (LEFT COLUMN) #}
+            {# ================================= #}
+            <div id="product-gallery" class="flex flex-col-reverse">
+                
+                {# Collect all images for JS (Main image first) #}
+                {% set all_images = [product.imagePath ?: '/images/default-product.png'] %}
+                {% for image in product.productImages %}
+                    {% set all_images = all_images|merge([image.imagePath]) %}
+                {% endfor %}
+                
+                {# Image Thumbnails Grid #}
+                <div class="mt-6 w-full max-w-2xl mx-auto sm:block lg:max-w-none">
+                    <div class="grid grid-cols-4 gap-4">
+                        {# Loop through all collected images to create thumbnails #}
+                        {% for imagePath in all_images %}
+                            <button type="button" 
+                                    class="thumbnail-btn aspect-square w-full rounded-md border-2 p-0.5 overflow-hidden focus:outline-none 
+                                            {% if loop.first %}border-indigo-600{% else %}border-transparent hover:border-gray-300{% endif %}"
+                                    data-image-path="{{ asset(imagePath) }}"
+                                    onclick="changeMainImage(this)">
+                                <img src="{{ asset(imagePath) }}" alt="Product thumbnail {{ loop.index }}" class="w-full h-full object-cover rounded-md">
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Main Image Display #}
+                <div class="w-full aspect-square overflow-hidden rounded-lg">
+                    {# Use the first image from the collection as the default main image #}
+                    {% set default_main_image = all_images[0] %}
+                    <img id="main-product-image" 
+                         src="{{ asset(default_main_image) }}" 
+                         alt="{{ product.name }} main image" 
+                         class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            {# ================================= #}
+            {# 2. PRODUCT DETAILS (RIGHT COLUMN) #}
+            {# ================================= #}
+            <div class="mt-10 lg:mt-0">
+                <h1 class="text-3xl font-extrabold text-gray-900 mb-2">{{ product.name }}</h1>
+                {% if product.brand %}<p class="text-gray-600 mb-2">Brand: <span class="font-semibold">{{ product.brand }}</span></p>{% endif %}
+                
+                <div class="my-4">
+                    <span class="text-3xl font-extrabold text-indigo-600">{{ product.price|number_format(2, '.', ',') }} AED</span>
+                    <span class="ml-4 text-sm text-gray-500">
+                        Stock: **{{ product.stock }}**
+                    </span>
+                </div>
+
+                <div class="mb-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-2">Description</h2>
+                    <p class="text-gray-700 whitespace-pre-line">{{ product.description }}</p>
+                </div>
+
+                <div class="mb-6 border-t pt-4">
+                    <p class="text-sm font-medium text-gray-700">Category: **{{ product.category.name }}**</p>
+                </div>
+                
+                {# Action Buttons: Add to Cart & Favorite #}
+                <div class="flex gap-4 items-center">
+                    
+                    {# Add to Cart Button #}
+                    {% if product.stock > 0 %}
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <form action="{{ path('app_user_cart_add', {'id': product.id}) }}" method="post" class="flex-grow">
+                                <button type="submit" class="w-full px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-semibold transition shadow-md">
+                                    Add to Cart
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="flex-grow text-center px-6 py-3 bg-gray-400 text-white rounded-md font-semibold cursor-not-allowed shadow-md">
+                                Login to buy
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <span class="flex-grow text-center px-6 py-3 bg-red-500 text-white rounded-md font-semibold shadow-md">
+                            Out of Stock
+                        </span>
+                    {% endif %}
+
+                    {# Favorite Toggle Button #}
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        {# Check if the product is in the user's favorites collection (assuming 'favoriteProductIds' is passed to the template) #}
+                        {# Since we don't have the context for 'favoriteProductIds' in show, we rely on the FavoriteController.php logic. #}
+                        {# If you pass 'isFavorite' (boolean) from the controller, you could use that here. #}
+                        {# For now, let's keep a simple heart button pointing to the toggle route. #}
+                        <form action="{{ path('app_user_favorite_toggle', {'id': product.id}) }}" method="post" class="flex-shrink-0">
+                            <button type="submit" 
+                                    title="Toggle Favorite"
+                                    class="p-3 border-2 rounded-full text-gray-400 hover:text-red-500 hover:border-red-500 transition 
+                                            {% if isFavorite is defined and isFavorite %}
+                                                bg-red-50 text-red-500 border-red-500
+                                            {% else %}
+                                                border-gray-300
+                                            {% endif %}">
+                                <svg class="w-6 h-6" fill="{{ (isFavorite is defined and isFavorite) ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-.318-.318-7.364-7.364z"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{# ================================= #}
+{# JAVASCRIPT FOR IMAGE SLIDER #}
+{# ================================= #}
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        /**
+         * Switches the main product image and updates the active thumbnail border.
+         * @param {HTMLElement} clickedButton - The thumbnail button element that was clicked.
+         */
+        function changeMainImage(clickedButton) {
+            const newImagePath = clickedButton.getAttribute('data-image-path');
+            const mainImage = document.getElementById('main-product-image');
+            
+            if (mainImage && newImagePath) {
+                // 1. Change the main image source
+                mainImage.src = newImagePath;
+                
+                // 2. Update the active thumbnail styling
+                const allThumbnails = document.querySelectorAll('.thumbnail-btn');
+                allThumbnails.forEach(btn => {
+                    // Remove active border from all
+                    btn.classList.remove('border-indigo-600');
+                    btn.classList.add('border-transparent');
+                    btn.classList.remove('hover:border-gray-300'); // Clean up from hover when active
+                });
+                
+                // Add active border to the clicked one
+                clickedButton.classList.remove('border-transparent');
+                clickedButton.classList.add('border-indigo-600');
+                clickedButton.classList.remove('hover:border-gray-300'); // Ensure hover isn't re-applied
+            }
+        }
+    </script>
+{% endblock %}

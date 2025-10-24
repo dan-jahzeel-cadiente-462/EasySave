@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\UserRepository;
+use App\Entity\Favorite;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -25,7 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    private array $roles = ["ROLE_USER", "ROLE_ADMIN"];
+    private array $roles = [];
 
     /**
      * @var string The hashed password
@@ -38,6 +42,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $last_name = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Address::class, orphanRemoval: true)]
+    private Collection $addresses;
+
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Order::class)]
+    private Collection $orders;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true)]
+    private Collection $favorites;
+
+    public function __construct()
+    {
+        $this->addresses = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -140,6 +160,96 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(?string $last_name): static
     {
         $this->last_name = $last_name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Address>
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(Address $address): static
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+            $address->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(Address $address): static
+    {
+        if ($this->addresses->removeElement($address)) {
+            // set the owning side to null (unless already changed)
+            if ($address->getUser() === $this) {
+                $address->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getCustomer() === $this) {
+                $order->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): static
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            // set the owning side to null (unless already changed)
+            if ($favorite->getUser() === $this) {
+                $favorite->setUser(null);
+            }
+        }
 
         return $this;
     }

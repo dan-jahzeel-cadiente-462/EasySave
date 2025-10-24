@@ -1,58 +1,124 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/index.html.twig' %}
 
 {% block title %}Product Details{% endblock %}
 
 {% block body %}
 <div class="container mx-auto px-6 py-8">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Product Details</h1>
-
-    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-        <table class="min-w-full text-sm text-gray-700">
-            <tbody class="divide-y divide-gray-200">
-                <tr class="hover:bg-gray-50">
-                    <th class="px-4 py-2 text-left font-medium">ID</th>
-                    <td class="px-4 py-2">{{ product.id }}</td>
-                </tr>
-                <tr class="hover:bg-gray-50">
-                    <th class="px-4 py-2 text-left font-medium">Name</th>
-                    <td class="px-4 py-2">{{ product.name }}</td>
-                </tr>
-                <tr class="hover:bg-gray-50">
-                    <th class="px-4 py-2 text-left font-medium">Brand</th>
-                    <td class="px-4 py-2">{{ product.brand }}</td>
-                </tr>
-                <tr class="hover:bg-gray-50">
-                    <th class="px-4 py-2 text-left font-medium">Description</th>
-                    <td class="px-4 py-2">{{ product.description }}</td>
-                </tr>
-                <tr class="hover:bg-gray-50">
-                    <th class="px-4 py-2 text-left font-medium">Price</th>
-                    <td class="px-4 py-2 text-green-600 font-semibold">{{ product.price|number_format(2) }}</td>
-                </tr>
-                <tr class="hover:bg-gray-50">
-                    <th class="px-4 py-2 text-left font-medium">Stock</th>
-                    <td class="px-4 py-2">{{ product.stock }}</td>
-                </tr>
-                <!--
-                <tr class="hover:bg-gray-50">
-                    <th class="px-4 py-2 text-left font-medium">Created At</th>
-                    <td class="px-4 py-2">{{ product.createdAt ? product.createdAt|date('Y-m-d H:i') : '' }}</td>
-                </tr>
-                -->
-            </tbody>
-        </table>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Product Details</h1>
+        <div class="flex items-center gap-3">
+            <a href="{{ path('app_product_index') }}" class="text-gray-600 hover:text-gray-800">&larr; Back to list</a>
+            <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white font-medium rounded-md shadow hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-300 transition text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
+                </svg>
+                <span>Edit Product</span>
+            </a>
+            {{ include('product/_delete_form.html.twig') }}
+        </div>
     </div>
 
-    <div class="flex gap-4">
-        <a href="{{ path('app_product_index') }}"
-           class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">
-           ← Back to list
-        </a>
-        <a href="{{ path('app_product_edit', {'id': product.id}) }}"
-           class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
-           Edit
-        </a>
-        {{ include('product/_delete_form.html.twig', {'class': 'px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition'}) }}
+    <div class="bg-white shadow rounded-lg border border-gray-200">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8">
+            <!-- Image Column -->
+            <div class="md:col-span-1 p-6 border-r border-gray-200">
+                <!--<h2 class="text-xl font-semibold text-gray-700 mb-4">Product Images</h2>-->
+    
+                {# Main Image #}
+                {% set main_img_path = product.imagePath ?: '/images/default-product.png' %}
+                <div class="mb-4">
+                    <a href="{{ asset(main_img_path) }}" target="_blank" class="block rounded-lg overflow-hidden border hover:shadow-lg transition-shadow duration-300" data-lightbox="product-gallery" title="{{ product.name }} - Main Image">
+                        <img src="{{ asset(main_img_path) }}" alt="{{ product.name }} (Main Image)" class="w-full h-auto object-cover">
+                    </a>
+                </div>
+    
+                {# Additional Images Gallery #}
+                {% set images = product.productImages|default([]) %}
+                {% if images is not empty %}
+                    <h3 class="text-lg font-medium text-gray-600 mb-3 mt-6">Gallery</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        {% for image in images %}
+                            <a href="{{ asset(image.imagePath) }}" target="_blank" class="block rounded-md overflow-hidden border hover:shadow-md transition-shadow duration-300" data-lightbox="product-gallery" title="Product image {{ loop.index }}">
+                                <img src="{{ asset(image.imagePath) }}" alt="Product image {{ loop.index }}" class="w-full h-20 object-cover">
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+    
+            <!-- Details Column -->
+            <div class="md:col-span-2 p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-sm font-medium text-gray-600 flex items-center flex-wrap">
+                            {% set breadcrumbs = [] %}
+                            {% set current_category = product.category %}
+                            {% for i in 1..10 %} {# Limit to 10 levels to prevent infinite loops #}
+                                {% if current_category %}
+                                    {% set breadcrumbs = [current_category] | merge(breadcrumbs) %}
+                                    {% set current_category = current_category.parent %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% for category in breadcrumbs %}
+                                <a href="{{ path('app_category_show', {'id': category.id}) }}" class="text-blue-600 hover:text-blue-800 hover:underline">{{ category.name }}</a>
+                                {% if not loop.last %}<span class="mx-2 text-gray-400">/</span>{% endif %}
+                            {% endfor %}
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900 mt-2">{{ product.name }}</h2>
+                        <p class="text-lg text-gray-500 mt-1">{{ product.brand }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold"><span class="text-lg text-green-400">PHP</span> <span class="text-3xl text-green-600">{{ product.price|number_format(2) }}</span></p>
+                        <p class="mt-1 text-sm font-medium rounded-full px-3 py-1 inline-block {{ product.stock <= 5 ? 'text-red-700 bg-red-100' : 'text-gray-700 bg-gray-100' }}">
+                            {{ product.stock }} in stock
+                        </p>
+                    </div>
+                </div>
+    
+                <div class="mt-4 flex items-center gap-4 text-gray-600 border-t pt-4">
+                    <span class="inline-flex items-center gap-1.5 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" class="size-6">
+                            <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                        </svg>
+                        <span>{{ product.favorites.count }}</span>
+                    </span>
+                </div>
+    
+                <div class="mt-6 prose max-w-none text-gray-700">
+                    <h4 class="font-semibold text-gray-800">Description</h4>
+                    <p>{{ product.description|nl2br }}</p>
+                </div>
+    
+                <div class="mt-6 border-t pt-4 text-sm text-gray-500">
+                    <div class="grid grid-cols-2 gap-4">
+                        <p><strong>Product ID:</strong> #{{ product.id }}</p>
+                        <p><strong>Created At:</strong> {{ product.createdAt ? product.createdAt|date('Y-m-d H:i') : 'N/A' }}</p>
+                        <p><strong>Last Updated:</strong> {{ product.updatedAt ? product.updatedAt|date('Y-m-d H:i') : 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{# Optional: Simple JavaScript for opening images in a new tab (Fallback) #}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // This is a placeholder for a real lightbox library like Fancybox or Lightbox2
+            // In a real app, you would initialize your chosen library here.
+            const galleryLinks = document.querySelectorAll('[data-lightbox="product-gallery"]');
+            galleryLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // This is a simple fallback to open in a new tab.
+                    // A real lightbox would open a modal overlay.
+                    // e.preventDefault();
+                    // window.open(this.href, '_blank');
+                });
+            });
+        });
+    </script>
 {% endblock %}

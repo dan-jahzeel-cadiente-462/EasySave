@@ -1,0 +1,122 @@
+{% extends 'admin/index.html.twig' %}
+
+{% block title %}Category{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Category: {{ category.name }}</h1>
+        </div>
+        
+        {# Category Details Card #}
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200 mb-8">
+            <div class="border-b border-gray-200 pb-4 mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Category Details</h2>
+            </div>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-gray-500">ID</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ category.id }}</dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-gray-500">Name</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ category.name }}</dd>
+                </div>
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-gray-500">Parent Category</dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                        {% if category.parent %}
+                            {# Added link to parent category for easy navigation #}
+                            <a href="{{ path('app_category_show', {'id': category.parent.id}) }}" class="text-indigo-600 hover:text-indigo-800 font-semibold">
+                            {{ category.parent.name }}
+                            </a>
+                        {% else %}
+                            <span class="text-gray-500 italic">None (Top-Level)</span>
+                        {% endif %}
+                    </dd>
+                </div>
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-medium text-gray-500">Description</dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                        {{ category.description|default('<span class="text-gray-400 italic">N/A</span>')|raw }}
+                    </dd>
+                </div>
+            </dl>
+            <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                <a href="{{ path('app_category_index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition text-sm font-medium">
+                    Back to list
+                </a>
+                
+                <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition text-sm font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>
+                    Edit
+                </a>
+                {{ include('partials/admin/_delete_form.html.twig') }}
+            </div>
+        </div>
+
+        {# Subcategories Card (NEW SECTION) #}
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200 mb-8">
+            <div class="border-b border-gray-200 pb-4 mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Subcategories (Children)</h2>
+            </div>
+            
+            {% if category.children is not empty %}
+                <ul class="divide-y divide-gray-200">
+                    {% for child in category.children %}
+                        <li class="py-2 flex justify-between items-center hover:bg-gray-50 px-2 rounded-md transition">
+                            <span class="text-gray-800 font-medium">{{ child.name }}</span>
+                            <div class="flex items-center space-x-3 text-sm">
+                                <span class="text-gray-500">{{ child.products|length }} products</span>
+                                <a href="{{ path('app_category_show', {'id': child.id}) }}" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                                    View Details →
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 italic">This category has no direct subcategories.</p>
+            {% endif %}
+        </div>
+
+        {# Products in this Category Card #}
+        <div class="bg-white shadow rounded-lg border border-gray-200">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">Products in this Category</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left text-gray-700">
+                    <thead class="bg-gray-50 text-gray-800 uppercase text-xs font-semibold tracking-wider">
+                    <tr>
+                        <th class="px-4 py-3">ID</th>
+                        <th class="px-4 py-3">Image</th>
+                        <th class="px-4 py-3">Name</th>
+                        <th class="px-4 py-3">Brand</th>
+                        <th class="px-4 py-3">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for product in category.products %}
+                        {% set img = product.imagePath ?: '/images/default-product.png' %}
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-3">{{ product.id }}</td>
+                            <td class="px-4 py-3">
+                                <div class="w-12 h-12 bg-gray-100 rounded overflow-hidden">
+                                    <img src="{{ asset(img) }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 font-medium text-gray-800">{{ product.name }}</td>
+                            <td class="px-4 py-3">{{ product.brand }}</td>
+                           <td class="px-4 py-3 max-w-xs truncate">{{ product.description }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="px-4 py-6 text-center text-gray-500">No products found in this category.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
