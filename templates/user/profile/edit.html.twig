@@ -1,0 +1,179 @@
+{% extends 'user/base.html.twig' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block user_body %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-extrabold text-gray-900 border-b border-gray-200 pb-3">
+        Edit Your Profile
+    </h1>
+
+    {{ form_start(form, {'attr': {'class': 'space-y-10', 'enctype': 'multipart/form-data'}}) }}
+
+    <!-- PERSONAL INFORMATION -->
+    <section class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b border-gray-200 pb-3">
+            Personal Information
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                {{ form_label(form.username, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.username, {'attr': {'class': 'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5'}}) }}
+                <p class="text-sm text-red-500 mt-1">{{ form_errors(form.username) }}</p>
+            </div>
+            <div>
+                {{ form_label(form.firstName, 'First Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.firstName, {'attr': {'class': 'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5'}}) }}
+                <p class="text-sm text-red-500 mt-1">{{ form_errors(form.firstName) }}</p>
+            </div>
+            <div>
+                {{ form_label(form.lastName, 'Last Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.lastName, {'attr': {'class': 'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5'}}) }}
+                <p class="text-sm text-red-500 mt-1">{{ form_errors(form.lastName) }}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADDRESSES -->
+    <section class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b border-gray-200 pb-3">
+        Addresses
+    </h2>
+
+    {% set address_prototype %}
+        <li class="address-item bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm relative transition hover:shadow-md">
+            <h3 class="address-title text-lg font-semibold mb-5 text-gray-700">Address #__address_number__</h3>
+
+            <div class="space-y-5">
+                <!-- Row 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        {% set houseNoField = form.addresses.vars.prototype.houseNo %}
+                        {{ form_label(houseNoField, 'House/Apt. No (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(houseNoField, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                    </div>
+                    <div class="md:col-span-2">
+                        {% set streetField = form.addresses.vars.prototype.street %}
+                        {{ form_label(streetField, 'Street', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(streetField, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        {% set subdivisionField = form.addresses.vars.prototype.subdivision %}
+                        {{ form_label(subdivisionField, 'Subdivision (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(subdivisionField, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                    </div>
+                    <div>
+                        {% set barangayField = form.addresses.vars.prototype.barangay %}
+                        {{ form_label(barangayField, 'Barangay', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(barangayField, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                    </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        {% set cityMunicipalityField = form.addresses.vars.prototype.cityMunicipality %}
+                        {{ form_label(cityMunicipalityField, 'City/Municipality', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(cityMunicipalityField, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                    </div>
+                    <div>
+                        {% set provinceField = form.addresses.vars.prototype.province %}
+                        {{ form_label(provinceField, 'State/Province (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(provinceField, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                    </div>
+                    <div>
+                        {% set postalCodeField = form.addresses.vars.prototype.postalCode %}
+                        {{ form_label(postalCodeField, 'Postal Code', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(postalCodeField, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="mt-6 text-red-600 hover:text-red-700 text-sm font-medium delete-address-button transition duration-150">
+                Remove Address
+            </button>
+        </li>
+    {% endset %}
+
+    <ul id="addresses-fields-list"
+        data-prototype="{{ address_prototype|e }}"
+        data-widget-tags="&lt;li&gt;&lt;/li&gt;"
+        data-widget-counter="{{ form.addresses|length }}"
+        class="space-y-6">
+        {% for addressField in form.addresses %}
+            <li class="address-item bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm relative transition hover:shadow-md">
+                <h3 class="address-title text-lg font-semibold mb-5 text-gray-700">Address #{{ loop.index }}</h3>
+
+                <div class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            {{ form_label(addressField.houseNo, 'House/Apt. No (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_widget(addressField.houseNo, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                        </div>
+                        <div class="md:col-span-2">
+                            {{ form_label(addressField.street, 'Street', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_widget(addressField.street, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            {{ form_label(addressField.subdivision, 'Subdivision (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_widget(addressField.subdivision, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                        </div>
+                        <div>
+                            {{ form_label(addressField.barangay, 'Barangay', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_widget(addressField.barangay, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            {{ form_label(addressField.cityMunicipality, 'City/Municipality', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_widget(addressField.cityMunicipality, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                        </div>
+                        <div>
+                            {{ form_label(addressField.province, 'State/Province (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_widget(addressField.province, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                        </div>
+                        <div>
+                            {{ form_label(addressField.postalCode, 'Postal Code', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                            {{ form_widget(addressField.postalCode, {'attr': {'class': 'mt-1 block w-full bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition-colors hover:bg-gray-200'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="mt-6 text-red-600 hover:text-red-700 text-sm font-medium delete-address-button transition duration-150">
+                    Remove Address
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <button type="button" class="add-address-button mt-8 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-indigo-700 transition">
+        + Add New Address
+    </button>
+</section>
+
+
+    <!-- ACTION BUTTONS -->
+    <div class="flex justify-end sm:justify-start gap-4 pt-4">
+        <button type="submit" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition transform hover:scale-[1.02]">
+            {{ button_label|default('Save Profile Changes') }}
+        </button>
+        <a href="{{ path('app_user_profile') }}" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg shadow-sm hover:bg-gray-50 transition"
+           onclick="return confirm('Are you sure you want to cancel? Any unsaved changes will be lost.');">
+            Cancel
+        </a>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}New Category{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <a href="{{ path('app_category_index') }}" class="inline-flex items-center text-green-600 hover:text-green-800 font-medium transition-colors group">
+                <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Categories
+            </a>
+            <div class="mt-6">
+                <h1 class="text-3xl font-bold text-gray-900">Create New Category</h1>
+                <p class="text-gray-600 mt-2">Add a new product category to your inventory</p>
+            </div>
+        </div>
+
+        <!-- Category Form Card -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Form Header -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-8 py-6 border-b border-gray-200">
+                <div class="flex items-center">
+                    <div class="bg-green-100 p-3 rounded-lg mr-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-800">Category Details</h2>
+                </div>
+            </div>
+
+            <div class="p-8">
+                {{ include('admin/category/_form.html.twig', {'button_label': 'Create Category'}) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

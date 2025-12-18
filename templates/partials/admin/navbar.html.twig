@@ -1,0 +1,88 @@
+<nav class="border-b border-gray-200 bg-white py-4 shadow-md transition-all duration-300">
+    <div class="flex justify-between items-center px-4 md:px-6">
+        
+        <!-- Left Section: Profile Info -->
+        <div class="flex items-center space-x-4">
+            <!-- Profile Image and Role Display -->
+            <div class="flex items-center gap-3">
+                <!-- Profile Image -->
+                <div class="relative">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <img src="{{ app.user.profileImageUrl|default('/images/default_user_icons/admin_user_icon.png') }}" alt="Profile Image" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-100 shadow-sm">
+                    {% elseif is_granted('ROLE_STAFF') %}
+                        <img src="{{ app.user.profileImageUrl|default('/images/default_user_icons/staff_user_icon.png') }}" alt="Profile Image" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-100 shadow-sm">
+                    {% endif %}
+                </div>
+                
+                <!-- Name and Role Info -->
+                <div class="hidden sm:block">
+                    <!-- Username and Role Badge -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h2 class="text-sm font-semibold text-gray-800">
+                            {{ app.user.firstName|default('Admin User') }} {{ app.user.lastName|default('') }}
+                        </h2>
+                        
+                        <!-- Primary Role Badge -->
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                                Admin
+                            </span>
+                        {% elseif is_granted('ROLE_STAFF') %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                Staff
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Username -->
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        {{ app.user.username|default('admin_user') }}
+                    </p>
+                    {#
+                    <!-- Email -->
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        {{ app.user.email|default('No email') }}
+                    </p>
+                    #}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section: Hamburger, Navigation Items & Logout -->
+        <div class="flex items-center space-x-6">
+            <!-- Hamburger Button (Visible only on small screens) -->
+            <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('sidebarOpen', sidebarOpen)"
+                class="text-gray-600 hover:text-gray-900 focus:outline-none lg:hidden transition sidebar-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <!-- Optional: Navigation Items -->
+            {# Add more navigation items here as needed
+            <a href="#" class="text-gray-600 hover:text-gray-800 text-sm font-semibold transition hidden lg:block">
+                Dashboard
+            </a>
+            <a href="#" class="text-gray-600 hover:text-gray-800 text-sm font-semibold transition hidden lg:block">
+                Settings
+            </a>
+            #}
+
+            <!-- Notifications and Logs -->
+            {#
+            {% include 'partials/admin/navbar_notifications.html.twig' %}
+            {% include 'partials/admin/navbar_logs.html.twig' %}
+            #}
+
+            <!-- Logout Button -->
+            <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-800 text-sm font-semibold transition flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span class="hidden sm:inline">Logout</span>
+            </a>
+        </div>
+    </div>
+</nav>

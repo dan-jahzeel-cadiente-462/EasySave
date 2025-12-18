@@ -1,0 +1,1058 @@
+{% extends 'user/base.html.twig' %}
+
+{% block user_body %}
+<!-- 💎 Sticky Premium Navbar (sticks below the user header) -->
+<nav class="sticky z-40 bg-white border-b border-gray-200 shadow-sm" style="top: var(--user-header-height, 3rem);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:space-x-6">
+            <!-- Premium Search Bar -->
+            <div class="flex-1 mb-0 lg:mb-0 mr-4">
+                <div class="relative">
+                    <form method="GET" action="/search" class="w-full">
+                        <div class="relative flex items-center">
+                            <!-- Search Icon -->
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+
+                            <!-- Search Input -->
+                            <input 
+                                type="search"
+                                name="q"
+                                placeholder="Search"
+                                value="{{ app.request.query.get('q') }}"
+                                autocomplete="off"
+                                class="w-full pl-12 pr-24 py-2 bg-white border-2 border-gray-200 rounded-l-xl focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all duration-200 placeholder-gray-500 text-gray-900 focus:outline-none hover:border-gray-300"
+                            >
+                            
+                            <!-- Search Button -->
+                            <button 
+                                type="submit" 
+                                class="absolute inset-y-0 right-0 bg-green-600 rounded-r-xl px-6 py-2 hover:bg-green-700 transition-all duration-200 cursor-pointer text-white flex items-center justify-center border-2 border-transparent hover:border-green-800 focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2"
+                                aria-label="Search"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                </svg>
+                                <span class="ml-2 font-medium hidden sm:inline">Search</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Premium Sort Dropdown -->
+            <div class="relative group mr-4">
+                <button type="button"
+                        class="flex items-center justify-between px-5 py-2 bg-white border-2 border-gray-200 rounded-xl hover:border-indigo-400 hover:shadow-md transition-all duration-300 min-w-[180px]">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"></path>
+                        </svg>
+                        <span class="font-medium text-gray-700">
+                            {% set current_sort = app.request.query.get('sort') %}
+                            {% if current_sort == 'price_asc' %}
+                                Price: Low to High
+                            {% elseif current_sort == 'price_desc' %}
+                                Price: High to Low
+                            {% elseif current_sort == 'name' %}
+                                Name (A-Z)
+                            {% elseif current_sort == 'newest' %}
+                                Newest First
+                            {% elseif current_sort == 'popular' %}
+                                Most Popular
+                            {% else %}
+                                Sort by
+                            {% endif %}
+                        </span>
+                    </div>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                
+                <!-- Sort Dropdown Menu -->
+                <div class="absolute z-50 hidden group-hover:block w-full mt-2">
+                    <div class="bg-white border-2 border-gray-200 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="py-2">
+                            <label class="flex items-center px-5 py-2 hover:bg-indigo-50 cursor-pointer transition-colors">
+                                <input type="radio" name="sort" value="popular"
+                                       {% if current_sort == 'popular' %}checked{% endif %}
+                                       class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                <div class="ml-4">
+                                    <span class="font-medium text-gray-900">Most Popular</span>
+                                    <span class="block text-sm text-gray-500">Top rated products</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center px-5 py-3 hover:bg-indigo-50 cursor-pointer transition-colors">
+                                <input type="radio" name="sort" value="newest"
+                                       {% if current_sort == 'newest' %}checked{% endif %}
+                                       class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                <div class="ml-4">
+                                    <span class="font-medium text-gray-900">Newest First</span>
+                                    <span class="block text-sm text-gray-500">Recently added</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center px-5 py-3 hover:bg-indigo-50 cursor-pointer transition-colors">
+                                <input type="radio" name="sort" value="price_asc"
+                                       {% if current_sort == 'price_asc' %}checked{% endif %}
+                                       class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                <div class="ml-4">
+                                    <span class="font-medium text-gray-900">Price: Low to High</span>
+                                    <span class="block text-sm text-gray-500">Budget friendly</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center px-5 py-3 hover:bg-indigo-50 cursor-pointer transition-colors">
+                                <input type="radio" name="sort" value="price_desc"
+                                       {% if current_sort == 'price_desc' %}checked{% endif %}
+                                       class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                <div class="ml-4">
+                                    <span class="font-medium text-gray-900">Price: High to Low</span>
+                                    <span class="block text-sm text-gray-500">Premium selection</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center px-5 py-3 hover:bg-indigo-50 cursor-pointer transition-colors">
+                                <input type="radio" name="sort" value="name"
+                                       {% if current_sort == 'name' %}checked{% endif %}
+                                       class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                <div class="ml-4">
+                                    <span class="font-medium text-gray-900">Name (A-Z)</span>
+                                    <span class="block text-sm text-gray-500">Alphabetical order</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- View Toggle -->
+            <div class="flex items-center space-x-2 mr-4">
+                <button type="button"
+                        onclick="setView('grid')"
+                        class="p-2 rounded-lg {{ view == 'grid' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-100' }} transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                </button>
+                <button type="button"
+                        onclick="setView('list')"
+                        class="p-2 rounded-lg {{ view == 'list' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-100' }} transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Advanced Filters Toggle -->
+            <button type="button"
+                    onclick="toggleAdvancedFilters()"
+                    class="flex items-center px-5 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-100 text-indigo-700 font-semibold rounded-xl hover:from-indigo-100 hover:to-purple-100 hover:border-indigo-200 hover:shadow-md transition-all duration-300 group">
+                <svg class="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                </svg>
+                Filters
+                <span id="filter-count" class="ml-2 bg-indigo-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                    2
+                </span>
+            </button>
+        </div>
+        
+        <!-- Active Filters Bar -->
+        {% if app.request.query.get('q') or app.request.query.get('category') or app.request.query.get('sort') %}
+        <div class="mt-4 pt-4 border-t border-gray-100">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-700">Active filters:</span>
+                    {% if app.request.query.get('q') %}
+                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm bg-blue-100 text-blue-800">
+                        Search: "{{ app.request.query.get('q') }}"
+                        <button type="button" class="ml-2 text-blue-600 hover:text-blue-800">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </span>
+                    {% endif %}
+                    {% if app.request.query.get('category') and categories is defined %}
+                        {% for category in categories %}
+                            {% if category.id == app.request.query.get('category') %}
+                            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm bg-green-100 text-green-800">
+                                {{ category.name }}
+                                <button type="button" class="ml-2 text-green-600 hover:text-green-800">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </span>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <a href="{{ path('app_user_shop') }}"
+                   class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                    Clear all filters
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- 🎛️ Collapsible Advanced Filters Panel -->
+    <div id="advanced-filters" class="hidden bg-white border-2 border-gray-200 rounded-2xl shadow-lg mb-8 overflow-hidden">
+        <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Price Range Filter -->
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg class="h-5 w-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Price Range
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="relative pt-1">
+                                <input type="range" min="0" max="5000" value="0" 
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
+                                       id="price-min">
+                                <input type="range" min="0" max="5000" value="5000" 
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb mt-2"
+                                       id="price-max">
+                                <div class="absolute h-2 bg-indigo-500 rounded-lg left-0 right-0 top-1/2 transform -translate-y-1/2 pointer-events-none"></div>
+                            </div>
+                            <div class="flex items-center justify-between pt-4">
+                                <div class="flex-1 mr-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Min Price</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500">AED</span>
+                                        </div>
+                                        <input type="number" 
+                                               class="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                                               value="0"
+                                               id="price-min-input">
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500">AED</span>
+                                        </div>
+                                        <input type="number" 
+                                               class="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                                               value="5000"
+                                               id="price-max-input">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="h-5 w-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        Categories
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        {% if categories is defined %}
+                            {% for category in categories|slice(0, 6) %}
+                            <label class="flex items-center p-3 border-2 border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all duration-200">
+                                <input type="checkbox" name="categories[]" value="{{ category.id }}"
+                                       class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                <span class="ml-3 text-gray-700 font-medium">{{ category.name }}</span>
+                            </label>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% if categories is defined and categories|length > 6 %}
+                    <button type="button" 
+                            onclick="toggleMoreCategories()"
+                            class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center transition-colors">
+                        Show all categories
+                        <svg class="h-4 w-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <!-- Additional Filters -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="h-5 w-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                        </svg>
+                        More Filters
+                    </h3>
+                    <div class="space-y-4">
+                        <!-- Rating Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
+                            <div class="flex items-center space-x-1">
+                                {% for i in 5..1 %}
+                                <button type="button" 
+                                        class="p-2 text-yellow-400 hover:text-yellow-500 transition-colors"
+                                        data-rating="{{ i }}">
+                                    <svg class="h-6 w-6 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+                                    </svg>
+                                </button>
+                                {% endfor %}
+                                <span class="ml-2 text-sm text-gray-600">& above</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Availability Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">In Stock</span>
+                                    <span class="ml-auto text-sm text-gray-500">({{ random(50, 150) }})</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">On Sale</span>
+                                    <span class="ml-auto text-sm text-gray-500">({{ random(10, 30) }})</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">Fast Delivery</span>
+                                    <span class="ml-auto text-sm text-gray-500">({{ random(80, 120) }})</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter Actions -->
+            <div class="mt-8 pt-8 border-t border-gray-100 flex justify-between">
+                <button type="button" 
+                        onclick="resetAdvancedFilters()"
+                        class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all duration-300">
+                    Reset All Filters
+                </button>
+                <div class="space-x-4">
+                    <button type="button" 
+                            onclick="toggleAdvancedFilters()"
+                            class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all duration-300">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-300">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 💎 Premium Product Grid/List -->
+    <div class="{% if view == 'list' %}space-y-6{% else %}grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8{% endif %}">
+        {% for product in products %}
+            {% set is_favorited = product.id in favoriteProductIds %}
+            {% set discount = random(0, 30) %}
+            {% set is_new = random(0, 1) %}
+            {% set rating = random(3, 5) %}
+
+            {% if view == 'list' %}
+            <!-- List View -->
+            <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500">
+                <div class="flex">
+                    <!-- Product Image -->
+                    <div class="relative w-48 h-48 flex-shrink-0 overflow-hidden rounded-l-2xl">
+                        {% set img = product.imagePath ?: '/images/default-product.png' %}
+                        <img src="{{ asset(img) }}"
+                             alt="{{ product.name }}"
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+
+                        <!-- Product Badges -->
+                        <div class="absolute top-4 left-4 space-y-2">
+                            {% if discount > 0 %}
+                            <span class="inline-block px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full shadow-lg">
+                                -{{ discount }}%
+                            </span>
+                            {% endif %}
+                            {% if is_new %}
+                            <span class="inline-block px-3 py-1 bg-emerald-500 text-white text-sm font-bold rounded-full shadow-lg">
+                                NEW
+                            </span>
+                            {% endif %}
+                            {% if product.stock <= 10 and product.stock > 0 %}
+                            <span class="inline-block px-3 py-1 bg-orange-500 text-white text-sm font-bold rounded-full shadow-lg">
+                                Only {{ product.stock }} left
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Favorite Button -->
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <form method="post" action="{{ path('app_user_favorite_toggle', {'id': product.id}) }}"
+                              class="absolute top-4 right-4 z-10">
+                            <button type="submit"
+                                    aria-label="Toggle favorite"
+                                    class="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group/fav">
+                                {% if is_favorited %}
+                                <svg class="h-6 w-6 text-red-500 fill-current group-hover/fav:scale-110 transition-transform" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                                </svg>
+                                {% else %}
+                                <svg class="h-6 w-6 text-gray-400 group-hover/fav:text-red-400 group-hover/fav:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                                {% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="flex-1 p-6">
+                        <!-- Category & Brand -->
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-medium text-indigo-600 uppercase tracking-wide">
+                                {{ product.brand }}
+                            </span>
+                            <!-- Star Rating -->
+                            <div class="flex items-center">
+                                {% for i in 1..5 %}
+                                    {% if i <= rating %}
+                                    <svg class="h-4 w-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                    {% else %}
+                                    <svg class="h-4 w-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ml-1 text-sm text-gray-500">({{ random(15, 245) }})</span>
+                            </div>
+                        </div>
+
+                        <!-- Product Name -->
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+                            <a href="{{ path('app_user_shop_show', {'id': product.id}) }}">
+                                {{ product.name }}
+                            </a>
+                        </h3>
+
+                        <!-- Product Description -->
+                        <p class="text-gray-600 text-sm mb-4">
+                            {{ product.description|default('Premium quality product with excellent features and durability.')|slice(0, 150) }}...
+                        </p>
+
+                        <!-- Price Section -->
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <span class="text-2xl font-bold text-gray-900">
+                                    {{ (product.price * (100 - discount) / 100)|number_format(2, '.', ',') }} AED
+                                </span>
+                                {% if discount > 0 %}
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-500 line-through">
+                                        {{ product.price|number_format(2, '.', ',') }} AED
+                                    </span>
+                                    <span class="text-sm font-medium text-red-600">
+                                        Save {{ (product.price * discount / 100)|number_format(2, '.', ',') }} AED
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <div class="flex space-x-4">
+                            {% if product.stock > 0 %}
+                            <form method="post" action="{{ path('app_user_cart_add', {'id': product.id}) }}" class="flex-1">
+                                <button type="submit"
+                                        class="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-gray-900 to-black text-white font-semibold rounded-xl hover:from-gray-800 hover:to-black hover:shadow-lg transition-all duration-300 group/cart">
+                                    <svg class="h-5 w-5 mr-3 group-hover/cart:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                            </form>
+                            {% else %}
+                            <button disabled
+                                    class="flex-1 px-6 py-3 bg-gray-100 text-gray-400 font-semibold rounded-xl cursor-not-allowed">
+                                Out of Stock
+                            </button>
+                            {% endif %}
+
+                            <!-- Quick View -->
+                            <a href="{{ path('app_user_shop_show', {'id': product.id}) }}"
+                               class="px-6 py-3 border-2 border-gray-200 text-gray-700 font-medium rounded-xl hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-300">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Grid View -->
+            <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+                <!-- Product Image with Overlays -->
+                <div class="relative overflow-hidden">
+                    {% set img = product.imagePath ?: '/images/default-product.png' %}
+                    <img src="{{ asset(img) }}" 
+                         alt="{{ product.name }}"
+                         class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700">
+                    
+                    <!-- Product Badges -->
+                    <div class="absolute top-4 left-4 space-y-2">
+                        {% if discount > 0 %}
+                        <span class="inline-block px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full shadow-lg">
+                            -{{ discount }}%
+                        </span>
+                        {% endif %}
+                        {% if is_new %}
+                        <span class="inline-block px-3 py-1 bg-emerald-500 text-white text-sm font-bold rounded-full shadow-lg">
+                            NEW
+                        </span>
+                        {% endif %}
+                        {% if product.stock <= 10 and product.stock > 0 %}
+                        <span class="inline-block px-3 py-1 bg-orange-500 text-white text-sm font-bold rounded-full shadow-lg">
+                            Only {{ product.stock }} left
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Favorite Button -->
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <form method="post" action="{{ path('app_user_favorite_toggle', {'id': product.id}) }}" 
+                          class="absolute top-4 right-4 z-10">
+                        <button type="submit" 
+                                aria-label="Toggle favorite"
+                                class="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group/fav">
+                            {% if is_favorited %}
+                            <svg class="h-6 w-6 text-red-500 fill-current group-hover/fav:scale-110 transition-transform" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                            {% else %}
+                            <svg class="h-6 w-6 text-gray-400 group-hover/fav:text-red-400 group-hover/fav:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                            {% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    <!-- Quick View Overlay -->
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <a href="{{ path('app_user_shop_show', {'id': product.id}) }}"
+                           class="px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors">
+                            Quick View
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Product Info -->
+                <div class="p-6">
+                    <!-- Category & Brand -->
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-indigo-600 uppercase tracking-wide">
+                            {{ product.brand }}
+                        </span>
+                        <!-- Star Rating -->
+                        <div class="flex items-center">
+                            {% for i in 1..5 %}
+                                {% if i <= rating %}
+                                <svg class="h-4 w-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                {% else %}
+                                <svg class="h-4 w-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="ml-1 text-sm text-gray-500">({{ random(15, 245) }})</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Name -->
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+                        <a href="{{ path('app_user_shop_show', {'id': product.id}) }}" class="line-clamp-2">
+                            {{ product.name }}
+                        </a>
+                    </h3>
+                    
+                    <!-- Product Description -->
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {{ product.description|default('Premium quality product with excellent features and durability.')|slice(0, 80) }}...
+                    </p>
+                    
+                    <!-- Price Section -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <span class="text-2xl font-bold text-gray-900">
+                                {{ (product.price * (100 - discount) / 100)|number_format(2, '.', ',') }} AED
+                            </span>
+                            {% if discount > 0 %}
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500 line-through">
+                                    {{ product.price|number_format(2, '.', ',') }} AED
+                                </span>
+                                <span class="text-sm font-medium text-red-600">
+                                    Save {{ (product.price * discount / 100)|number_format(2, '.', ',') }} AED
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Add to Cart Button -->
+                    <div class="space-y-3">
+                        {% if product.stock > 0 %}
+                        <form method="post" action="{{ path('app_user_cart_add', {'id': product.id}) }}" class="w-full">
+                            <button type="submit" 
+                                    class="w-full flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-gray-900 to-black text-white font-semibold rounded-xl hover:from-gray-800 hover:to-black hover:shadow-lg transition-all duration-300 group/cart">
+                                <svg class="h-5 w-5 mr-3 group-hover/cart:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                Add to Cart
+                            </button>
+                        </form>
+                        {% else %}
+                        <button disabled 
+                                class="w-full px-6 py-3.5 bg-gray-100 text-gray-400 font-semibold rounded-xl cursor-not-allowed">
+                            Out of Stock
+                        </button>
+                        {% endif %}
+                        
+                        <!-- Quick Actions -->
+                        <div class="flex space-x-3">
+                            <button type="button"
+                                    class="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 font-medium rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300">
+                                Compare
+                            </button>
+                            <button type="button"
+                                    class="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 font-medium rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300">
+                                Wishlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="col-span-full py-20 text-center">
+                <div class="max-w-md mx-auto">
+                    <svg class="h-24 w-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-gray-600 mb-3">No products found</h3>
+                    <p class="text-gray-500 mb-8">
+                        {% if app.request.query.get('q') or app.request.query.get('category') %}
+                            Try adjusting your search or filter to find what you're looking for.
+                        {% else %}
+                            Our collection is currently being updated. Check back soon!
+                        {% endif %}
+                    </p>
+                    {% if app.request.query.get('q') or app.request.query.get('category') %}
+                    <a href="{{ path('app_user_shop') }}"
+                       class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-300">
+                        Clear all filters
+                        <svg class="h-5 w-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination (Placeholder) -->
+    {% if products|length > 0 %}
+    <div class="mt-16 flex items-center justify-between border-t border-gray-200 pt-8">
+        <div class="flex-1 flex justify-between sm:hidden">
+            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Previous
+            </a>
+            <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Next
+            </a>
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Showing <span class="font-medium">1</span> to <span class="font-medium">12</span> of <span class="font-medium">{{ random(100, 500) }}</span> results
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-xl shadow-sm -space-x-px" aria-label="Pagination">
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 rounded-l-xl border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Previous</span>
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7 7-7-7"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        1
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        2
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        3
+                    </a>
+                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                        ...
+                    </span>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        8
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 rounded-r-xl border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Next</span>
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript for Advanced Filters -->
+<script>
+// Toggle Advanced Filters Panel
+function toggleAdvancedFilters() {
+    const panel = document.getElementById('advanced-filters');
+    const isVisible = !panel.classList.contains('hidden');
+    
+    if (isVisible) {
+        panel.classList.add('hidden');
+    } else {
+        panel.classList.remove('hidden');
+        // Smooth scroll to filters
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Price Range Slider Sync
+function initPriceSliders() {
+    const minSlider = document.getElementById('price-min');
+    const maxSlider = document.getElementById('price-max');
+    const minInput = document.getElementById('price-min-input');
+    const maxInput = document.getElementById('price-max-input');
+    
+    if (!minSlider || !maxSlider || !minInput || !maxInput) return;
+    
+    // Sync sliders with inputs
+    function updateSliders() {
+        const min = parseInt(minSlider.value);
+        const max = parseInt(maxSlider.value);
+        
+        // Ensure min <= max
+        if (min > max) {
+            minSlider.value = max;
+            minInput.value = max;
+        }
+        
+        // Update input fields
+        minInput.value = minSlider.value;
+        maxInput.value = maxSlider.value;
+        
+        // Update filter count (demo)
+        updateFilterCount();
+    }
+    
+    // Event listeners for sliders
+    [minSlider, maxSlider].forEach(slider => {
+        slider.addEventListener('input', updateSliders);
+    });
+    
+    // Event listeners for inputs
+    [minInput, maxInput].forEach(input => {
+        input.addEventListener('change', function() {
+            const value = parseInt(this.value) || 0;
+            if (this === minInput) {
+                minSlider.value = Math.min(value, parseInt(maxSlider.value));
+            } else {
+                maxSlider.value = Math.max(value, parseInt(minSlider.value));
+            }
+            updateSliders();
+        });
+    });
+}
+
+// Rating Selection
+function initRatingSelection() {
+    const ratingButtons = document.querySelectorAll('[data-rating]');
+    let selectedRating = 0;
+    
+    ratingButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            selectedRating = rating;
+            
+            // Update visual state
+            ratingButtons.forEach((btn, index) => {
+                const btnRating = parseInt(btn.getAttribute('data-rating'));
+                if (btnRating <= rating) {
+                    btn.classList.add('text-yellow-500');
+                    btn.classList.remove('text-yellow-400');
+                } else {
+                    btn.classList.remove('text-yellow-500');
+                    btn.classList.add('text-yellow-400');
+                }
+            });
+            
+            updateFilterCount();
+        });
+    });
+}
+
+// Toggle More Categories
+function toggleMoreCategories() {
+    const grid = document.querySelector('.grid.grid-cols-2.gap-3');
+    if (grid) {
+        grid.classList.toggle('expanded');
+        const button = event.target.closest('button');
+        if (button) {
+            button.innerHTML = grid.classList.contains('expanded') 
+                ? 'Show less categories' 
+                : 'Show all categories';
+        }
+    }
+}
+
+// Reset All Filters
+function resetAdvancedFilters() {
+    // Reset checkboxes
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    // Reset radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(rb => {
+        rb.checked = false;
+    });
+    
+    // Reset price sliders
+    const minSlider = document.getElementById('price-min');
+    const maxSlider = document.getElementById('price-max');
+    const minInput = document.getElementById('price-min-input');
+    const maxInput = document.getElementById('price-max-input');
+    
+    if (minSlider && maxSlider && minInput && maxInput) {
+        minSlider.value = 0;
+        maxSlider.value = 5000;
+        minInput.value = 0;
+        maxInput.value = 5000;
+    }
+    
+    // Reset rating
+    document.querySelectorAll('[data-rating]').forEach(btn => {
+        btn.classList.remove('text-yellow-500');
+        btn.classList.add('text-yellow-400');
+    });
+    
+    updateFilterCount();
+}
+
+// Update filter count badge
+function updateFilterCount() {
+    const badge = document.getElementById('filter-count');
+    if (!badge) return;
+    
+    // Count active filters (simulated for demo)
+    let count = 0;
+    
+    // Price range filter (if not default)
+    const minPrice = document.getElementById('price-min')?.value || 0;
+    const maxPrice = document.getElementById('price-max')?.value || 5000;
+    if (minPrice > 0 || maxPrice < 5000) count++;
+    
+    // Checkboxes
+    const checkedBoxes = document.querySelectorAll('input[type="checkbox"]:checked').length;
+    count += checkedBoxes;
+    
+    // Rating filter
+    const ratingButtons = document.querySelectorAll('[data-rating].text-yellow-500');
+    if (ratingButtons.length > 0) count++;
+    
+    badge.textContent = count || '0';
+    badge.classList.toggle('bg-indigo-600', count > 0);
+    badge.classList.toggle('bg-gray-400', count === 0);
+}
+
+// View toggle function
+function setView(viewType) {
+    const url = new URL(window.location);
+    url.searchParams.set('view', viewType);
+    window.location.href = url.toString();
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initPriceSliders();
+    initRatingSelection();
+    updateFilterCount();
+
+    // Auto-submit dropdowns on change
+    document.querySelectorAll('input[name="sort"]').forEach(input => {
+        input.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    });
+
+    // Auto-submit category checkboxes on change
+    document.querySelectorAll('input[name="categories[]"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    });
+});
+
+// Add custom slider thumb styles
+const style = document.createElement('style');
+style.textContent = `
+.slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+}
+
+.slider-thumb::-webkit-slider-runnable-track {
+    height: 8px;
+    background: transparent;
+    border-radius: 9999px;
+}
+
+.slider-thumb::-moz-range-track {
+    height: 8px;
+    background: transparent;
+    border-radius: 9999px;
+}
+
+.slider-thumb::-webkit-slider-thumb {
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #4F46E5;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+
+.slider-thumb::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+.slider-thumb::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #4F46E5;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+
+.slider-thumb::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+/* ensure thumb sits above other elements inside scrolling container */
+.slider-thumb::-webkit-slider-thumb,
+.slider-thumb::-moz-range-thumb {
+    position: relative;
+    z-index: 50;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Smooth transitions */
+.transition-all {
+    transition-property: all;
+}
+
+/* Custom scrollbar for filter panel */
+#advanced-filters {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+#advanced-filters::-webkit-scrollbar {
+    width: 6px;
+}
+
+#advanced-filters::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#advanced-filters::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
+    border-radius: 10px;
+}
+
+#advanced-filters::-webkit-scrollbar-thumb:hover {
+    background: #a5b4fc;
+}
+`;
+document.head.appendChild(style);
+</script>
+
+<script>
+    (function setUserHeaderHeight(){
+        function update() {
+            const header = document.querySelector('header');
+            if (header) {
+                document.documentElement.style.setProperty('--user-header-height', header.offsetHeight + 'px');
+            }
+        }
+
+        // Update on load and resize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', update);
+        } else {
+            update();
+        }
+        window.addEventListener('resize', update);
+
+        // Also observe header for DOM/size changes (mobile menu expand/collapse)
+        const header = document.querySelector('header');
+        if (header && window.MutationObserver) {
+            const mo = new MutationObserver(() => update());
+            mo.observe(header, { attributes: true, childList: true, subtree: true });
+        }
+
+        // If there's a mobile menu toggle button, update when clicked
+        const mobileToggle = document.getElementById('mobile-menu-toggle');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', function () {
+                // Delay slightly to allow menu animation to complete, then update
+                setTimeout(update, 140);
+            });
+        }
+    })();
+</script>
+{% endblock %}
+{% endblock %}

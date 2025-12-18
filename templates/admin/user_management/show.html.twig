@@ -1,0 +1,463 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}User Details: {{ user.username }}{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 sm:px-8 py-8">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">User Details</h1>
+            <div class="flex items-center gap-3 mt-2">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-2">
+                        <span class="text-indigo-600 font-semibold">{{ user.username|first|upper }}</span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-700">{{ user.username }}</h2>
+                        <p class="text-sm text-gray-500">{{ user.email|default('No email') }}</p>
+                    </div>
+                </div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+                    {% if user.isActive %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                    {% if user.isActive %}Active{% else %}Inactive{% endif %}
+                </span>
+            </div>
+        </div>
+        <a href="{{ path('app_user_management') }}" class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Users
+        </a>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column: Profile & Actions -->
+        <div class="lg:col-span-1 space-y-6">
+            <!-- User Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 p-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <span class="text-white text-lg font-bold">{{ user.username|first|upper }}</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">{{ user.username }}</h3>
+                            <p class="text-white/80 text-sm">User ID: #{{ user.id }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <dl class="space-y-4">
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Email</dt>
+                            <dd class="mt-1 text-sm text-gray-900 font-medium">{{ user.email|default('Not provided') }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Member Since</dt>
+                            <dd class="mt-1 text-sm text-gray-900 font-medium">{{ user.createdAt ? user.createdAt|date('F j, Y') : 'N/A' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Account Status</dt>
+                            <dd class="mt-1 text-sm text-gray-900 font-medium">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if user.isActive %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                    {% if user.isActive %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Role Management Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Role Management</h3>
+                
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-gray-700 mb-3">Current Roles</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for role in user.roles %}
+                            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold
+                                {% if role == 'ROLE_ADMIN' %}bg-red-100 text-red-800 border border-red-200
+                                {% elseif role == 'ROLE_STAFF' %}bg-green-100 text-green-800 border border-green-200
+                                {% else %}bg-blue-100 text-blue-800 border border-blue-200{% endif %}">
+                                {% if role == 'ROLE_ADMIN' %}Administrator
+                                {% elseif role == 'ROLE_STAFF' %}Staff Member
+                                {% else %}Regular User{% endif %}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if 'ROLE_ADMIN' not in user.roles %}
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700 mb-3">Staff Permissions</h4>
+                    <form method="POST" action="{{ path('app_admin_user_toggle_staff', {'id': user.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_staff' ~ user.id) }}">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700">Staff Access</p>
+                                <p class="text-xs text-gray-500">Allow backend access</p>
+                            </div>
+                            {% if 'ROLE_STAFF' in user.roles %}
+                                <button type="submit" 
+                                        onclick="return confirm('Remove staff permissions from this user?');"
+                                        class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg transition">
+                                    Remove
+                                </button>
+                            {% else %}
+                                <button type="submit" 
+                                        onclick="return confirm('Grant staff permissions to this user?');"
+                                        class="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-lg transition">
+                                    Grant
+                                </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                    <a href="{{ path('app_admin_user_edit', {'id': user.id}) }}" 
+                       class="flex items-center justify-between w-full px-4 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg transition group">
+                        <div class="flex items-center gap-3">
+                            <div class="p-1.5 bg-indigo-100 rounded-lg">
+                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </div>
+                            <span class="font-medium">Edit Profile</span>
+                        </div>
+                        <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+
+                    <form method="POST" action="{{ path('app_admin_user_toggle_status', {'id': user.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_status' ~ user.id) }}">
+                        <button type="submit" 
+                                onclick="return confirm('{% if user.isActive %}Deactivate{% else %}Reactivate{% endif %} this account?');"
+                                class="flex items-center justify-between w-full px-4 py-3 {% if user.isActive %}bg-yellow-50 hover:bg-yellow-100 text-yellow-700{% else %}bg-green-50 hover:bg-green-100 text-green-700{% endif %} rounded-lg transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="p-1.5 {% if user.isActive %}bg-yellow-100{% else %}bg-green-100{% endif %} rounded-lg">
+                                    <svg class="w-4 h-4 {% if user.isActive %}text-yellow-600{% else %}text-green-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        {% if user.isActive %}
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        {% else %}
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        {% endif %}
+                                    </svg>
+                                </div>
+                                <span class="font-medium">
+                                    {% if user.isActive %}Deactivate Account{% else %}Reactivate Account{% endif %}
+                                </span>
+                            </div>
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ path('app_admin_user_delete', {'id': user.id}) }}" 
+                          onsubmit="return confirm('Permanently delete this user? This action cannot be undone.');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_user' ~ user.id) }}">
+                        <button type="submit" 
+                                class="flex items-center justify-between w-full px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="p-1.5 bg-red-100 rounded-lg">
+                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Delete Account</span>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: User Data -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Show addresses and orders only for non-admin users -->
+            {% if 'ROLE_ADMIN' and 'ROLE_STAFF' not in user.roles %}
+                <!-- Addresses Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Shipping Addresses</h3>
+                        <p class="text-sm text-gray-500 mt-1">Delivery information for orders</p>
+                    </div>
+                    <div class="p-5">
+                        {% if user.addresses is not empty %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for address in user.addresses %}
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 transition">
+                                        <div class="flex items-start justify-between mb-3">
+                                            <div>
+                                                <h4 class="font-medium text-gray-800">{{ address.street }}</h4>
+                                                <p class="text-sm text-gray-600 mt-1">{{ address.cityMunicipality }}, {{ address.province }}</p>
+                                                <p class="text-sm text-gray-600">{{ address.postalCode }}, {# {{ address.country }} #}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            <span class="inline-flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                Shipping Address
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-8">
+                                <div class="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <p class="text-gray-500 font-medium">No addresses found</p>
+                                <p class="text-sm text-gray-400 mt-1">This user hasn't added any shipping addresses yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Order History Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Order History</h3>
+                                <p class="text-sm text-gray-500 mt-1">Recent purchases and transactions</p>
+                            </div>
+                            {% if user.orders|length > 0 %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                                    {{ user.orders|length }} order{{ user.orders|length != 1 ? 's' : '' }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="p-5">
+                        {% if user.orders is not empty %}
+                            <div class="overflow-hidden rounded-lg border border-gray-200">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for order in user.orders|sort((a, b) => b.createdAt <=> a.createdAt)|slice(0, 10) %}
+                                            <tr class="hover:bg-gray-50 transition">
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    <span class="font-mono text-sm font-semibold text-gray-900">#{{ order.id }}</span>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ order.createdAt|date('M d, Y') }}</div>
+                                                    <div class="text-xs text-gray-500">{{ order.createdAt|date('h:i A') }}</div>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    {% set statusColors = {
+                                                        'Delivered': 'bg-green-100 text-green-800',
+                                                        'Shipped': 'bg-blue-100 text-blue-800',
+                                                        'Processing': 'bg-yellow-100 text-yellow-800',
+                                                        'Cancelled': 'bg-red-100 text-red-800',
+                                                        'Pending': 'bg-gray-100 text-gray-800'
+                                                    } %}
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ statusColors[order.status]|default('bg-gray-100 text-gray-800') }}">
+                                                        {{ order.status }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                                    {{ order.orderItems|length }} item{{ order.orderItems|length != 1 ? 's' : '' }}
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                                    €{{ order.total|number_format(2) }}
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                                                    <a href="{{ path('app_admin_order_show', {'order': order.id}) }}"
+                                                       class="text-indigo-600 hover:text-indigo-900 font-medium inline-flex items-center gap-1">
+                                                        View
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                        </svg>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            {% if user.orders|length > 10 %}
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm text-gray-500">
+                                        Showing 10 most recent orders of {{ user.orders|length }} total
+                                    </p>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="text-center py-8">
+                                <div class="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                </div>
+                                <p class="text-gray-500 font-medium">No orders yet</p>
+                                <p class="text-sm text-gray-400 mt-1">This user hasn't placed any orders.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                {% if 'ROLE_STAFF' in user.roles %}
+                    <!-- Admin User Message -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+                        <div class="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Staff Account</h3>
+                        <p class="text-gray-600 mb-4">
+                            This is an account that belongs to the staff team. Addresses and order history are not available 
+                            as administrators typically don't place orders through the customer interface.
+                        </p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 rounded-lg">
+                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm text-red-600 font-medium">System-level access only</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Admin User Message -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+                        <div class="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Administrator Account</h3>
+                        <p class="text-gray-600 mb-4">
+                            This is an administrator account. Addresses and order history are not available 
+                            as administrators typically don't place orders through the customer interface.
+                        </p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 rounded-lg">
+                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm text-red-600 font-medium">System-level access only</span>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+                <!-- Activity Log for each user -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Activity Log</h3>
+                                <!-- <p class="text-sm text-gray-500 mt-1">Recent purchases and transactions</p> -->
+                                {% for log in logs %}
+                                    <div class="text-sm text-gray-600">
+                                        {{ log.timestamp|date('M d, Y H:i') }} - {{ log.action }}
+                                    </div>
+                                {% else %}
+                                    <div class="text-sm text-gray-600">
+                                        No activity logs available.
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if user.orders|length > 0 %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                                    {{ user.orders|length }} order{{ user.orders|length != 1 ? 's' : '' }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="gray-50"></thead>
+                    </table>
+                </div>
+                {#
+                <!-- Login History -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Login History</h3>
+                                <p class="text-sm text-gray-500 mt-1">Recent login attempts for this account.</p>
+                            </div>
+                            {% if user.loginHistories|length > 0 %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                                    {{ user.loginHistories|length }} attempt{{ user.loginHistories|length != 1 ? 's' : '' }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        {% if user.loginHistories is not empty %}
+                            <div class="overflow-hidden rounded-lg border border-gray-200">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for login in user.loginHistories|sort((a, b) => b.loginTimestamp <=> a.loginTimestamp)|slice(0, 15) %}
+                                            <tr class="hover:bg-gray-50 transition">
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ login.loginTimestamp|date('M d, Y') }}</div>
+                                                    <div class="text-xs text-gray-500">{{ login.loginTimestamp|date('h:i:s A') }}</div>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    {% if login.wasSuccessful %}
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Success</span>
+                                                    {% else %}
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Failed</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap font-mono text-sm text-gray-700">{{ login.ipAddress }}</td>
+                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ login.failureReason|default('N/A') }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-8">
+                                <div class="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+                                </div>
+                                <p class="text-gray-500 font-medium">No Login History</p>
+                                <p class="text-sm text-gray-400 mt-1">There are no recorded login attempts for this user yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                #}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Order Management{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Order Management</h1>
+                <p class="text-gray-600 mt-1">Monitor and manage customer orders</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Filter Orders</h2>
+        <form method="GET" action="{{ path('app_admin_order_index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <!-- From Date -->
+            <div>
+                <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                <input type="date" 
+                       id="start_date" 
+                       name="start_date" 
+                       value="{{ startDate|default('') }}" 
+                       class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+            </div>
+
+            <!-- To Date -->
+            <div>
+                <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                <input type="date" 
+                       id="end_date" 
+                       name="end_date" 
+                       value="{{ endDate|default('') }}" 
+                       class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select id="status" name="status" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white">
+                    <option value="">All Statuses</option>
+                    <option value="Pending" {% if filterStatus == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Shipped" {% if filterStatus == 'Shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="Delivered" {% if filterStatus == 'Delivered' %}selected{% endif %}>Delivered</option>
+                    <option value="Cancelled" {% if filterStatus == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2 items-end">
+                <button type="submit" 
+                        class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors text-sm h-[42px]">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Apply Filters
+                </button>
+                <a href="{{ path('app_admin_order_index') }}" 
+                   class="flex-1 inline-flex items-center justify-center px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition-colors text-sm h-[42px]">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Order Statistics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Orders</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ totalOrders }}</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4l1-12z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Order ID</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Customer</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Order Date</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 border-b border-gray-200 text-sm font-medium text-gray-900">
+                                #{{ order.id }}
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+                                {{ order.customer.username|default('N/A') }}
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+                                {{ order.createdAt|date('M d, Y') }}
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 text-sm font-semibold text-gray-900">
+                                ${{ order.total|number_format(2, '.', ',') }}
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 text-sm">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+                                    {% if order.status == 'Delivered' %} bg-green-100 text-green-800
+                                    {% elseif order.status == 'Shipped' %} bg-blue-100 text-blue-800
+                                    {% elseif order.status == 'Pending' %} bg-yellow-100 text-yellow-800
+                                    {% else %} bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 text-sm text-right">
+                                <a href="{{ path('app_admin_order_show', {'order': order.id}) }}" class="text-indigo-600 hover:text-indigo-900 font-medium hover:underline transition-colors">View Details</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500 text-sm">
+                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                </svg>
+                                No orders found matching the criteria.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if totalPages > 1 %}
+        <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <p class="text-sm text-gray-600">
+                    Page <span class="font-semibold">{{ currentPage }}</span> of <span class="font-semibold">{{ totalPages }}</span> • <span class="font-semibold">{{ totalOrders }}</span> total orders
+                </p>
+                <div class="flex gap-2">
+                    {# Previous Page #}
+                    <a href="{{ path('app_admin_order_index', {
+                        'page': currentPage - 1, 
+                        'start_date': startDate, 
+                        'end_date': endDate,
+                        'status': filterStatus
+                    }) }}" 
+                       class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                              {% if currentPage > 1 %} text-gray-700 bg-white border border-gray-300 hover:bg-gray-100
+                              {% else %} text-gray-400 bg-gray-50 border border-gray-200 cursor-not-allowed {% endif %}">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Previous
+                    </a>
+
+                    {# Next Page #}
+                    <a href="{{ path('app_admin_order_index', {
+                        'page': currentPage + 1, 
+                        'start_date': startDate, 
+                        'end_date': endDate,
+                        'status': filterStatus
+                    }) }}" 
+                       class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                              {% if currentPage < totalPages %} text-gray-700 bg-white border border-gray-300 hover:bg-gray-100
+                              {% else %} text-gray-400 bg-gray-50 border border-gray-200 cursor-not-allowed {% endif %}">
+                        Next
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

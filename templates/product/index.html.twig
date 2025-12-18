@@ -1,0 +1,120 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+	<div class="max-w-7xl mx-auto">
+		<!-- Page Header -->
+		<div class="flex items-center justify-between mb-8">
+			<div>
+				<h1 class="text-3xl font-bold text-gray-800">
+					{% if is_granted('ROLE_ADMIN') %}
+						All Products
+					{% else %}
+						My Products
+					{% endif %}
+				</h1>
+				<p class="text-gray-600 mt-1">Manage your product listings</p>
+			</div>
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+			<a href="{{ path('app_product_new') }}"
+					class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+					<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+					</svg>
+					Add New Product
+				</a>
+			{% endif %}
+		</div>
+
+		{% if products|length > 0 %}
+			<!-- Products Table -->
+			<div class="bg-white rounded-lg shadow-md overflow-hidden">
+				<div class="overflow-x-auto">
+					<table class="w-full">
+						<thead class="bg-gray-50 border-b border-gray-200">
+							<tr>
+								<th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Product Name</th>
+								<th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Category</th>
+								<th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Price</th>
+								<th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Stock</th>
+								<th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+								{% if is_granted('ROLE_ADMIN') %}
+									<th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Created By</th>
+								{% endif %}
+								<th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-gray-200">
+							{% for product in products %}
+								<tr class="hover:bg-gray-50 transition-colors">
+									<td class="px-6 py-4">
+										<span class="text-blue-600 font-medium">
+											{{ product.name }}
+										</span>
+									</td>
+									<td class="px-6 py-4 text-sm text-gray-700">
+										{% if product.category %}
+											{{ product.category.name }}
+										{% else %}
+											<span class="text-gray-500">Uncategorized</span>
+										{% endif %}
+									</td>
+									<td class="px-6 py-4 text-sm font-semibold text-gray-800">
+										{{ product.price|number_format(2) }} €
+									</td>
+									<td class="px-6 py-4 text-sm">
+										<span class="px-3 py-1 rounded-full {% if product.stock > 0 %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+											{{ product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
+										</span>
+									</td>
+									{% if is_granted('ROLE_ADMIN') %}
+										<td class="px-6 py-4 text-sm text-gray-600">
+											{{ product.createdBy.username ?? 'System' }}
+										</td>
+									{% endif %}
+									<td class="px-6 py-4 text-sm">
+										<div class="flex gap-2">
+											<a href="{{ path('app_product_edit', {'product': product.id}) }}"
+												class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+												</svg>
+											</a>
+											<a href="{{ path('app_product_delete', {'product': product.id}) }}"
+												class="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors">
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+												</svg>
+											</a>
+										</div>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{% else %}
+			<!-- Empty State -->
+			<div class="bg-white rounded-lg shadow-md p-12 text-center">
+				<div class="text-6xl mb-4">📦</div>
+				<h3 class="text-xl font-semibold text-gray-800 mb-2">No Products Yet</h3>
+				<p class="text-gray-600 mb-6">
+					{% if is_granted('ROLE_ADMIN') %}
+						No products have been created yet. Start by adding your first product!
+					{% else %}
+						You haven't created any products yet. Start by adding your first product!
+					{% endif %}
+				</p>
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+					<a href="{{ path('app_admin_product_new') }}"
+						class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+						<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+						</svg>
+						Create Your First Product
+					</a>
+				{% endif %}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

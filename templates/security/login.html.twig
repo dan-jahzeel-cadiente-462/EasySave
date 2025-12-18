@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!
+{% endblock %}
+
+{% block body %}
+	<div class="min-h-screen flex items-center justify-center bg-gray-100">
+		<div class="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
+			<h1 class="text-2xl font-bold mb-6 text-gray-800">Sign-in</h1>
+
+			{# Show error if login failed #}
+			{% if error %}
+				<div class="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+					{{ error.messageKey|trans(error.messageData, 'security') }}
+				</div>
+			{% endif %}
+
+			{# Flash success messages (e.g., after registration) #}
+			{% for message in app.flashes('success') %}
+				<div class="mb-4 p-3 text-sm text-green-700 bg-green-100 rounded-lg">
+					{{ message }}
+				</div>
+			{% endfor %}
+
+			<form method="post" class="space-y-4">
+				<input
+				type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+				{# If you want to control the URL the user is redirected to on success
+				                    <input type="hidden" name="_target_path" value="/account">
+				                #}
+				<div>
+					<label for="username" class="block text-gray-700 font-medium mb-2">Username</label>
+					<input type="text" value="{{ last_username }}" name="_username" id="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required autofocus>
+				</div>
+
+				{# 🔑 NEW: Make this container relative for the absolute checkbox position #}
+				<div class="relative">
+					<label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
+					<input
+					type="password" name="_password" id="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 pr-10" required>
+
+					{# 🔑 NEW: Absolute positioning for the checkbox/label combo #}
+					<div class="absolute inset-y-0 right-0 flex items-center pr-3">
+						<input
+						type="checkbox" id="show_password" class="hidden">
+						{# Hide the default checkbox #}
+						<label
+							for="show_password" class="cursor-pointer text-gray-400 hover:text-gray-600 transition duration-150" aria-label="Toggle password visibility">
+
+							{# Use a simple eye icon for better UX #}
+							<svg id="eye-open" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+							</svg>
+							<svg id="eye-closed" class="h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.82L21 12 13.875 5.18M10.125 5.18L3 12l7.125 6.82"/>
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+							</svg>
+						</label>
+					</div>
+				</div>
+
+				{# Optional "Remember Me" checkbox #}
+				<div class="flex items-center">
+					<input type="checkbox" id="remember_me" name="_remember_me" class="mr-2">
+					<label for="remember_me" class="text-gray-700">Remember me</label>
+				</div>
+
+
+				<button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+					Login
+				</button>
+
+				<div class="text-sm text-center text-gray-600">
+					Don't have an account?
+					<a href="{{ path('app_register') }}" class="text-green-600 hover:underline">Register here</a>.
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

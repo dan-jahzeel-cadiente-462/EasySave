@@ -1,0 +1,29 @@
+{% extends 'user/base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block user_body %}
+<div class="max-w-5xl mx-auto py-12 px-4">
+    <h1 class="text-2xl font-bold mb-4">Welcome, {{ user.username }}</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-4 rounded shadow">
+            <h2 class="font-semibold">Account</h2>
+            <ul class="mt-2 text-sm text-gray-700">
+                <li>Username: <strong>{{ user.username }}</strong></li>
+                <li>Roles: <strong>{{ user.roles|join(', ') }}</strong></li>
+            </ul>
+        </div>
+        <div class="bg-white p-4 rounded shadow md:col-span-2">
+            <h2 class="font-semibold">Quick actions</h2>
+            <div class="mt-3 flex flex-wrap gap-3">
+                <a href="{{ path('app_user_shop') }}" class="px-4 py-2 bg-blue-600 text-white rounded">Browse products</a>
+                <a href="{{ path('app_user_cart') }}" class="px-4 py-2 bg-green-600 text-white rounded">View cart</a>
+                <form method="post" action="{{ path('app_logout') }}" class="inline">
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

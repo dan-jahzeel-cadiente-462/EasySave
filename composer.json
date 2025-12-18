@@ -13,7 +13,6 @@
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.3",
         "symfony/asset": "7.4.*",
-        "symfony/asset-mapper": "7.4.*",
         "symfony/console": "7.4.*",
         "symfony/doctrine-messenger": "7.4.*",
         "symfony/dotenv": "7.4.*",
@@ -40,8 +39,10 @@
         "symfony/ux-turbo": "^2.31",
         "symfony/validator": "7.4.*",
         "symfony/web-link": "7.4.*",
+        "symfony/webpack-encore-bundle": "^2.4",
         "symfony/yaml": "7.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/string-extra": "^3.22",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {
@@ -76,8 +77,7 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "importmap:install": "symfony-cmd"
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
@@ -96,6 +96,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "phpunit/phpunit": "^11.5",
         "symfony/browser-kit": "7.4.*",
         "symfony/css-selector": "7.4.*",

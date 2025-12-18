@@ -1,0 +1,105 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Activity Log Details{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="{{ path('app_admin_activity_logs') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">← Back to Activity Logs</a>
+    </div>
+
+    <!-- Log Details Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Activity Log Details</h1>
+
+        <!-- Basic Info Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Timestamp -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Timestamp</label>
+                <p class="text-lg text-gray-900">{{ log.createdAt|date('Y-m-d H:i:s') }}</p>
+            </div>
+
+            <!-- User -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
+                <div class="flex items-center gap-2">
+                    <p class="text-lg text-gray-900">{{ log.user.username ?? 'System' }}</p>
+                    {% if log.user %}
+                        {% if 'ROLE_ADMIN' in log.user.roles %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">Admin</span>
+                        {% elseif 'ROLE_STAFF' in log.user.roles %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">Staff</span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">User</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Action -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Action</label>
+                {% set actionColor = {
+                    'LOGIN': 'bg-green-100 text-green-800',
+                    'LOGOUT': 'bg-yellow-100 text-yellow-800',
+                    'CREATE': 'bg-blue-100 text-blue-800',
+                    'UPDATE': 'bg-purple-100 text-purple-800',
+                    'DELETE': 'bg-red-100 text-red-800'
+                } %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold {{ actionColor[log.action] ?? 'bg-gray-100 text-gray-800' }}">
+                    {{ log.action }}
+                </span>
+            </div>
+
+            <!-- Entity -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Entity</label>
+                <p class="text-lg text-gray-900">
+                    {{ log.entityType }}
+                    {% if log.entityId %}
+                        <span class="text-gray-500">(ID: {{ log.entityId }})</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-8">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <p class="text-gray-900 bg-gray-50 p-4 rounded">{{ log.description }}</p>
+        </div>
+
+        <!-- Request Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- IP Address -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">IP Address</label>
+                <p class="text-gray-900 font-mono">{{ log.ipAddress ?? 'N/A' }}</p>
+            </div>
+
+            <!-- User Agent -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">User Agent</label>
+                <p class="text-gray-900 text-sm break-words">{{ log.userAgent ?? 'N/A' }}</p>
+            </div>
+        </div>
+
+        <!-- Details JSON (if available) -->
+        {% if log.details %}
+            <div class="mb-8">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Additional Details</label>
+                <pre class="bg-gray-50 p-4 rounded text-sm overflow-x-auto">{{ log.details|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Note -->
+    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <p class="text-sm text-blue-800">
+            <strong>Note:</strong> This activity log is read-only and cannot be modified.
+        </p>
+    </div>
+</div>
+{% endblock %}
