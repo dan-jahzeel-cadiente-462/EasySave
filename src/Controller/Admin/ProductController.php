@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ProductController extends AbstractController
 {
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(ProductRepository $productRepository): Response
+    public function index(ProductRepository $productRepository, CategoryRepository $categoryRepository): Response
     {
         $request = Request::createFromGlobals();
         $q = $request->query->get('q');
@@ -27,9 +28,11 @@ final class ProductController extends AbstractController
         $view = $request->query->get('view', 'list'); // Default to 'list' if not set
 
         $products = $productRepository->findWithFilters($q, $category ? (int)$category : null, $sort);
+        $categories = $categoryRepository->findAll();
 
         return $this->render('admin/product/index.html.twig', [
             'products' => $products,
+            'categories' => $categories,
             'q' => $q,
             'selectedCategory' => $category,
             'sort' => $sort,

@@ -1,0 +1,27 @@
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+	<div>
+		<h1 class="text-2xl font-bold text-gray-800">User Details</h1>
+		<div class="flex items-center gap-3 mt-2">
+			<div class="flex items-center">
+				<div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-2">
+					<span class="text-indigo-600 font-semibold">{{ user.username|first|upper }}</span>
+				</div>
+				<div>
+					<h2 class="text-lg font-semibold text-gray-700">{{ user.username }}</h2>
+					<p class="text-sm text-gray-500">{{ user.email|default('No email') }}</p>
+				</div>
+			</div>
+			<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+					                    {% if user.isActive %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+				{% if user.isActive %}Active{% else %}Inactive
+				{% endif %}
+			</span>
+		</div>
+	</div>
+	<a href="{{ path('app_user_management') }}" class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium">
+		<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+		</svg>
+		Back to Users
+	</a>
+</div>

@@ -17,11 +17,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserManagementController extends AbstractController
 {
     #[Route('/user/management', name: 'app_user_management')]
-    public function index(UserRepository $userRepository, Request $request): Response
+    public function index(UserRepository $userRepository, ActivityLogRepository $activityLogRepository, Request $request): Response
     {
         $search = $request->query->get('search', '');
         $role = $request->query->get('role', '');
         $status = $request->query->get('status', '');
+        $logs = $activityLogRepository->findAll();
 
         // Build the query dynamically based on filters
         $qb = $userRepository->createQueryBuilder('u');
@@ -88,10 +89,11 @@ final class UserManagementController extends AbstractController
     }
 
     #[Route('/management/{id}', name: 'app_admin_user_show', methods: ['GET'])]
-    public function show(User $user): Response
+    public function show(User $user, ActivityLog $logs): Response
     {
         return $this->render('admin/user_management/show.html.twig', [
             'user' => $user,
+            'logs' => $logs
         ]);
     }
 
