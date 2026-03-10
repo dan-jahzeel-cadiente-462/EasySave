@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\ReviewRepository;
 use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Form\ProductType;
@@ -19,7 +20,10 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ProductController extends AbstractController
 {
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(ProductRepository $productRepository, CategoryRepository $categoryRepository): Response
+    public function index(
+            ProductRepository $productRepository, 
+            CategoryRepository $categoryRepository
+        ): Response
     {
         $request = Request::createFromGlobals();
         $q = $request->query->get('q');
@@ -80,7 +84,7 @@ final class ProductController extends AbstractController
     public function show(Product $product): Response
     {
         return $this->render('admin/product/show.html.twig', [
-            'product' => $product,
+            'product' => $product, 
         ]);
     }
 

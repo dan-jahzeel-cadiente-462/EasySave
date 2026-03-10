@@ -69,4 +69,16 @@ final class ActivityLogController extends AbstractController
             'log' => $log,
         ]);
     }
+
+    #[Route('', name: 'app_admin_activity_log_dashboard_index', methods: ['GET'])]
+    public function dashboardIndex(ActivityLogRepository $activityLogRepository): Response
+    {
+        $recentLogs = $activityLogRepository->getRecentLogs(5);
+        $actionsCount = $activityLogRepository->countActionsLast7Days();
+
+        return $this->render('admin/dashboard/index.html.twig', [
+            'recentActivityLogs' => $recentLogs,
+            'actionsCount' => $actionsCount,
+        ]);
+    }
 }

@@ -1,0 +1,42 @@
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">Product List</h2>
+                <div class="flex items-center space-x-4">
+                    <!-- View Toggle -->
+                    <div class="flex items-center space-x-2">
+                        <button type="button"
+                                onclick="setView('grid')"
+                                class="p-2 rounded-lg {{ view == 'grid' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-100' }} transition-colors">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                        </button>
+                        <button type="button"
+                                onclick="setView('list')"
+                                class="p-2 rounded-lg {{ view == 'list' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-100' }} transition-colors">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="text-sm text-gray-600">
+                        {{ products|length }} products
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        {% if products|length > 0 %}
+            {% if view == 'grid' %}
+                <!-- Grid View -->
+                {% include 'admin/product/includes/index_page/table_section/grid_view.html.twig' %}
+            {% else %}
+                <!-- List View -->
+                {% include 'admin/product/includes/index_page/table_section/list_view.html.twig' %}
+            {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            {% include('admin/product/includes/index_page/table_section/empty_state.html.twig') %}
+        {% endif %}
+    </div>

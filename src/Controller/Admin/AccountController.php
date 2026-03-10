@@ -70,7 +70,7 @@ final class AccountController extends AbstractController
         return $this->render('admin/account/change-password.html.twig');
     }
 
-    #[Route('/update-profile', name: 'app_admin_account_update_profile', methods: ['POST'])]
+    #[Route('/update-profile', name: 'app_admin_account_update_profile', methods: ['GET', 'POST'])]
     public function updateProfile(Request $request, EntityManagerInterface $entityManager): Response
     {
         // Allow both admins and staff to update their profile
@@ -100,5 +100,90 @@ final class AccountController extends AbstractController
 
         $this->addFlash('success', 'Profile updated successfully');
         return $this->redirectToRoute('app_admin_account_profile');
+    }
+
+    #[Route('/edit_profile_details', name: 'app_admin_account_edit_profile_details', methods: ['GET'])]
+    public function editProfileDetails(): Response
+    {
+        // Allow both admins and staff to view their profile details
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Access Denied. Admin or Staff role required.');
+        }
+
+        $user = $this->getUser();
+
+        return $this->render('admin/account/edit-profile-details.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
+    #[Route('/manage_data', name: 'app_admin_account_manage_data', methods: ['GET'])]
+    public function manageData(): Response
+    {
+        // Allow both admins and staff to manage their data
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Access Denied. Admin or Staff role required.');
+        }
+
+        $user = $this->getUser();
+
+        return $this->render('admin/account/manage-data.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
+    #[Route('/delete_data', name: 'app_admin_account_delete_data', methods: ['POST'])]
+    public function deleteData(EntityManagerInterface $entityManager): Response
+    {
+        // Allow both admins and staff to delete their data
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Access Denied. Admin or Staff role required.');
+        }
+
+        $user = $this->getUser();
+
+        // Here you would implement the logic to delete the user's data
+        // For example, you might want to anonymize the user's data instead of deleting it
+
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Your data has been deleted successfully');
+        return $this->redirectToRoute('app_home');
+    }
+
+    #[Route('/export_data', name: 'app_admin_account_export_data', methods: ['GET'])]
+    public function exportData(): Response
+    {
+        // Allow both admins and staff to export their data
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Access Denied. Admin or Staff role required.');
+        }
+
+        $user = $this->getUser();
+
+        // Here you would implement the logic to export the user's data
+        // For example, you might generate a CSV or JSON file containing the user's data
+        $data = [
+            'first_name' => $user->getFirstName(),
+            'last_name' => $user->getLastName(),
+            'email' => $user->getEmail(),
+            // Add more fields as needed
+        ];
+    }
+
+    #[Route('/view_profile_details', name: 'app_admin_account_view_profile_details', methods: ['GET'])]
+    public function viewProfileDetails(): Response
+    {
+        // Allow both admins and staff to view their profile details
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Access Denied. Admin or Staff role required.');
+        }
+
+        $user = $this->getUser();
+
+        return $this->render('admin/account/view-profile-details.html.twig', [
+            'user' => $user,
+        ]);
     }
 }

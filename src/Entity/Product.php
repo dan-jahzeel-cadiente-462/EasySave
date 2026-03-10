@@ -10,6 +10,22 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
+
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Delete()
+    ]
+)]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Product
@@ -17,45 +33,56 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $brand = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $imagePath = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\GreaterThan(0)]
+    #[Groups(['product:read', 'product:write'])]
     private ?float $price = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\GreaterThanOrEqual(0)]
+    #[Groups(['product:read', 'product:write'])]
     private ?int $stock = 0;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
+    #[Groups(['product:read', 'category:write'])]
     private ?Category $category = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['product:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['product:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['product:read'])]
     private ?User $createdBy = null;
 
     #[ORM\Column(type: 'boolean', nullable: true, options: ['default' => true], name: 'is_active')]

@@ -98,4 +98,16 @@ class ActivityLogRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countActionsLast7Days(): int
+    {
+        $sevenDaysAgo = new \DateTime('-7 days');
+
+        $qb = $this->createQueryBuilder('al')
+            ->select('COUNT(al.id)')
+            ->where('al.createdAt >= :sevenDaysAgo')
+            ->setParameter('sevenDaysAgo', $sevenDaysAgo);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

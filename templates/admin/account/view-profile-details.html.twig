@@ -1,0 +1,40 @@
+{% extends 'admin/account/base_profile.html.twig' %}
+
+{% block profile_title %}Profile Details{% endblock %}
+{% block profile_description %}View your account information and details{% endblock %}
+
+{% block profile_content %}
+<div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+    <h2 class="text-xl font-semibold mb-4 border-b pb-3">Account Information</h2>
+    <div class="space-y-4">
+        <div>
+            <p class="text-sm text-gray-500">User ID</p>
+            <p class="font-semibold text-gray-800">#{{ user.id }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Username</p>
+            <p class="font-semibold text-gray-800">{{ user.username }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Email</p>
+            <p class="font-semibold text-gray-800">{{ user.email|default('N/A') }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Account Created</p>
+            <p class="font-semibold text-gray-800">{{ user.createdAt ? user.createdAt|date('M d, Y \\a\\t h:i A') : 'N/A' }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Role</p>
+            {% if is_granted('ROLE_ADMIN') %}
+                <span class="inline-block bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full font-semibold">ADMIN</span>
+            {% elseif is_granted('ROLE_STAFF') %}
+                <span class="inline-block bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-semibold">STAFF</span>
+            {% endif %}
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Account Status</p>
+            <span class="inline-block bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-semibold">Active</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

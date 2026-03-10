@@ -2,9 +2,11 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\ActivityLog;
 use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\User;
+use App\Repository\ActivityLogRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -20,6 +22,7 @@ final class DashboardController extends AbstractController
     private CategoryRepository $categoryRepository;
     private UserRepository $userRepository;
     private OrderRepository $orderRepository;
+    private ActivityLogRepository $activityLogRepository;
     private RequestStack $requestStack;
 
     public function __construct(
@@ -27,13 +30,15 @@ final class DashboardController extends AbstractController
         CategoryRepository $categoryRepository,
         UserRepository $userRepository,
         RequestStack $requestStack,
-        OrderRepository $orderRepository
+        OrderRepository $orderRepository,
+        ActivityLogRepository $activityLogRepository
     )
     {
         $this->productRepository = $productRepository;
         $this->categoryRepository = $categoryRepository;
         $this->userRepository = $userRepository;
         $this->orderRepository = $orderRepository;
+        $this->activityLogRepository  = $activityLogRepository;
         $this->requestStack = $requestStack;
     }
 
@@ -77,6 +82,7 @@ final class DashboardController extends AbstractController
         $uploadsPath = $request ? $request->server->get('DOCUMENT_ROOT').'/uploads' : null;
         $freeDisk = $uploadsPath && file_exists($uploadsPath) ? round(disk_free_space($uploadsPath) / (1024*1024), 2) : null;
 
+        $recentActivityLogs = $this->activityLogRepository->findBy([], ['createdAt' => 'DESC'], 5);
         
         return $this->render('admin/dashboard/index.html.twig', [
             'productCount' => $productCount,
@@ -93,6 +99,7 @@ final class DashboardController extends AbstractController
             'ordersLast7DaysPercent' => $ordersLast7DaysPercent,
             'revenueLast7DaysPercent' => $revenueLast7DaysPercent,
             'orderLast7DaysData' => $orderLast7DaysData,
+            'recentActivityLogs' => $recentActivityLogs,
         ]);
     }
 }

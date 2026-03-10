@@ -3,172 +3,18 @@
 {% block title %}Categories{% endblock %}
 
 {% block body %}
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="container mx-auto px-2 sm:px-2 lg:px-2 py-2">
     <!-- Title and Header -->
-    <div class="mb-8">
+    <div class="mb-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <!-- 
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Categories Management</h1>
                 <p class="text-gray-600 mt-1">Organize and manage your product categories</p>
             </div>
-            
-            <!-- Create New Button -->
-            <a href="{{ path('app_category_new') }}"
-               class="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                New Category
-            </a>
+            -->
         </div>
     </div>
-
-    <!-- Search and Filter Toolbar -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-6">
-        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
-            <!-- Search Section -->
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Search Categories</label>
-                <form method="get" action="{{ path('app_category_index') }}" class="relative max-w-md">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input type="search" 
-                           name="q" 
-                           value="{{ searchQuery }}" 
-                           placeholder="Search by name or description..."
-                           class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                    
-                    <input type="hidden" name="sort" value="{{ sortBy }}">
-                    <input type="hidden" name="direction" value="{{ sortDirection }}">
-                    
-                    {% if searchQuery %}
-                        <a href="{{ path('app_category_index', {sort: sortBy, direction: sortDirection}) }}" 
-                           class="absolute inset-y-0 right-0 pr-10 flex items-center text-sm text-gray-500 hover:text-gray-700">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </a>
-                    {% endif %}
-                </form>
-            </div>
-
-            <!-- Sort Controls -->
-            <div class="flex flex-col sm:flex-row gap-4">
-                <div class="w-full sm:w-48">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-                    <form method="get" action="{{ path('app_category_index') }}" class="w-full">
-                        <input type="hidden" name="q" value="{{ searchQuery }}">
-                        
-                        {% set currentSort = sortBy ~ '-' ~ sortDirection %}
-                        
-                        <select name="sort_by_direction" 
-                                onchange="this.form.submit()" 
-                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                            
-                            <option value="" disabled {% if not sortBy %}selected{% endif %}>Select sort...</option>
-                            <option value="id-asc" {% if currentSort == 'id-asc' %}selected{% endif %}>ID (Ascending)</option>
-                            <option value="id-desc" {% if currentSort == 'id-desc' %}selected{% endif %}>ID (Descending)</option>
-                            <option value="name-asc" {% if currentSort == 'name-asc' %}selected{% endif %}>Name (A-Z)</option>
-                            <option value="name-desc" {% if currentSort == 'name-desc' %}selected{% endif %}>Name (Z-A)</option>
-                            <option value="parent-asc" {% if currentSort == 'parent-asc' %}selected{% endif %}>Parent (A-Z)</option>
-                            <option value="parent-desc" {% if currentSort == 'parent-desc' %}selected{% endif %}>Parent (Z-A)</option>
-                            <option value="products-desc" {% if currentSort == 'products-desc' %}selected{% endif %}>Products (High to Low)</option>
-                            <option value="products-asc" {% if currentSort == 'products-asc' %}selected{% endif %}>Products (Low to High)</option>
-                        </select>
-                    </form>
-                </div>
-                
-                <!-- Apply Filters Button -->
-                <div class="flex items-end">
-                    <button type="submit"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 transition-all duration-200 text-sm h-[42px]">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                        </svg>
-                        Apply Filters
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories Summary Stats -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-5 rounded-xl border border-gray-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Total Categories</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ totalItems }}</p>
-                </div>
-                <div class="p-3 bg-blue-50 rounded-lg">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 6.75h7.5M8.25 12h7.5m-7.5 5.25h7.5M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white p-5 rounded-xl border border-gray-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Parent Categories</p>
-                    <p class="text-2xl font-bold text-emerald-600 mt-1">
-                        {% set parentCount = categories|filter(c => c.parent == null)|length %}
-                        {{ parentCount }}
-                    </p>
-                </div>
-                <div class="p-3 bg-emerald-50 rounded-lg">
-                    <svg class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white p-5 rounded-xl border border-gray-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Subcategories</p>
-                    <p class="text-2xl font-bold text-amber-600 mt-1">
-                        {% set subcategoryCount = categories|filter(c => c.parent != null)|length %}
-                        {{ subcategoryCount }}
-                    </p>
-                </div>
-                <div class="p-3 bg-amber-50 rounded-lg">
-                    <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-        
-        {#
-        <div class="bg-white p-5 rounded-xl border border-gray-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Avg Products/Category</p>
-                    <p class="text-2xl font-bold text-purple-600 mt-1">
-                        {% if categories|length > 0 %}
-                            {% set totalProducts = categories|reduce((sum, c) => sum + c.products|length, 0) %}
-                            {{ (totalProducts / categories|length)|round(1) }}
-                        {% else %}
-                            0
-                        {% endif %}
-                    </p>
-                </div>
-                <div class="p-3 bg-purple-50 rounded-lg">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-        #}
-    </div>
-
     <!-- Categories Table -->
     {{ include('admin/category/category_cards/index_page/categories_table.html.twig')}}
 </div>
