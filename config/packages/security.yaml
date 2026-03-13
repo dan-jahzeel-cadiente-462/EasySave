@@ -21,6 +21,13 @@ security:
             pattern: ^/api
             stateless: true
             provider: app_user_provider
+            json_login:
+                check_path: api_login
+                username_path: username
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
 
         main:
             lazy: true
@@ -38,6 +45,10 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
+        # API routes
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED }
+
         # Admin-only routes
         - { path: ^/admin/activity-logs, roles: ROLE_ADMIN }
         - { path: ^/admin/user/management, roles: ROLE_ADMIN }
