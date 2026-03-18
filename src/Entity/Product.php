@@ -101,10 +101,17 @@ class Product
     #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'product')]
     private Collection $favorites;
 
+    /**
+     * @var Collection<int, Discount>
+     */
+    #[ORM\ManyToMany(targetEntity: Discount::class, mappedBy: 'product')]
+    private Collection $discounts;
+
     public function __construct()
     {
         $this->productImages = new ArrayCollection();
         $this->favorites = new ArrayCollection();
+        $this->discounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -335,6 +342,33 @@ class Product
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Discount>
+     */
+    public function getDiscounts(): Collection
+    {
+        return $this->discounts;
+    }
+
+    public function addDiscount(Discount $discount): static
+    {
+        if (!$this->discounts->contains($discount)) {
+            $this->discounts->add($discount);
+            $discount->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscount(Discount $discount): static
+    {
+        if ($this->discounts->removeElement($discount)) {
+            $discount->removeProduct($this);
+        }
 
         return $this;
     }

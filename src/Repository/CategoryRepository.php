@@ -24,12 +24,12 @@ class CategoryRepository extends ServiceEntityRepository
 
     /**
      * Finds categories based on search query, applying sorting and pagination.
-     * This method is the efficient replacement for the in-controller logic.
-     * * @param string $searchQuery The search term (q).
-     * @param string $sortBy The field to sort by (e.g., 'id', 'name', 'products').
-     * @param string $sortDirection The direction ('asc' or 'desc').
-     * @param int $limit The maximum number of results to return (items per page).
-     * @param int $offset The starting point for the results (for pagination).
+     *
+     * @param string $searchQuery The search term (q)
+     * @param string $sortBy The field to sort by (e.g., 'id', 'name', 'products', 'parent')
+     * @param string $sortDirection The direction ('asc' or 'desc')
+     * @param int $limit The maximum number of results to return (items per page)
+     * @param int $offset The starting point for the results (for pagination)
      * @return Category[]
      */
     public function findFilteredAndPaginated(
@@ -44,16 +44,14 @@ class CategoryRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('c')
             // Join with parent to allow sorting/filtering by parent name
             ->leftJoin('c.parent', 'p')
-            // Select related products collection for counting (essential for 'products' sort)
+            // Left join products for counting
             ->leftJoin('c.products', 'prod')
-            // Group by category to allow aggregation (e.g., counting products)
-            ->groupBy('c.id'); 
+            // Add select with grouping
+            ->addSelect('p', 'COUNT(prod.id) as HIDDEN product_count')
+            ->groupBy('c.id, p.id');
 
-        // 1. Apply Filtering (Search)
-        if (!empty($searchQuery)) {
-            $qb->andWhere('LOWER(c.name) LIKE :query OR LOWER(c.description) LIKE :query')
-               ->setParameter('query', '%' . strtolower($searchQuery) . '%');
-        }
+        // 1. Apply Filtering (Search) - matches on name, description, and parent name
+        $this->applySearchFilter($qb, $searchQuery);
 
         // 2. Apply Sorting
         $this->applySortingToQueryBuilder($qb, $sortBy, $sortDirection);
@@ -68,23 +66,54 @@ class CategoryRepository extends ServiceEntityRepository
 
     /**
      * Counts total results for pagination without limit/offset.
-     * Used to calculate totalPages in the controller.
      */
     public function countFiltered(string $searchQuery): int
     {
         $qb = $this->createQueryBuilder('c')
-            ->select('COUNT(c.id)')
-            // Join is necessary if filtering is done on related entities (like parent)
-            ->leftJoin('c.parent', 'p'); 
+            ->select('COUNT(DISTINCT c.id)')
+            ->leftJoin('c.parent', 'p');
 
-        if (!empty($searchQuery)) {
-            $qb->andWhere('LOWER(c.name) LIKE :query OR LOWER(c.description) LIKE :query')
-               ->setParameter('query', '%' . strtolower($searchQuery) . '%');
-        }
+        $this->applySearchFilter($qb, $searchQuery);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
+    /**
+     * Apply search filter to query builder
+     */
+    private function applySearchFilter(QueryBuilder $qb, string $searchQuery): void
+    {
+        if (!empty($searchQuery)) {
+            // Split search query into individual keywords
+            $keywords = explode(' ', trim($searchQuery));
+            $keywords = array_filter($keywords); // Remove empty strings
+            
+            if (empty($keywords)) {
+                return;
+            }
+
+            $conditions = [];
+            
+            foreach ($keywords as $index => $keyword) {
+                $paramName = 'query' . $index;
+                $keyword = strtolower($keyword);
+                
+                // Search in category name and description
+                $conditions[] = $qb->expr()->orX(
+                    $qb->expr()->like('LOWER(c.name)', ':' . $paramName . '_name'),
+                    $qb->expr()->like('LOWER(c.description)', ':' . $paramName . '_desc'),
+                    $qb->expr()->like('LOWER(p.name)', ':' . $paramName . '_parent')
+                );
+                
+                $qb->setParameter($paramName . '_name', '%' . $keyword . '%')
+                   ->setParameter($paramName . '_desc', '%' . $keyword . '%')
+                   ->setParameter($paramName . '_parent', '%' . $keyword . '%');
+            }
+            
+            // Combine all keyword conditions with AND
+            $qb->andWhere($qb->expr()->andX(...$conditions));
+        }
+    }
 
     /**
      * Internal helper to handle sorting logic.
@@ -101,16 +130,18 @@ class CategoryRepository extends ServiceEntityRepository
                 $qb->orderBy('c.description', $direction);
                 break;
             case 'products':
-                // Sort by the count of associated products. Note: We use c.id to avoid issues
-                // if there are no products, but the HAVING/GROUP BY is the key.
-                // We use the aggregation function COUNT(prod.id) here.
+                // Sort by the count of associated products
                 $qb->orderBy('COUNT(prod.id)', $direction);
                 break;
             case 'parent':
-                // Sort by the parent's name. Use p.name (the joined entity's name field).
-                $qb->orderBy('p.name', $direction)
-                   // Ensure categories without parents ('None') are handled consistently
+                // Sort by parent name, with NULLs (no parent) last
+                $qb->addSelect('CASE WHEN p.name IS NULL THEN 1 ELSE 0 END as HIDDEN parent_null_sort')
+                   ->orderBy('parent_null_sort', 'ASC')
+                   ->addOrderBy('p.name', $direction)
                    ->addOrderBy('c.name', 'ASC');
+                break;
+            case 'createdAt':
+                $qb->orderBy('c.createdAt', $direction);
                 break;
             case 'id':
             default:
@@ -139,5 +170,18 @@ class CategoryRepository extends ServiceEntityRepository
             $descendants[] = $child->getId();
             $this->collectDescendants($child, $descendants);
         }
+    }
+
+    /**
+     * Find categories for dropdown select (optimized)
+     */
+    public function findForSelect(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.parent', 'p')
+            ->orderBy('p.name', 'ASC')
+            ->addOrderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

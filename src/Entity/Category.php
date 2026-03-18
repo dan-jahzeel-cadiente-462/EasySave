@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Serializer\Attribute\Groups;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -56,13 +57,18 @@ class Category
 
     #[ORM\ManyToOne(inversedBy: 'category')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?User $created_by = null;
     #[Groups(['category:read'])]
+    private ?User $created_by = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['category:read'])]
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()
     {
         $this->products = new ArrayCollection();
         $this->children = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -181,5 +187,33 @@ class Category
         $this->created_by = $created_by;
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the full hierarchy path (e.g., "Electronics > Computers > Laptops")
+     */
+    public function getHierarchyPath(string $separator = ' > '): string
+    {
+        $path = [];
+        $current = $this;
+
+        while ($current !== null) {
+            array_unshift($path, $current->getName() ?: 'Unnamed');
+            $current = $current->getParent();
+        }
+
+        return implode($separator, $path);
     }
 }

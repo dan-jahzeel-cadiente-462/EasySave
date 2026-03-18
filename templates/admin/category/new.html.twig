@@ -1,40 +1,241 @@
-{% extends 'admin/base.html.twig' %}
+{% extends 'admin/index.html.twig' %}
 
 {% block title %}New Category{% endblock %}
 
 {% block body %}
-    <div class="max-w-4xl mx-auto py-8">
-        <!-- Page Header -->
-        <div class="mb-8">
-            <a href="{{ path('app_category_index') }}" class="inline-flex items-center text-green-600 hover:text-green-800 font-medium transition-colors group">
-                <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Categories
+    <div class="container mx-auto px-6 py-10">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">
+                ➕ Create New Category
+            </h1>
+            <a 
+                href="{{ path('app_category_index') }}"
+                class="mt-4 md:mt-0 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium 
+                       text-gray-700 bg-gray-100 border border-gray-300 rounded-lg 
+                       hover:bg-gray-200 hover:text-gray-900 transition duration-200"
+            >
+                ← Back to List
             </a>
-            <div class="mt-6">
-                <h1 class="text-3xl font-bold text-gray-900">Create New Category</h1>
-                <p class="text-gray-600 mt-2">Add a new product category to your inventory</p>
-            </div>
         </div>
 
-        <!-- Category Form Card -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <!-- Form Header -->
-            <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-8 py-6 border-b border-gray-200">
-                <div class="flex items-center">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div class="p-8 space-y-6">
+                <h2 class="text-xl font-semibold text-gray-700 border-b border-gray-200 pb-3">
+                    Category Details
+                </h2>
+
+                <div class="flex items-center mb-4">
                     <div class="bg-green-100 p-3 rounded-lg mr-4">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
                     </div>
-                    <h2 class="text-xl font-semibold text-gray-800">Category Details</h2>
+                    <p class="text-gray-600">Add a new product category to your inventory</p>
                 </div>
+
+                {{ include('admin/category/_form.html.twig', {'button_label': '✨ Create Category'}) }}
             </div>
 
-            <div class="p-8">
-                {{ include('admin/category/_form.html.twig', {'button_label': 'Create Category'}) }}
+            <div class="flex items-center justify-end px-8 py-5 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
+                <span class="text-sm text-gray-500">Fill in the details above to create a new category</span>
             </div>
         </div>
     </div>
+
+    <style>
+        /* Modern dropdown styling */
+        select, 
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25rem;
+            padding-right: 2.5rem;
+            cursor: pointer;
+            border-radius: 0.75rem;
+            border: 1.5px solid #E5E7EB;
+            background-color: white;
+            transition: all 0.2s ease;
+            width: 100%;
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #1F2937;
+        }
+
+        select:hover,
+        .form-select:hover {
+            border-color: #9CA3AF;
+            background-color: #F9FAFB;
+        }
+
+        select:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        select:invalid {
+            color: #6B7280;
+        }
+
+        select option {
+            padding: 0.75rem 1rem;
+            background-color: white;
+            color: #1F2937;
+            font-size: 0.95rem;
+        }
+
+        select option:hover,
+        select option:focus,
+        select option:active,
+        select option:checked {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+        }
+
+        /* Form group styling for better spacing */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #374151;
+            letter-spacing: 0.025em;
+        }
+
+        /* Required field indicator */
+        .required label:after {
+            content: " *";
+            color: #EF4444;
+            font-weight: 600;
+        }
+
+        /* Optional field styling */
+        .optional label:after {
+            content: " (optional)";
+            color: #6B7280;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+
+        /* Animation for dropdown */
+        select {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Input field styling */
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:hover,
+        input[type="email"]:hover,
+        input[type="number"]:hover,
+        textarea:hover {
+            border-color: #9CA3AF;
+            background-color: #F9FAFB;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Button styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhance all select dropdowns
+            const selects = document.querySelectorAll('select');
+            
+            selects.forEach(select => {
+                // Add change effect
+                select.addEventListener('change', function() {
+                    if (this.value) {
+                        this.style.color = '#1F2937';
+                        this.style.fontWeight = '500';
+                    } else {
+                        this.style.color = '#6B7280';
+                        this.style.fontWeight = 'normal';
+                    }
+                });
+
+                // Trigger change event on load to set initial state
+                if (select.value) {
+                    select.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // Add form group classes based on required attribute
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach(group => {
+                const input = group.querySelector('input, select, textarea');
+                
+                if (input) {
+                    // Add classes based on required attribute
+                    if (input.required) {
+                        group.classList.add('required');
+                    } else {
+                        group.classList.add('optional');
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
