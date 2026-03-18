@@ -49,6 +49,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $isActive = true;
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $isVerified = false;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $verificationToken = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
 
@@ -149,6 +155,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             'last_name' => $this->last_name,
             'email' => $this->email,
             'isActive' => $this->isActive,
+            'isVerified' => $this->isVerified,
+            'verificationToken' => $this->verificationToken,
             'createdAt' => $this->createdAt,
         ];
     }
@@ -307,6 +315,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = (bool) $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Check if user email is verified
+     */
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    /**
+     * Set user email verification status
+     */
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * Get email verification token
+     */
+    public function getVerificationToken(): ?string
+    {
+        return $this->verificationToken;
+    }
+
+    /**
+     * Set email verification token
+     */
+    public function setVerificationToken(?string $verificationToken): static
+    {
+        $this->verificationToken = $verificationToken;
 
         return $this;
     }
