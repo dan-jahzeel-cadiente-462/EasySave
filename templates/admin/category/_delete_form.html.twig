@@ -1,4 +1,53 @@
-<form method="post" action="{{ path('app_category_delete', {'category': category.id}) }}" onsubmit="return confirm('Are you sure you want to delete this category?');">
+<form method="post" action="{{ path('app_category_delete', {'category': category.id}) }}" class="delete-form">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
-    <button class="btn">Delete</button>
+    <button type="button" class="flex items-center justify-center w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium delete-button">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+        Delete Category
+    </button>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButton = document.querySelector('.delete-button');
+    const deleteForm = document.querySelector('.delete-form');
+    
+    if (deleteButton) {
+        deleteButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Calculate impact
+            const productCount = {{ category.products|length }};
+            const childrenCount = {{ category.children|length }};
+            const hasParent = {{ category.parent ? 'true' : 'false' }};
+            
+            let confirmMessage = 'Are you sure you want to delete this category?\n\n';
+            
+            // Add impact information
+            if (productCount > 0) {
+                confirmMessage += '⚠️ This will affect ' + productCount + ' product' + (productCount !== 1 ? 's' : '') + '.\n';
+                if (hasParent) {
+                    confirmMessage += '   → Products will be moved to the parent category.\n';
+                } else {
+                    confirmMessage += '   ERROR: This category has no parent and contains products!\n';
+                    confirmMessage += '   This action cannot be completed.\n';
+                    alert(confirmMessage);
+                    return;
+                }
+            }
+            
+            if (childrenCount > 0) {
+                confirmMessage += '⚠️ This will affect ' + childrenCount + ' subcategor' + (childrenCount !== 1 ? 'ies' : 'y') + '.\n';
+                confirmMessage += '   → Subcategories will be moved to the parent category.\n';
+            }
+            
+            confirmMessage += '\n✓ This action cannot be undone.';
+            
+            if (confirm(confirmMessage)) {
+                deleteForm.submit();
+            }
+        });
+    }
+});
+</script>

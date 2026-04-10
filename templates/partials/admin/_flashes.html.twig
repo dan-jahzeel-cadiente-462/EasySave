@@ -1,0 +1,151 @@
+{# Display Flash Messages as Toast-style Notifications #}
+<div id="flash-messages-container" class="fixed top-4 right-4 z-50 space-y-2">
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-message flash-{{ type }} animate-fade-in"
+                 data-type="{{ type }}"
+                 role="alert"
+                 aria-live="polite">
+                
+                {% if type == 'success' %}
+                    <div class="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md">
+                        <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-green-800">{{ message }}</p>
+                        </div>
+                        <button type="button" class="close-flash text-green-600 hover:text-green-700 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                {% elseif type == 'error' %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md">
+                        <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-red-800">{{ message }}</p>
+                        </div>
+                        <button type="button" class="close-flash text-red-600 hover:text-red-700 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                {% elseif type == 'info' %}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md">
+                        <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-blue-800">{{ message }}</p>
+                        </div>
+                        <button type="button" class="close-flash text-blue-600 hover:text-blue-700 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                {% elseif type == 'danger' %}
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md">
+                        <svg class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 4v.01M12 2.5C6.75 2.5 2.5 6.75 2.5 12S6.75 21.5 12 21.5 21.5 17.25 21.5 12 17.25 2.5 12 2.5z"/>
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-orange-800">{{ message }}</p>
+                        </div>
+                        <button type="button" class="close-flash text-orange-600 hover:text-orange-700 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                {% else %}
+                    {# Default styling for unknown flash types #}
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md">
+                        <svg class="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-800">{{ message }}</p>
+                        </div>
+                        <button type="button" class="close-flash text-gray-600 hover:text-gray-700 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .animate-fade-out {
+        animation: fadeOut 0.3s ease-out forwards;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-dismiss flash messages after 6 seconds
+        const flashMessages = document.querySelectorAll('.flash-message');
+        
+        flashMessages.forEach(message => {
+            const closeButton = message.querySelector('.close-flash');
+            
+            // Manual close button
+            if (closeButton) {
+                closeButton.addEventListener('click', function() {
+                    message.classList.add('animate-fade-out');
+                    setTimeout(() => message.remove(), 300);
+                });
+            }
+            
+            // Auto-dismiss after 6 seconds
+            const type = message.dataset.type;
+            const autoDismissTypes = ['success', 'info'];
+            
+            if (autoDismissTypes.includes(type)) {
+                setTimeout(() => {
+                    message.classList.add('animate-fade-out');
+                    setTimeout(() => message.remove(), 300);
+                }, 6000);
+            }
+        });
+    });
+</script>

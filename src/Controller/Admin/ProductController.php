@@ -68,10 +68,13 @@ final class ProductController extends AbstractController
                 $product->setImagePath('uploads/products/'.$newFilename);
             }
 
-            $entityManager->persist($product);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                $entityManager->persist($product);
+                $entityManager->flush();
+                return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to create product: ' . $e->getMessage());
+            }
         }
 
         return $this->render('admin/product/new.html.twig', [
@@ -141,8 +144,8 @@ final class ProductController extends AbstractController
                 ]);
             }
 
-            // Redirect back to edit page to see changes and/or continue
-            return $this->redirectToRoute('app_product_edit', ['product' => $product->getId()], Response::HTTP_SEE_OTHER);
+            // Redirect to product index after successful update
+            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/product/edit.html.twig', [

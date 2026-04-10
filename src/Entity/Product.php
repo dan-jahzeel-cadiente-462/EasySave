@@ -101,6 +101,13 @@ class Product
     #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'product')]
     private Collection $favorites;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Review::class)]
+    private Collection $reviews;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Stock::class)]
+    private Collection $stocks;
+
+
     /**
      * @var Collection<int, Discount>
      */
@@ -112,6 +119,8 @@ class Product
         $this->productImages = new ArrayCollection();
         $this->favorites = new ArrayCollection();
         $this->discounts = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
+        $this->stocks = new ArrayCollection();
     }
 
     public function getId(): ?int

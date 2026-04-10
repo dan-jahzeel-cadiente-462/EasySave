@@ -82,10 +82,14 @@ final class CategoryController extends AbstractController
             if ($this->getUser()) {
                 $category->setCreatedBy($this->getUser());
             }
-            $entityManager->persist($category);
-            $entityManager->flush();
-            $this->addFlash('success', 'Category created successfully!');
-            return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                $entityManager->persist($category);
+                $entityManager->flush();
+                $this->addFlash('success', 'Category created successfully!');
+                return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to create category: ' . $e->getMessage());
+            }
         }
 
         return $this->render('admin/category/new.html.twig', [
@@ -111,9 +115,13 @@ final class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            $this->addFlash('success', 'Category updated successfully.');
-            return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                $entityManager->flush();
+                $this->addFlash('success', 'Category updated successfully.');
+                return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to update category: ' . $e->getMessage());
+            }
         }
 
         return $this->render('admin/category/edit.html.twig', [
@@ -126,20 +134,38 @@ final class CategoryController extends AbstractController
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager, CategoryRepository $categoryRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
-            // Check if category has children - reassign to parent or prevent deletion
-            $children = $categoryRepository->findBy(['parent' => $category]);
-
-            if (!empty($children)) {
-                // If category has children, reassign them to the parent before deletion
-                foreach ($children as $child) {
-                    $child->setParent($category->getParent());
+            try {
+                // 1. Check if category has child categories - reassign to parent
+                $children = $categoryRepository->findBy(['parent' => $category]);
+                if (!empty($children)) {
+                    foreach ($children as $child) {
+                        $child->setParent($category->getParent());
+                    }
                 }
+
+                // 2. Check if category has products - reassign to parent category
+                $products = $category->getProducts();
+                if (($products->count() > 0) && !$category->getParent()) {
+                    $this->addFlash('error', 'Cannot delete this category because it has ' . $products->count() . ' product(s) and no parent category to reassign them to. Please move products to another category first or delete the products.');
+                    return $this->redirectToRoute('app_category_show', ['category' => $category->getId()]);
+                }
+                
+                if ($products->count() > 0) {
+                    foreach ($products as $product) {
+                        $product->setCategory($category->getParent());
+                    }
+                    $this->addFlash('info', 'Reassigned ' . $products->count() . ' product(s) to parent category.');
+                }
+
+                // 3. Remove the category
+                $entityManager->remove($category);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Category deleted successfully.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Error deleting category: ' . $e->getMessage());
+                return $this->redirectToRoute('app_category_show', ['category' => $category->getId()]);
             }
-
-            $entityManager->remove($category);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Category deleted successfully.');
         } else {
             $this->addFlash('danger', 'Invalid security token.');
         }

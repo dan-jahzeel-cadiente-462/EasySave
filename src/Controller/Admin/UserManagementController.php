@@ -130,7 +130,7 @@ final class UserManagementController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', "User '$username' updated successfully");
-            return $this->redirectToRoute('app_admin_user_show', ['id' => $user->getId()]);
+            return $this->redirectToRoute('app_user_management');
         }
 
         return $this->render('admin/user_management/edit.html.twig', [
