@@ -1,0 +1,256 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} - Catalog{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex items-center space-x-2 text-sm">
+                <a href="{{ path('app_home') }}" class="text-blue-600 hover:text-blue-800">Home</a>
+                <span class="text-gray-400">/</span>
+                <a href="{{ path('app_catalog') }}" class="text-blue-600 hover:text-blue-800">Catalog</a>
+                <span class="text-gray-400">/</span>
+                <span class="text-gray-600">{{ product.name }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Back Link -->
+        <a href="{{ path('app_catalog') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium mb-6 transition">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Catalog
+        </a>
+
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+                <!-- Image Section -->
+                <div>
+                    <!-- Main Image -->
+                    {% if product.imagePath %}
+                        <div class="mb-6 bg-gray-100 rounded-lg overflow-hidden">
+                            <img 
+                                src="{{ asset(product.imagePath) }}" 
+                                alt="{{ product.name }}" 
+                                class="w-full h-auto object-cover"
+                                id="mainImage"
+                            >
+                        </div>
+                    {% else %}
+                        <div class="mb-6 bg-gray-100 rounded-lg h-96 flex items-center justify-center">
+                            <p class="text-gray-400">No image available</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Additional Images Gallery -->
+                    {% if product.productImages|length > 0 %}
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-900 mb-3">Gallery</h3>
+                            <div class="grid grid-cols-5 gap-2">
+                                {% if product.imagePath %}
+                                    <button 
+                                        onclick="document.getElementById('mainImage').src='{{ asset(product.imagePath) }}'"
+                                        class="bg-gray-100 rounded-lg overflow-hidden h-20 cursor-pointer hover:ring-2 hover:ring-green-500 transition"
+                                    >
+                                        <img src="{{ asset(product.imagePath) }}" alt="Main" class="w-full h-full object-cover">
+                                    </button>
+                                {% endif %}
+                                {% for image in product.productImages %}
+                                    <button 
+                                        onclick="document.getElementById('mainImage').src='{{ asset(image.imagePath) }}'"
+                                        class="bg-gray-100 rounded-lg overflow-hidden h-20 cursor-pointer hover:ring-2 hover:ring-green-500 transition"
+                                    >
+                                        <img src="{{ asset(image.imagePath) }}" alt="Product image" class="w-full h-full object-cover">
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Details Section -->
+                <div>
+                    <!-- Brand -->
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ product.brand }}</p>
+
+                    <!-- Title -->
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ product.name }}</h1>
+
+                    <!-- Category -->
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-sm text-gray-600">Category:</span>
+                        {% set breadcrumbs = [] %}
+                        {% set current_category = product.category %}
+                        {% for i in 1..10 %}
+                            {% if current_category %}
+                                {% set breadcrumbs = [current_category] | merge(breadcrumbs) %}
+                                {% set current_category = current_category.parent %}
+                            {% endif %}
+                        {% endfor %}
+                        <div class="flex items-center gap-1">
+                            {% for category in breadcrumbs %}
+                                <span class="text-green-600 font-medium">{{ category.name }}</span>
+                                {% if not loop.last %}<span class="text-gray-400">/</span>{% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Rating (placeholder) -->
+                    <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-200">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            <span class="ml-2 text-gray-700">4.5 / 5 (28 reviews)</span>
+                        </div>
+                    </div>
+
+                    <!-- Price Section -->
+                    {% set activeDiscount = product.discounts|filter(d => d.isActive)|first %}
+                    <div class="mb-6">
+                        <p class="text-sm text-gray-600 mb-2">Price</p>
+                        <div class="flex items-center gap-3">
+                            {% if activeDiscount %}
+                                {% set discountedPrice = product.price %}
+                                {% if activeDiscount.type == 'percentage' %}
+                                    {% set discountedPrice = product.price * (1 - (activeDiscount.value / 100)) %}
+                                {% else %}
+                                    {% set discountedPrice = product.price - activeDiscount.value %}
+                                {% endif %}
+                                <div class="flex items-center justify-between gap-4 flex-wrap">
+                                    <div class="flex items-baseline gap-3">
+                                        <span class="text-4xl font-bold text-green-600">PHP {{ discountedPrice|number_format(2) }}</span>
+                                        <span class="text-xl line-through text-gray-500">PHP {{ product.price|number_format(2) }}</span>
+                                    </div>
+                                    <div class="inline-block px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-bold">
+                                        {% if activeDiscount.type == 'percentage' %}
+                                            Save {{ activeDiscount.value }}%
+                                        {% else %}
+                                            Save PHP {{ activeDiscount.value }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <span class="text-4xl font-bold text-gray-900">PHP {{ product.price|number_format(2) }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Discount Info -->
+                    {% if activeDiscount %}
+                        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p class="text-sm text-blue-900">
+                                <strong>{{ activeDiscount.label }}</strong>
+                                {% if activeDiscount.endsAt %}
+                                    - Valid until {{ activeDiscount.endsAt|date('M d, Y') }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Stock Status -->
+                    <div class="mb-6">
+                        <p class="text-sm text-gray-600 mb-2">Stock Available</p>
+                        {% if product.stock > 0 %}
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-lg font-semibold text-gray-900">{{ product.stock }} units in stock</span>
+                                    <span class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded">In Stock</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div 
+                                        class="bg-green-600 h-2 rounded-full transition-all"
+                                        style="width: {{ min(100, (product.stock / 100) * 100) }}%"
+                                    ></div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-lg font-semibold text-red-600 bg-red-50 p-3 rounded-lg">
+                                Out of Stock
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Add to Cart Button -->
+                    <div class="mb-6">
+                        <button 
+                            {% if product.stock <= 0 %}disabled{% endif %}
+                            class="w-full {% if product.stock > 0 %}bg-green-600 hover:bg-green-700{% else %}bg-gray-400 cursor-not-allowed{% endif %} text-white py-3 rounded-lg font-semibold text-lg transition"
+                        >
+                            {% if product.stock > 0 %}
+                                Add to Cart
+                            {% else %}
+                                Out of Stock
+                            {% endif %}
+                        </button>
+                    </div>
+
+                    <!-- Additional Actions -->
+                    <div class="flex gap-3">
+                        <button class="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition font-medium flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            Save
+                        </button>
+                        <button class="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition font-medium flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C9.017 13.447 9.5 13.5 10 13.5c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 2 4.572m0 0l-2.757 2.757m2.757-2.757l2.757 2.757m-10.385-4.757h.008v.008H.311v-.008z" />
+                            </svg>
+                            Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            {% if product.description %}
+                <div class="border-t border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Product Description</h2>
+                    <div class="text-gray-700 leading-relaxed whitespace-pre-line">{{ product.description }}</div>
+                </div>
+            {% endif %}
+
+            <!-- Product Specifications -->
+            <div class="border-t border-gray-200 p-8 bg-gray-50">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Specifications</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Product Name</p>
+                        <p class="font-semibold text-gray-900">{{ product.name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Brand</p>
+                        <p class="font-semibold text-gray-900">{{ product.brand }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Product ID</p>
+                        <p class="font-semibold text-gray-900">EZ-{{ '%05d'|format(product.id) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Availability</p>
+                        {% if product.stock > 0 %}
+                            <p class="font-semibold text-green-600">In Stock</p>
+                        {% else %}
+                            <p class="font-semibold text-red-600">Out of Stock</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">You May Also Like</h2>
+            <!-- Placeholder for related products -->
+            <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+                <p class="text-gray-500">Related products will appear here</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

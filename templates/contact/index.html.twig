@@ -1,0 +1,340 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ContactController!
+{% endblock %}
+
+{% block body %}
+	{# 
+	    EasySave Contact Us Section - Twig Template
+	    Integrates Brevo (Sendinblue) transactional email API
+	    Displays user feedback on submission (success/error)
+	    For display/demo purposes only - requires backend form handler
+	#}
+
+	<section class="bg-transparent py-16 md:py-24">
+		<div
+			class="max-w-screen-xl px-4 mx-auto">
+			<!-- Section Header -->
+			<div class="text-center max-w-2xl mx-auto mb-12">
+				<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style="background-color: rgba(59, 173, 89, 0.12); border: 1px solid rgba(59, 173, 89, 0.3);">
+					<span class="text-xs font-semibold tracking-wide" style="color: #3bad59;">📬 Get In Touch</span>
+				</div>
+				<h2 class="text-3xl md:text-4xl font-extrabold text-black mb-4">
+					Let's Talk About<br>Your Backup Strategy
+				</h2>
+				<p class="text-black/70 text-lg">
+					Have questions about EasySave? Need enterprise pricing? Our team is here to help.
+				</p>
+			</div>
+
+			<div
+				class="grid lg:grid-cols-2 gap-12 items-start">
+				<!-- Contact Form Column -->
+				<div
+					class="bg-white/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-sm border" style="border-color: rgba(59, 173, 89, 0.2);">
+					{# 
+					                    Feedback message block (success / error)
+					                    Shown via JavaScript after form submission simulation
+					                    In real implementation, backend returns flash messages
+					                #}
+					<div id="form-feedback" class="mb-6 hidden">
+						<div id="feedback-success" class="hidden p-4 rounded-lg bg-green-50 border-l-4 border-green-500 text-green-800">
+							<div class="flex items-center gap-2">
+								<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+								<span class="font-medium">Thank you! Your message has been sent successfully.</span>
+							</div>
+							<p class="text-sm mt-1">We'll get back to you within 24 hours.</p>
+						</div>
+						<div id="feedback-error" class="hidden p-4 rounded-lg bg-red-50 border-l-4 border-red-500 text-red-800">
+							<div class="flex items-center gap-2">
+								<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+								<span class="font-medium">Submission failed. Please try again later.</span>
+							</div>
+							<p class="text-sm mt-1">You can also reach us directly at support@easysave.com</p>
+						</div>
+					</div>
+
+					<form
+						id="contact-form" method="POST" action="#" class="space-y-5">
+						{# CSRF protection (Symfony style, adjust as needed) #}
+						<input type="hidden" name="_csrf_token" value="{{ csrf_token('contact') }}">
+
+						<div class="grid sm:grid-cols-2 gap-4">
+							<div>
+								<label for="first_name" class="block text-sm font-medium text-black mb-1">First name *</label>
+								<input type="text" id="first_name" name="first_name" required class="w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:outline-none transition" style="border-color: #e5e7eb; background: white; color: black; focus:ring-color: #3bad59;">
+							</div>
+							<div>
+								<label for="last_name" class="block text-sm font-medium text-black mb-1">Last name *</label>
+								<input type="text" id="last_name" name="last_name" required class="w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:outline-none transition" style="border-color: #e5e7eb; background: white; color: black;">
+							</div>
+						</div>
+
+						<div>
+							<label for="email" class="block text-sm font-medium text-black mb-1">Work email *</label>
+							<input type="email" id="email" name="email" required class="w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:outline-none" style="border-color: #e5e7eb; background: white; color: black;">
+						</div>
+
+						<div>
+							<label for="company" class="block text-sm font-medium text-black mb-1">Company (optional)</label>
+							<input type="text" id="company" name="company" class="w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:outline-none" style="border-color: #e5e7eb; background: white; color: black;">
+						</div>
+
+						<div>
+							<label for="subject" class="block text-sm font-medium text-black mb-1">Subject *</label>
+							<select id="subject" name="subject" required class="w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:outline-none" style="border-color: #e5e7eb; background: white; color: black;">
+								<option value="">Select a topic</option>
+								<option value="general">General inquiry</option>
+								<option value="pricing">Pricing & plans</option>
+								<option value="technical">Technical support</option>
+								<option value="enterprise">Enterprise solution</option>
+								<option value="partnership">Partnership opportunity</option>
+							</select>
+						</div>
+
+						<div>
+							<label for="message" class="block text-sm font-medium text-black mb-1">Message *</label>
+							<textarea id="message" name="message" rows="5" required class="w-full px-4 py-2.5 rounded-lg border focus:ring-2 focus:outline-none resize-none" style="border-color: #e5e7eb; background: white; color: black;" placeholder="Tell us how we can help..."></textarea>
+						</div>
+
+						<button type="submit" id="submit-btn" class="w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2" style="background-color: #3bad59; color: white;">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+							</svg>
+							Send Message
+						</button>
+						<p class="text-xs text-black/50 text-center mt-3">
+							By submitting, you agree to our
+							<a href="#" class="underline" style="color: #3bad59;">Privacy Policy</a>.
+						</p>
+					</form>
+				</div>
+
+				<!-- Contact Info & Third-party integration note -->
+				<div class="space-y-8">
+					<div class="rounded-2xl p-6 border" style="background: rgba(59, 173, 89, 0.04); border-color: rgba(59, 173, 89, 0.2);">
+						<h3 class="text-xl font-bold text-black mb-4 flex items-center gap-2">
+							<svg class="w-6 h-6" style="color: #3bad59;" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+							</svg>
+							Direct support
+						</h3>
+						<div class="space-y-3 text-black/80">
+							<p class="flex items-center gap-3">
+								<span class="w-6">📧</span>
+								<span>support@easysave.com</span>
+							</p>
+							<p class="flex items-center gap-3">
+								<span class="w-6">📞</span>
+								<span>+1 (555) 789-1023</span>
+							</p>
+							<p class="flex items-center gap-3">
+								<span class="w-6">🕒</span>
+								<span>Mon–Fri, 9am–6pm EST</span>
+							</p>
+						</div>
+					</div>
+
+					<div class="rounded-2xl p-6 border" style="background: rgba(59, 173, 89, 0.02); border-color: rgba(59, 173, 89, 0.15);">
+						<h3 class="text-lg font-bold text-black mb-3">🔒 Integrated with Brevo (Sendinblue)</h3>
+						<p class="text-black/70 text-sm leading-relaxed">
+							All messages are securely transmitted via Brevo's email API. We never store your data — 
+							                        your inquiry is directly delivered to our support team. You'll receive a confirmation 
+							                        email within minutes.
+						</p>
+						<div class="mt-4 flex items-center gap-2 text-xs text-black/50">
+							<span>✅ GDPR compliant</span>
+							<span>•</span>
+							<span>✅ TLS encrypted</span>
+							<span>•</span>
+							<span>✅ Real-time delivery</span>
+						</div>
+					</div>
+
+					<!-- Live demo feedback simulation (for display purposes) -->
+					<div class="text-center text-xs text-black/40 border-t pt-6 mt-4">
+						<span>⚡ Demo mode: Submissions simulate Brevo API integration with visual feedback</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{# 
+	    JavaScript for form feedback simulation (display purposes)
+	    In production, replace with actual AJAX call to your backend endpoint
+	    that integrates Brevo API (Sendinblue) or Google Forms webhook
+	#}
+	<script>
+		(function () {
+        const form = document.getElementById('contact-form');
+        const feedbackDiv = document.getElementById('form-feedback');
+        const successBox = document.getElementById('feedback-success');
+        const errorBox = document.getElementById('feedback-error');
+        const submitBtn = document.getElementById('submit-btn');
+        let originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+
+        // Helper to show feedback
+        function showFeedback(type, messageOverride = null) {
+        if (! feedbackDiv || ! successBox || ! errorBox) 
+        return;
+
+        // Hide both first
+        successBox.classList.add('hidden');
+        errorBox.classList.add('hidden');
+        feedbackDiv.classList.remove('hidden');
+
+        if (type === 'success') {
+        successBox.classList.remove('hidden');
+        // Auto-scroll to feedback
+        feedbackDiv.scrollIntoView({behavior: 'smooth', block: 'center'});
+        // Reset form after success
+        if (form) 
+        form.reset();
+
+        } else if (type === 'error') {
+        errorBox.classList.remove('hidden');
+        if (messageOverride) {
+        const errorSpan = errorBox.querySelector('span.font-medium');
+        if (errorSpan) 
+        errorSpan.innerText = messageOverride;
+
+        }
+        feedbackDiv.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+        }
+
+        function hideFeedback() {
+        if (feedbackDiv) 
+        feedbackDiv.classList.add('hidden');
+
+        }
+
+        // Simulate third-party form submission (Brevo / Google Forms)
+        // For demo / display purposes: 90% success rate simulation with realistic delay
+        // In a real Twig template, this would be replaced by actual fetch to backend endpoint.
+        if (form) {
+        form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        hideFeedback();
+
+        // Basic client-side validation
+        const firstName = document.getElementById('first_name') ?. value.trim();
+        const email = document.getElementById('email') ?. value.trim();
+        const message = document.getElementById('message') ?. value.trim();
+        if (! firstName || ! email || ! message) {
+        showFeedback('error', 'Please fill in all required fields (*).');
+        return;
+        }
+        if (! email.includes('@') || ! email.includes('.')) {
+        showFeedback('error', 'Please enter a valid email address.');
+        return;
+        }
+
+        // Show loading state on button
+        if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+                                <svg class="animate-spin w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Sending via Brevo...
+                            `;
+        }
+
+        // Simulate API call to Brevo / Google Forms webhook (display only)
+        // In production, replace with: fetch('/contact/send', { method: 'POST', body: new FormData(form) })
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Simulated success rate: 95% success, 5% error for demo variety
+        const isSuccess = Math.random() > 0.05; // 95% success simulation
+
+        if (isSuccess) { // Collect form data to console for demonstration (simulate Brevo integration)
+        const formData = new FormData(form);
+        const formValues = Object.fromEntries(formData.entries());
+        console.log('[EasySave | Brevo Integration] Message sent (simulated):', formValues);
+        console.log('🔔 Third-party service: Brevo (Sendinblue) would receive this payload.');
+
+        showFeedback('success');
+        } else {
+        console.warn('[Demo] Simulated submission failure');
+        showFeedback('error', 'Service temporarily unavailable. Please try again or email support@easysave.com');
+        }
+
+        // Restore button
+        if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+        }
+
+        // Auto-hide feedback after 6 seconds on success
+        if (isSuccess) {
+        setTimeout(() => {
+        if (feedbackDiv && ! feedbackDiv.classList.contains('hidden')) {
+        feedbackDiv.classList.add('hidden');
+        }
+        }, 6000);
+        }
+        });
+        }
+
+        // Optional: clear feedback when user starts typing
+        const formInputs = form ? form.querySelectorAll('input, textarea, select') : [];
+        formInputs.forEach(input => {
+        input.addEventListener('focus', () => hideFeedback());
+        });
+        })();
+	</script>
+
+	{# 
+	    ============================================
+	    BACKEND INTEGRATION NOTES (for production):
+	    ============================================
+	    
+	    To integrate Brevo (Sendinblue) API in Symfony:
+	    
+	    1. Install Brevo SDK: composer require brevo/brevo-php
+	    
+	    2. In your controller (ContactController):
+	    
+	       use Brevo\Client\Api\TransactionalEmailsApi;
+	       use Brevo\Client\Model\SendSmtpEmail;
+	    
+	       public function submitContact(Request $request): Response
+	       {
+	           $data = $request->request->all();
+	           
+	           // Configure API
+	           $config = Brevo\Client\Configuration::getDefaultConfiguration()
+	               ->setApiKey('api-key', $_ENV['BREVO_API_KEY']);
+	           $apiInstance = new TransactionalEmailsApi(null, $config);
+	           
+	           $sendSmtpEmail = new SendSmtpEmail([
+	               'to' => [['email' => 'support@easysave.com', 'name' => 'EasySave Support']],
+	               'replyTo' => ['email' => $data['email'], 'name' => $data['first_name']],
+	               'subject' => 'New contact: ' . $data['subject'],
+	               'htmlContent' => "<p><strong>From:</strong> {$data['first_name']} {$data['last_name']}</p>
+	                                 <p><strong>Email:</strong> {$data['email']}</p>
+	                                 <p><strong>Company:</strong> {$data['company']}</p>
+	                                 <p><strong>Message:</strong><br>{$data['message']}</p>",
+	               'sender' => ['email' => 'noreply@easysave.com', 'name' => 'EasySave Contact']
+	           ]);
+	           
+	           try {
+	               $apiInstance->sendTransacEmail($sendSmtpEmail);
+	               $this->addFlash('success', 'Message sent!');
+	           } catch (\Exception $e) {
+	               $this->addFlash('error', 'Failed to send.');
+	           }
+	           
+	           return $this->redirectToRoute('contact');
+	       }
+	    
+	    3. Alternative: Google Forms Webhook - use fetch() to POST to Google Apps Script URL.
+	    
+	    ============================================
+	    This Twig template is ready for display/demo.
+	    ============================================
+	#}
+{% endblock %}

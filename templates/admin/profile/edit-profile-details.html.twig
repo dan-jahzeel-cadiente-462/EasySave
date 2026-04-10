@@ -1,0 +1,129 @@
+
+<div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Profile Picture Upload -->
+        <div>
+            <h2 class="text-lg font-semibold mb-6 text-gray-800\">Profile Picture</h2>
+            <form id="profilePictureForm" method="POST" action="{{ path('app_admin_account_upload_profile_picture') }}" enctype="multipart/form-data">
+                <div class="flex flex-col items-center">
+                    <!-- Current Picture Preview -->
+                    <div id="picturePreview" class="mb-6">
+                        {% if user.profilePicture %}
+                            <img id="previewImg" src="{{ asset('uploads/profiles/' ~ user.profilePicture) }}" 
+                                 alt="{{ user.username }}" 
+                                 class="w-40 h-40 rounded-full object-cover border-4 border-indigo-200">
+                        {% else %}
+                            <div id="placeholderDiv" class="w-40 h-40 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center border-4 border-gray-200">
+                                <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- File Input -->
+                    <div class="w-full space-y-3">
+                        <label for="profile_picture" class="block text-sm font-semibold text-gray-700">Choose Picture</label>
+                        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500">PNG, JPG, GIF (max 2MB)</p>
+
+                        <!-- Upload Button -->
+                        <button type="submit" class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition">
+                            Upload Picture
+                        </button>
+
+                        <!-- Remove Picture Button (if exists) -->
+                        {% if user.profilePicture %}
+                            <button type="button" onclick="removeProfilePicture()" class="w-full px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-semibold transition">
+                                Remove Picture
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div>
+            <h2 class="text-lg font-semibold mb-6 text-gray-800">Personal Information</h2>
+            
+            <form method="POST" action="{{ path('app_admin_account_update_profile') }}" class="space-y-5">
+                <!-- First Name -->
+                <div>
+                    <label for="first_name" class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                    <input type="text" id="first_name" name="first_name" value="{{ user.firstName|default('') }}" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                           placeholder="Enter first name">
+                </div>
+
+                <!-- Last Name -->
+                <div>
+                    <label for="last_name" class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" value="{{ user.lastName|default('') }}" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                           placeholder="Enter last name">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="email" name="email" value="{{ user.email|default('') }}" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                           placeholder="Enter email address">
+                </div>
+
+                <!-- Username (Read-only) -->
+                <div>
+                    <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" value="{{ user.username }}" disabled 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600" 
+                           placeholder="Username">
+                    <p class="text-xs text-gray-500 mt-1">Username cannot be changed</p>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <a href="{{ path('app_admin_account_view_profile_details') }}" 
+                       class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold transition">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('profile_picture').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const previewDiv = document.getElementById('picturePreview');
+            previewDiv.innerHTML = '<img id="previewImg" src="' + event.target.result + '" class="w-40 h-40 rounded-full object-cover border-4 border-indigo-200">';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+function removeProfilePicture() {
+    if (confirm('Are you sure you want to remove your profile picture?')) {
+        fetch('{{ path("app_admin_account_remove_profile_picture") }}', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Failed to remove profile picture');
+            }
+        });
+    }
+}
+</script>

@@ -1,11 +1,22 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}New Discount{% endblock %}
+{% block title %}Create New Discount{% endblock %}
 
 {% block body %}
-    <h1>Create new Discount</h1>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <a href="{{ path('app_discount_index') }}" class="inline-flex items-center text-green-600 hover:text-green-800 font-medium transition-colors group mb-4">
+            <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to Discounts
+        </a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-2">Create New Discount</h1>
+        <p class="text-gray-600 mt-2">Set up a new discount to apply to your products</p>
+    </div>
 
-    {{ include('discount/_form.html.twig') }}
-
-    <a href="{{ path('app_discount_index') }}">back to list</a>
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+        {{ include('admin/discount/_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}

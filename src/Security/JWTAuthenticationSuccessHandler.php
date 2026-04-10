@@ -21,15 +21,6 @@ class JWTAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInt
         /** @var User $user */
         $user = $token->getUser();
 
-        // Check if email is verified
-        if (!$user->isVerified()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Please verify your email address before logging in',
-                'verified' => false
-            ], 403);
-        }
-
         // Generate JWT token
         $jwt = $this->jwtManager->create($user);
 
@@ -38,7 +29,6 @@ class JWTAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInt
             'user' => [
                 'username' => $user->getUserIdentifier(),
                 'email' => $user->getEmail(),
-
                 'roles' => $user->getRoles(),
                 'verified' => $user->isVerified()
             ]

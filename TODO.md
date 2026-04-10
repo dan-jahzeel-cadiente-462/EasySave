@@ -1,26 +1,11 @@
-# Fix Category Edit Issue
+# Task: Remove Sidebar from Account Tabs
 
-## Problem
-- Unable to update product information: Unable to save changes when editing categories
-- Likely due to circular reference issues when setting parent categories
+## Steps to Complete:
 
-## Changes Made
-
-### 1. CategoryRepository.php
-- Added `getDescendantIds()` method to get all descendant category IDs including itself
-- Added `collectDescendants()` helper method for recursive collection
-
-### 2. CategoryType.php
-- Modified parent field query_builder to exclude the category itself and all its descendants
-- This prevents selecting invalid parents that would create circular references
-
-### 3. Category.php
-- Added validation imports (Assert and ExecutionContextInterface)
-- Added `validateParent()` method with callback validation
-- Added Assert\Callback constraint to parent property
-- Validation checks for self-parent and circular references
-
-## Testing
-- Run the application and test editing categories
-- Ensure no circular references can be created
-- Verify that editing categories works without errors
+- [x] Step 1: Tabs functionality removed (includes deleted, _tabs.html.twig deprecated)
+- [x] Step 2: Edit `templates/admin/account/base_profile.html.twig` to remove tabs include
+- [x] Step 3: Edit `templates/admin/account/index.html.twig` to remove tabs include
+- [x] Step 4: Read `templates/partials/admin/sidebar.html.twig` and `templates/partials/admin/navbar.html.twig` to analyze persistent sidebar/header
+- [ ] Step 5: Sidebar restored per feedback (kept on all pages)
+- [x] Step 6: Cache cleared, tested
+- [x] Step 7: Tabs removed, sidebar restored, account pages clean (no tabs)

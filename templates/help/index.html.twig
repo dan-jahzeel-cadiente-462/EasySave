@@ -1,0 +1,233 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HelpController!{% endblock %}
+
+{% block body %}
+{# 
+    EasySave Help & Support Page - Twig Template
+    Comprehensive help center with FAQs, support categories, and contact options
+    Consistent branding with #3bad59 green accents
+    Fully responsive (mobile → tablet → desktop)
+#}
+
+<section class="bg-transparent py-12 md:py-20">
+    <div class="max-w-screen-xl px-4 sm:px-6 mx-auto">
+        
+        
+
+        {# Featured FAQs Section #}
+        <div class="mb-20">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-bold text-black">Frequently Asked Questions</h2>
+                <p class="text-black/60 mt-2">Quick answers to common questions</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                {# FAQ Item 1 #}
+                <div class="rounded-xl p-5 transition-all cursor-pointer faq-item" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-black">How do I set up my first backup?</h3>
+                        <svg class="w-5 h-5 transition-transform faq-icon" style="color: #3bad59;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer hidden mt-3 pt-3 border-t text-black/70 text-sm" style="border-color: rgba(59, 173, 89, 0.15);">
+                        <p>After installing EasySave, launch the application and click "New Backup Job". Select your source folders, choose a destination (local drive, external HDD, or cloud), set your schedule preferences, and click "Start Backup". Our wizard will guide you through each step.</p>
+                    </div>
+                </div>
+
+                {# FAQ Item 2 #}
+                <div class="rounded-xl p-5 transition-all cursor-pointer faq-item" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-black">What encryption methods does EasySave use?</h3>
+                        <svg class="w-5 h-5 transition-transform faq-icon" style="color: #3bad59;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer hidden mt-3 pt-3 border-t text-black/70 text-sm" style="border-color: rgba(59, 173, 89, 0.15);">
+                        <p>EasySave uses AES-256 encryption for data at rest and TLS 1.3 for data in transit. We also offer end-to-end encryption with customer-managed keys for enterprise clients.</p>
+                    </div>
+                </div>
+
+                {# FAQ Item 3 #}
+                <div class="rounded-xl p-5 transition-all cursor-pointer faq-item" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-black">Can I restore files from any backup point?</h3>
+                        <svg class="w-5 h-5 transition-transform faq-icon" style="color: #3bad59;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer hidden mt-3 pt-3 border-t text-black/70 text-sm" style="border-color: rgba(59, 173, 89, 0.15);">
+                        <p>Yes! EasySave maintains version history for all backed up files. You can browse by date, time, or even search for specific file versions to restore exactly what you need.</p>
+                    </div>
+                </div>
+
+                {# FAQ Item 4 #}
+                <div class="rounded-xl p-5 transition-all cursor-pointer faq-item" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-black">Is EasySave compatible with my operating system?</h3>
+                        <svg class="w-5 h-5 transition-transform faq-icon" style="color: #3bad59;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer hidden mt-3 pt-3 border-t text-black/70 text-sm" style="border-color: rgba(59, 173, 89, 0.15);">
+                        <p>EasySave supports Windows 10/11, macOS 11+, and all major Linux distributions (Ubuntu, Debian, CentOS, RHEL). We also offer CLI tools for server environments.</p>
+                    </div>
+                </div>
+
+                {# FAQ Item 5 #}
+                <div class="rounded-xl p-5 transition-all cursor-pointer faq-item" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-black">How do I upgrade my storage plan?</h3>
+                        <svg class="w-5 h-5 transition-transform faq-icon" style="color: #3bad59;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer hidden mt-3 pt-3 border-t text-black/70 text-sm" style="border-color: rgba(59, 173, 89, 0.15);">
+                        <p>Log into your EasySave account dashboard, navigate to "Billing" > "Plans", and select a new storage tier. Changes take effect immediately and are prorated automatically.</p>
+                    </div>
+                </div>
+
+                {# FAQ Item 6 #}
+                <div class="rounded-xl p-5 transition-all cursor-pointer faq-item" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-black">What happens if my backup fails?</h3>
+                        <svg class="w-5 h-5 transition-transform faq-icon" style="color: #3bad59;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="faq-answer hidden mt-3 pt-3 border-t text-black/70 text-sm" style="border-color: rgba(59, 173, 89, 0.15);">
+                        <p>EasySave sends immediate email notifications for any failed backups. You can also view detailed logs in the dashboard. Our automatic retry system will attempt the backup up to 3 times before alerting you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Video Tutorials Section #}
+        <div class="mb-20">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-bold text-black">📺 Video Tutorials</h2>
+                <p class="text-black/60 mt-2">Watch step-by-step guides</p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="rounded-xl overflow-hidden group cursor-pointer" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="relative">
+                        <img src="https://placehold.co/400x225/e8f5e9/3bad59?text=Getting+Started" alt="Tutorial thumbnail" class="w-full">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #3bad59;">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-black">Quick Start Guide</h3>
+                        <p class="text-xs text-black/50">5 min • Beginner</p>
+                    </div>
+                </div>
+                <div class="rounded-xl overflow-hidden group cursor-pointer" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="relative">
+                        <img src="https://placehold.co/400x225/e8f5e9/3bad59?text=Advanced+Features" alt="Tutorial thumbnail" class="w-full">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #3bad59;">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-black">Advanced Backup Strategies</h3>
+                        <p class="text-xs text-black/50">12 min • Intermediate</p>
+                    </div>
+                </div>
+                <div class="rounded-xl overflow-hidden group cursor-pointer" style="background: white; border: 1px solid rgba(59, 173, 89, 0.15);">
+                    <div class="relative">
+                        <img src="https://placehold.co/400x225/e8f5e9/3bad59?text=Disaster+Recovery" alt="Tutorial thumbnail" class="w-full">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #3bad59;">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-black">Disaster Recovery Setup</h3>
+                        <p class="text-xs text-black/50">8 min • Advanced</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Contact Support CTA #}
+        <div class="text-center rounded-2xl p-8 md:p-12" style="background: linear-gradient(135deg, rgba(59,173,89,0.08) 0%, rgba(59,173,89,0.02) 100%); border: 1px solid rgba(59,173,89,0.2);">
+            <h3 class="text-2xl md:text-3xl font-bold text-black mb-3">Still Need Help?</h3>
+            <p class="text-black/70 max-w-2xl mx-auto mb-6">Our support team is available 24/7 to assist you with any questions or issues.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all hover:shadow-lg" style="background-color: #3bad59; color: white;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    Live Chat
+                </a>
+                <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all border hover:shadow-lg" style="border-color: #3bad59; color: #3bad59; background: white;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    Email Support
+                </a>
+                <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all border hover:shadow-lg" style="border-color: #3bad59; color: #3bad59; background: white;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    Documentation
+                </a>
+            </div>
+            <p class="text-xs text-black/40 mt-6">Response time: typically under 2 hours for email, instant for live chat</p>
+        </div>
+    </div>
+</section>
+
+{# JavaScript for FAQ accordion functionality #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.flex');
+            const answer = item.querySelector('.faq-answer');
+            const icon = item.querySelector('.faq-icon');
+            
+            question.addEventListener('click', function() {
+                const isOpen = answer.classList.contains('hidden');
+                
+                // Close all other FAQs (optional - uncomment for single-open behavior)
+                // faqItems.forEach(otherItem => {
+                //     if (otherItem !== item) {
+                //         otherItem.querySelector('.faq-answer').classList.add('hidden');
+                //         otherItem.querySelector('.faq-icon').style.transform = 'rotate(0deg';
+                //     }
+                // });
+                
+                answer.classList.toggle('hidden');
+                if (icon) {
+                    icon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            });
+        });
+        
+        // Simple search highlight (demo functionality)
+        const searchInput = document.getElementById('help-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                const faqQuestions = document.querySelectorAll('.faq-item h3');
+                
+                faqQuestions.forEach(q => {
+                    const parent = q.closest('.faq-item');
+                    if (query && q.textContent.toLowerCase().includes(query)) {
+                        parent.style.opacity = '1';
+                        parent.style.border = '2px solid #3bad59';
+                    } else if (query) {
+                        parent.style.opacity = '0.4';
+                        parent.style.border = '1px solid rgba(59, 173, 89, 0.15)';
+                    } else {
+                        parent.style.opacity = '1';
+                        parent.style.border = '1px solid rgba(59, 173, 89, 0.15)';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

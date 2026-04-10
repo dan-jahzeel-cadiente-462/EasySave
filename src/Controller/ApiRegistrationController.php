@@ -97,10 +97,9 @@ class ApiRegistrationController extends AbstractController
         // Set default role
         $user->setRoles(['ROLE_USER']);
 
-        // Generate verification token
-        $verificationToken = $this->emailVerificationService->generateVerificationToken();
-        $user->setVerificationToken($verificationToken);
-        $user->setIsVerified(false);
+        // Auto-verify user (email verification disabled)
+        $user->setIsVerified(true);
+        $user->setVerificationToken(null);
 
         // Validate entity
         $errors = $this->validator->validate($user);
@@ -121,25 +120,9 @@ class ApiRegistrationController extends AbstractController
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        // Generate verification URL
-        $verificationUrl = $this->generateUrl(
-            'app_verify_email',
-            ['token' => $verificationToken],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        // Send verification email
-        try {
-            $this->emailVerificationService->sendVerificationEmail($user, $verificationUrl);
-        } catch (\Exception $e) {
-            // Log error but don't fail registration
-// User can request resend later
-        }
-
         return $this->json([
-
             'success' => true,
-            'message' => 'Registration successful. Please check your email to verify your account.',
+            'message' => 'Registration successful. You can now login.',
             'user' => [
                 'id' => $user->getId(),
                 'username' => $user->getUsername(),

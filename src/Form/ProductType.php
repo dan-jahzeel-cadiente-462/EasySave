@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Category;
+use App\Entity\Discount;
 use App\Entity\Product;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -48,6 +49,17 @@ class ProductType extends AbstractType
                 'group_by' => 'parent.name',
                 'placeholder' => 'Choose a category',
                 'required' => true,
+            ])
+            ->add('discounts', EntityType::class, [
+                'class' => Discount::class,
+                'choice_label' => 'label',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'select2',
+                    'help_text' => 'Optional: Select active discounts to apply to this product',
+                ],
             ])
             ->add('isActive', CheckboxType::class, [
                 'required' => false,

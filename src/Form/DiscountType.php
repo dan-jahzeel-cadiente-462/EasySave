@@ -3,8 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Discount;
-use App\Entity\Product;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,11 +22,6 @@ class DiscountType extends AbstractType
             ->add('is_active')
             ->add('value')
             ->add('label')
-            ->add('product', EntityType::class, [
-                'class' => Product::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-            ])
         ;
     }
 
