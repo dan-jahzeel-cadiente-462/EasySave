@@ -30,10 +30,14 @@ final class DiscountController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($discount);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_discount_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                $entityManager->persist($discount);
+                $entityManager->flush();
+                $this->addFlash('success', 'Discount created successfully!');
+                return $this->redirectToRoute('app_discount_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to create discount: ' . $e->getMessage());
+            }
         }
 
         return $this->render('admin/discount/new.html.twig', [
@@ -57,9 +61,13 @@ final class DiscountController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_discount_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                $entityManager->flush();
+                $this->addFlash('success', 'Discount updated successfully!');
+                return $this->redirectToRoute('app_discount_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to update discount: ' . $e->getMessage());
+            }
         }
 
         return $this->render('admin/discount/edit.html.twig', [
@@ -72,8 +80,15 @@ final class DiscountController extends AbstractController
     public function delete(Request $request, Discount $discount, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$discount->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($discount);
-            $entityManager->flush();
+            try {
+                $entityManager->remove($discount);
+                $entityManager->flush();
+                $this->addFlash('success', 'Discount deleted successfully!');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to delete discount: ' . $e->getMessage());
+            }
+        } else {
+            $this->addFlash('danger', 'Invalid CSRF token.');
         }
 
         return $this->redirectToRoute('app_discount_index', [], Response::HTTP_SEE_OTHER);

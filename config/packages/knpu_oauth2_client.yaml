@@ -1,3 +1,2 @@
-knpu_oauth2_client:
-    clients:
-        # configure your clients as described here: https://github.com/knpuniversity/oauth2-client-bundle#configuration
+# OAuth2 configuration has been moved to oauth2_client.yaml
+# This file is kept for reference only
