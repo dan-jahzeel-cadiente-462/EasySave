@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Category;
 use App\Entity\Discount;
 use App\Entity\Product;
+use App\Repository\DiscountRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -52,14 +53,24 @@ class ProductType extends AbstractType
             ])
             ->add('discounts', EntityType::class, [
                 'class' => Discount::class,
-                'choice_label' => 'label',
+                'choice_label' => function(Discount $discount) {
+                    $label = $discount->getLabel();
+                    $type = $discount->getType() === 'percentage' ? $discount->getValue() . '%' : 'PHP ' . $discount->getValue();
+                    return $label . ' (' . $type . ')';
+                },
+                'query_builder' => function(DiscountRepository $repository) {
+                    return $repository->createQueryBuilder('d')
+                        ->where('d.is_active = :active')
+                        ->setParameter('active', true)
+                        ->orderBy('d.label', 'ASC');
+                },
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
                 'attr' => [
                     'class' => 'select2',
-                    'help_text' => 'Optional: Select active discounts to apply to this product',
                 ],
+                'help' => 'Select active discounts to apply to this product. Customers will see these discounts on the catalog and product pages.',
             ])
             ->add('isActive', CheckboxType::class, [
                 'required' => false,
