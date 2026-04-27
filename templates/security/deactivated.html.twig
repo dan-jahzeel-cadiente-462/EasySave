@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Account Deactivated
+{% endblock %}
+
+{% block body %}
+	<div class="min-h-screen flex items-center justify-center bg-gray-100">
+		<div class="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center">
+			<div class="mb-6">
+				<svg class="h-16 w-16 text-red-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 4v2m0-4a2 2 0 11-4 0 2 2 0 014 0zm0-12a2 2 0 11-4 0 2 2 0 014 0zm0 24a2 2 0 11-4 0 2 2 0 014 0z"/>
+				</svg>
+			</div>
+
+			<h1 class="text-2xl font-bold mb-4 text-gray-800">Account Deactivated</h1>
+
+			<p class="text-gray-600 mb-6">
+				Your account has been deactivated. This may be due to policy violations or inactivity.
+			</p>
+
+			<p class="text-gray-700 font-semibold mb-4">
+				Please contact our support team for assistance.
+			</p>
+
+			<a href="mailto:support@easysave.com" class="inline-block bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition">
+				Contact Support
+			</a>
+
+			<div class="mt-6 pt-4 border-t border-gray-200">
+				<a href="{{ path('app_login') }}" class="text-green-600 hover:underline text-sm">
+					Back to Login
+				</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

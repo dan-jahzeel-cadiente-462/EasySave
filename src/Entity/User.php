@@ -61,6 +61,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $googleId = null;
+
+    #[ORM\Column(length: 50, nullable: true, options: ['default' => 'local'])]
+    private ?string $provider = null;
+
     /**
      * @var Collection<int, Address>
      */
@@ -387,6 +393,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(?\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): static
+    {
+        $this->googleId = $googleId;
+
+        return $this;
+    }
+
+    public function getProvider(): ?string
+    {
+        return $this->provider;
+    }
+
+    public function setProvider(?string $provider): static
+    {
+        $this->provider = $provider;
 
         return $this;
     }

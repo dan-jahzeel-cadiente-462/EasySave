@@ -93,11 +93,12 @@
 
 							<!-- Category -->
 							<div>
-								{{ form_row(form.category, {
-									row_attr: {class: 'mb-0'},
-									label_attr: {class: 'block text-sm font-medium text-gray-700 mb-2'},
-									attr: {class: 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors'}
-								}) }}
+								{{ form_label(form.category, 'Category', {label_attr: {class: 'block text-sm font-semibold text-gray-700 mb-2'}}) }}
+								{{ form_widget(form.category, {attr: {
+									class: 'w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-white hover:bg-gray-50 appearance-none cursor-pointer',
+									style: 'background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%239ca3af%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M2 5l6 6 6-6%27/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px; padding-right: 2.5rem;'
+								}}) }}
+								{{ form_errors(form.category) }}
 							</div>
 
 							<!-- Is Active -->
@@ -109,6 +110,30 @@
 							</div>
 						</div>
 					</div>
+
+					<!-- Discounts Section -->
+					{% if form.discounts is defined %}
+						<div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+							<h3 class="text-lg font-semibold text-gray-900 mb-3 pb-3 border-b border-blue-200 flex items-center gap-2">
+								<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
+								</svg>
+								Apply Discounts
+							</h3>
+							<p class="text-sm text-blue-700 mb-4">Optional: Select active discounts to apply to this product. Customers will see the discount on the catalog and product pages.</p>
+							
+							<div>
+								{{ form_label(form.discounts, 'Available Discounts', {label_attr: {class: 'block text-sm font-semibold text-gray-700 mb-2'}}) }}
+								{{ form_widget(form.discounts, {attr: {
+									class: 'w-full min-h-[120px] px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white',
+									multiple: 'multiple',
+									'aria-label': 'Available Discounts'
+								}}) }}
+								{{ form_errors(form.discounts) }}
+								<p class="text-xs text-gray-600 mt-2">Hold Ctrl (Cmd on Mac) to select multiple discounts. Only active discounts are available for selection.</p>
+							</div>
+						</div>
+					{% endif %}
 
 					<!-- Action Buttons -->
 					<div class="flex gap-4">

@@ -18,8 +18,7 @@
                         <p class="text-sm text-gray-500">{{ user.email|default('No email') }}</p>
                     </div>
                 </div>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
-                    {% if user.isActive %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {% if user.isActive %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
                     {% if user.isActive %}Active{% else %}Inactive{% endif %}
                 </span>
             </div>
@@ -40,7 +39,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 p-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-white backdrop-blur-sm flex items-center justify-center">
                             <span class="text-white text-lg font-bold">{{ user.username|first|upper }}</span>
                         </div>
                         <div>
@@ -62,8 +61,7 @@
                         <div>
                             <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Account Status</dt>
                             <dd class="mt-1 text-sm text-gray-900 font-medium">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {% if user.isActive %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if user.isActive %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
                                     {% if user.isActive %}Active{% else %}Inactive{% endif %}
                                 </span>
                             </dd>

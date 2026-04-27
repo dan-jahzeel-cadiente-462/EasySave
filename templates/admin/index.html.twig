@@ -17,7 +17,7 @@
                 <input type="hidden" name="sort" value="{{ sortBy }}">
                 <input type="hidden" name="direction" value="{{ sortDirection }}">
                 
-                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow transition">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.093l3.321 3.321a.75.75 0 11-1.06 1.06l-3.321-3.321A7 7 0 012 9z" clip-rule="evenodd" /></svg>
                 </button>
 
@@ -54,9 +54,7 @@
         </div>
         
         <a href="{{ path('app_category_new') }}"
-           class="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 
-           text-white font-medium rounded-lg shadow 
-                 hover:bg-green-700 focus:ring-2 focus:ring-green-400 transition w-full sm:w-auto">
+           class="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow focus:ring-2 focus:ring-green-400 transition w-full sm:w-auto">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
@@ -162,8 +160,7 @@
                 
                 {% for i in 1..totalPages %}
                     <a href="{{ path('app_category_index', base_params|merge({page: i})) }}"
-                    class="hidden sm:block px-3 py-1 border rounded-lg text-sm transition 
-                            {{ currentPage == i ? 'bg-green-600 text-white font-semibold border-green-600' : 'bg-white text-gray-700 hover:bg-green-50 hover:text-green-600' }}">
+                    class="hidden sm:block px-3 py-1 border rounded-lg text-sm transition {{ currentPage == i ? 'bg-green-600 text-white font-semibold border-green-600' : 'bg-white text-gray-700 hover:bg-green-50 hover:text-green-600' }}">
                         {{ i }}
                     </a>
                 {% endfor %}

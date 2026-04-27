@@ -1,0 +1,56 @@
+{% if form.discounts is defined %}
+	<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+		<h4 class="text-md font-semibold text-gray-900 mb-3 flex items-center gap-2">
+			<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/>
+			</svg>
+			Apply Discounts
+		</h4>
+		<p class="text-sm text-blue-700 mb-3">Optional: Select active discounts to apply to this product. Customers will see the discount on the catalog and product pages.</p>
+
+		<div>
+			{{ form_label(form.discounts, 'Available Discounts', {label_attr: {class: 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+			{{ form_widget(form.discounts, {attr: {
+										class: 'w-full min-h-[120px] px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white',
+										multiple: 'multiple',
+										'aria-label': 'Available Discounts'
+									}}) }}
+			{{ form_errors(form.discounts) }}
+			<p class="text-xs text-gray-600 mt-2">Hold Ctrl (Cmd on Mac) to select multiple discounts. Only active discounts are available for selection.</p>
+		</div>
+
+		{# Display current discounts if editing #}
+		{% if form.vars.data.id is defined and form.vars.data.discounts|length > 0 %}
+			<div class="mt-4 pt-4 border-t border-blue-200">
+				<p class="text-sm font-medium text-gray-700 mb-3">Active Discounts on this Product:</p>
+				<div class="space-y-2">
+					{% for discount in form.vars.data.discounts %}
+						<div class="flex items-center justify-between bg-white p-3 rounded border border-blue-200 hover:border-blue-400 transition-colors">
+							<div>
+								<p class="font-medium text-gray-900">{{ discount.label }}</p>
+								<p class="text-xs text-gray-600">
+									{% if discount.type == 'percentage' %}
+										{{ discount.value }}% off
+									{% else %}
+										PHP
+										{{ discount.value }}
+										off
+									{% endif %}
+									{% if discount.endsAt %}
+										- Expires:
+										{{ discount.endsAt|date('M d, Y') }}
+									{% endif %}
+								</p>
+							</div>
+							{% if discount.isActive %}
+								<span class="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded">Active</span>
+							{% else %}
+								<span class="text-xs font-semibold bg-gray-100 text-gray-800 px-2 py-1 rounded">Inactive</span>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endif %}
+	</div>
+{% endif %}

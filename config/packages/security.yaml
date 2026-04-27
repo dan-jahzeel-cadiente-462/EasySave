@@ -13,7 +13,6 @@ security:
 
     firewalls:
         dev:
-            # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
 
@@ -26,35 +25,41 @@ security:
                 username_path: username
                 password_path: password
                 success_handler: App\Security\JWTAuthenticationSuccessHandler
-                # success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             jwt: ~
 
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\LoginAuthenticator
+            user_checker: App\Security\UserChecker
+            custom_authenticator: 
+                - App\Security\AdminLoginAuthenticator
+                - App\Security\LoginAuthenticator
+                - App\Security\GoogleAuthenticator
+            entry_point: App\Security\LoginAuthenticator
             logout:
                 path: app_logout
-                target: app_login
-
-            # Activate different ways to authenticate:
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+                target: app_user_login
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        # API/Email routes
+        # Public login & registration pages
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+        - { path: ^/deactivated, roles: PUBLIC_ACCESS }
+        
+        # API routes
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED }
 
-        # Admin-only routes
+        # Admin-only routes (ROLE_ADMIN or ROLE_STAFF required)
         - { path: ^/admin/activity-logs, roles: ROLE_ADMIN }
         - { path: ^/admin/user/management, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_STAFF] }
+        
         # User routes
         - { path: ^/user, roles: ROLE_USER }
 

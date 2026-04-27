@@ -249,7 +249,7 @@ function printTable() {
                         <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
                         <td>
-                            <span class="badge {% if 'ROLE_ADMIN' in user.roles %}admin{% elseif 'ROLE_STAFF' in user.roles %}staff{% else %}user{% endif %}">
+                            <span class="badge {% if 'ROLE_ADMIN' in user.roles %}admin{% elseif 'ROLE_STAFF' %}staff{% else %}user{% endif %}">
                                 {% if 'ROLE_ADMIN' in user.roles %}ADMIN{% elseif 'ROLE_STAFF' in user.roles %}STAFF{% else %}USER{% endif %}
                             </span>
                         </td>

@@ -35,7 +35,6 @@
 /* Base body animation on first load & refresh */
 body {
     animation: bodyFadeIn 0.5s ease-out forwards;
-    background: linear-gradient(to bottom right, #f9fafb, #f3f4f6);
     min-height: 100vh;
 }
 
@@ -63,7 +62,7 @@ body {
     height: 2px;
     bottom: -4px;
     left: 0;
-    background-color: #4f46e5;
+    background-color: #3bad59;
     transition: width 0.3s ease-in-out;
 }
 

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Category;
 use App\Entity\Discount;
 use App\Entity\Product;
+use App\Repository\CategoryRepository;
 use App\Repository\DiscountRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -19,6 +20,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProductType extends AbstractType
 {
+    private CategoryRepository $categoryRepository;
+    private DiscountRepository $discountRepository;
+
+    public function __construct(CategoryRepository $categoryRepository, DiscountRepository $discountRepository)
+    {
+        $this->categoryRepository = $categoryRepository;
+        $this->discountRepository = $discountRepository;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -46,10 +56,17 @@ class ProductType extends AbstractType
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
-                'choice_label' => 'name',
-                'group_by' => 'parent.name',
-                'placeholder' => 'Choose a category',
+                'choice_label' => function(Category $category) {
+                    $path = $category->getHierarchyPath();
+                    return $path ? $path . ' (' . $category->getName() . ')' : $category->getName();
+                },
+                'placeholder' => 'Choose a category...',
                 'required' => true,
+                'attr' => [
+                    'class' => 'form-control-select',
+                    'data-filter' => 'true',
+                    'aria-label' => 'Product Category',
+                ],
             ])
             ->add('discounts', EntityType::class, [
                 'class' => Discount::class,
@@ -68,12 +85,16 @@ class ProductType extends AbstractType
                 'expanded' => false,
                 'required' => false,
                 'attr' => [
-                    'class' => 'select2',
+                    'class' => 'form-control-select',
+                    'aria-label' => 'Product Discounts',
                 ],
                 'help' => 'Select active discounts to apply to this product. Customers will see these discounts on the catalog and product pages.',
             ])
             ->add('isActive', CheckboxType::class, [
                 'required' => false,
+                'attr' => [
+                    'class' => 'form-check-input',
+                ],
             ])
         ;
     }
@@ -86,3 +107,5 @@ class ProductType extends AbstractType
         ]);
     }
 }
+
+

@@ -6,6 +6,15 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         
+        <script>
+            (function() {
+                const darkMode = localStorage.getItem('darkMode');
+                if (darkMode === 'true') {
+                    document.documentElement.classList.add('dark');
+                }
+            })();
+        </script>
+
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
@@ -13,9 +22,11 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
             <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+            <script type="module" src="https://unpkg.com/ionicons@7/dist/ionicons/ionicons.esm.js"></script>
+            <script nomodule src="https://unpkg.com/ionicons@7/dist/ionicons/ionicons.js"></script>
         {% endblock %}
     </head>
-    <body>
+    <body class="transition-colors duration-300">
         {# Authentication pages should not include the main navigation navbar #}
         <main class="container mx-auto px-4 py-8 max-w-6xl">
             <div class="animate-content">

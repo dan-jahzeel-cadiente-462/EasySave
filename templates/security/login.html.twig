@@ -4,20 +4,20 @@
 {% endblock %}
 
 {% block body %}
-	<div class="min-h-screen flex items-center justify-center bg-gray-100">
-		<div class="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
-			<h1 class="text-2xl font-bold mb-6 text-gray-800">Sign-in</h1>
+	<div class="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 transition-colors duration-300">
+		<div class="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 transition-colors duration-300">
+			<h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white transition-colors duration-300">Sign-in</h1>
 
 			{# Show error if login failed #}
 			{% if error %}
-				<div class="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+				<div class="mb-4 p-3 text-sm text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900/30 rounded-lg transition-colors duration-300">
 					{{ error.messageKey|trans(error.messageData, 'security') }}
 				</div>
 			{% endif %}
 
 			{# Flash success messages (e.g., after registration) #}
 			{% for message in app.flashes('success') %}
-				<div class="mb-4 p-3 text-sm text-green-700 bg-green-100 rounded-lg">
+				<div class="mb-4 p-3 text-sm text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/30 rounded-lg transition-colors duration-300">
 					{{ message }}
 				</div>
 			{% endfor %}
@@ -29,15 +29,15 @@
 				                    <input type="hidden" name="_target_path" value="/account">
 				                #}
 				<div>
-					<label for="username" class="block text-gray-700 font-medium mb-2">Username</label>
-					<input type="text" value="{{ last_username }}" name="_username" id="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required autofocus>
+					<label for="username" class="block text-gray-700 dark:text-gray-300 font-medium mb-2 transition-colors duration-300">Username</label>
+					<input type="text" value="{{ last_username }}" name="_username" id="username" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 transition-colors duration-300" required autofocus>
 				</div>
 
 				{# 🔑 NEW: Make this container relative for the absolute checkbox position #}
 				<div class="relative">
-					<label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
+					<label for="password" class="block text-gray-700 dark:text-gray-300 font-medium mb-2 transition-colors duration-300">Password</label>
 					<input
-					type="password" name="_password" id="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 pr-10" required>
+					type="password" name="_password" id="password" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 pr-10 transition-colors duration-300" required>
 
 					{# 🔑 NEW: Absolute positioning for the checkbox/label combo #}
 					<div class="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -45,7 +45,7 @@
 						type="checkbox" id="show_password" class="hidden">
 						{# Hide the default checkbox #}
 						<label
-							for="show_password" class="cursor-pointer text-gray-400 hover:text-gray-600 transition duration-150" aria-label="Toggle password visibility">
+							for="show_password" class="cursor-pointer text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition duration-150" aria-label="Toggle password visibility">
 
 							{# Use a simple eye icon for better UX #}
 							<svg id="eye-open" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
@@ -62,18 +62,29 @@
 
 				{# Optional "Remember Me" checkbox #}
 				<div class="flex items-center">
-					<input type="checkbox" id="remember_me" name="_remember_me" class="mr-2">
-					<label for="remember_me" class="text-gray-700">Remember me</label>
+					<input type="checkbox" id="remember_me" name="_remember_me" class="mr-2 accent-green-600 dark:accent-green-500">
+					<label for="remember_me" class="text-gray-700 dark:text-gray-300 transition-colors duration-300">Remember me</label>
 				</div>
 
 
-				<button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+				<button type="submit" class="w-full bg-green-600 dark:bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition duration-300">
 					Login
 				</button>
 
-				<div class="text-sm text-center text-gray-600">
+				<div class="text-sm text-center text-gray-600 dark:text-gray-400 transition-colors duration-300">
 					Don't have an account?
-					<a href="{{ path('app_register') }}" class="text-green-600 hover:underline">Register here</a>.
+					<a href="{{ path('app_register') }}" class="text-green-600 dark:text-green-400 hover:underline font-medium transition-colors duration-300">Register here</a>.
+				</div>
+
+				<div class="text-sm text-center text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700 mt-4 transition-colors duration-300">
+					<a href="{{ path('app_admin_login') }}" class="text-green-600 dark:text-green-400 hover:underline font-medium transition-colors duration-300">Admin Login</a>
+				</div>
+
+				<div class="auth-wrapper">
+					<a href="{{ path('connect_google_start') }}" id="google-login-link" class="btn-google">
+						<ion-icon name="logo-google" class="icon-left"></ion-icon>
+						Continue with Google
+					</a>
 				</div>
 			</form>
 		</div>

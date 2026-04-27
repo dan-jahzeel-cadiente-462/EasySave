@@ -7,6 +7,78 @@
 
 
 body {
-    background-color: lightgray;
     font-family: 'Poppins', sans-serif;
+}
+
+/* Form control improvements */
+.form-check-input {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.form-check-input:hover {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dark .form-check-input:hover {
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.dark .form-check-input:checked {
+    background-color: #60a5fa;
+    border-color: #60a5fa;
+}
+
+/* Smooth color transitions */
+* {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* Google OAuth Button Styles */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn-google {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background-color: #ffffff;
+    color: #444;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-google:hover {
+    background-color: #f7f7f7;
+    border-color: #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.icon-left {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+ion-icon {
+    font-size: 1.2em;
 }
