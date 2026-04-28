@@ -1,0 +1,145 @@
+{# Grid View Product Card #}
+<div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+    <!-- Product Image with Overlays -->
+    <div class="relative overflow-hidden">
+        {% set img = product.imagePath ?: '/images/default-product.png' %}
+        <img src="{{ asset(img) }}" 
+             alt="{{ product.name }}"
+             class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700">
+        
+        <!-- Product Badges -->
+        <div class="absolute top-4 left-4 space-y-2">
+            {% if discount > 0 %}
+            <span class="inline-block px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full shadow-lg">
+                -{{ discount }}%
+            </span>
+            {% endif %}
+            {% if is_new %}
+            <span class="inline-block px-3 py-1 bg-emerald-500 text-white text-sm font-bold rounded-full shadow-lg">
+                NEW
+            </span>
+            {% endif %}
+            {% if product.stock <= 10 and product.stock > 0 %}
+            <span class="inline-block px-3 py-1 bg-orange-500 text-white text-sm font-bold rounded-full shadow-lg">
+                Only {{ product.stock }} left
+            </span>
+            {% endif %}
+        </div>
+        
+        <!-- Favorite Button -->
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <form method="post" action="{{ path('app_user_favorite_toggle', {'id': product.id}) }}" 
+              class="absolute top-4 right-4 z-10">
+            <button type="submit" 
+                    aria-label="Toggle favorite"
+                    class="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group/fav">
+                {% if is_favorited %}
+                <svg class="h-6 w-6 text-red-500 fill-current group-hover/fav:scale-110 transition-transform" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                </svg>
+                {% else %}
+                <svg class="h-6 w-6 text-gray-400 group-hover/fav:text-red-400 group-hover/fav:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                {% endif %}
+            </button>
+        </form>
+        {% endif %}
+        
+        <!-- Quick View Overlay -->
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <a href="{{ path('app_user_shop_show', {'id': product.id}) }}"
+               class="px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors">
+                Quick View
+            </a>
+        </div>
+    </div>
+    
+    <!-- Product Info -->
+    <div class="p-6">
+        <!-- Category & Brand -->
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-indigo-600 uppercase tracking-wide">
+                {{ product.brand }}
+            </span>
+            <!-- Star Rating -->
+            <div class="flex items-center">
+                {% for i in 1..5 %}
+                    {% if i <= rating %}
+                    <svg class="h-4 w-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    {% else %}
+                    <svg class="h-4 w-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    {% endif %}
+                {% endfor %}
+                <span class="ml-1 text-sm text-gray-500">({{ random(15, 245) }})</span>
+            </div>
+        </div>
+        
+        <!-- Product Name -->
+        <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+            <a href="{{ path('app_user_shop_show', {'id': product.id}) }}" class="line-clamp-2">
+                {{ product.name }}
+            </a>
+        </h3>
+        
+        <!-- Product Description -->
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+            {{ product.description|default('Premium quality product with excellent features and durability.')|slice(0, 80) }}...
+        </p>
+        
+        <!-- Price Section -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <span class="text-2xl font-bold text-gray-900">
+                    {{ (product.price * (100 - discount) / 100)|number_format(2, '.', ',') }} AED
+                </span>
+                {% if discount > 0 %}
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500 line-through">
+                        {{ product.price|number_format(2, '.', ',') }} AED
+                    </span>
+                    <span class="text-sm font-medium text-red-600">
+                        Save {{ (product.price * discount / 100)|number_format(2, '.', ',') }} AED
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Add to Cart Button -->
+        <div class="space-y-3">
+            {% if product.stock > 0 %}
+            <form method="post" action="{{ path('app_user_cart_add', {'id': product.id}) }}" class="w-full">
+                <button type="submit" 
+                        class="w-full flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-gray-900 to-black text-white font-semibold rounded-xl hover:from-gray-800 hover:to-black hover:shadow-lg transition-all duration-300 group/cart">
+                    <svg class="h-5 w-5 mr-3 group-hover/cart:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Add to Cart
+                </button>
+            </form>
+            {% else %}
+            <button disabled 
+                    class="w-full px-6 py-3.5 bg-gray-100 text-gray-400 font-semibold rounded-xl cursor-not-allowed">
+                Out of Stock
+            </button>
+            {% endif %}
+            
+            <!-- Quick Actions -->
+            <div class="flex space-x-3">
+                <button type="button"
+                        class="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 font-medium rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300">
+                    Compare
+                </button>
+                <button type="button"
+                        class="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 font-medium rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300">
+                    Wishlist
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
