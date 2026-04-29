@@ -1,9 +1,13 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block body %}
+
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Title and Header -->
     {{ include('admin/product/includes/index_page/title_header.html.twig') }}
+
+    <!-- Charts and Graphs -->
+    {{ include('admin/product/includes/index_page/charts.html.twig') }} 
 
     <!-- Products Summary Stats -->
     {{ include('admin/product/includes/index_page/product_summary.html.twig') }}
@@ -22,4 +26,6 @@ function setView(viewType) {
     window.location.href = url.toString();
 }
 </script>
+<script src="{{ asset('js/charts/reports-bar-chart.js') }}"></script>
+<script src="{{ asset('js/charts/reports-line-chart.js') }}"></script>
 {% endblock %}

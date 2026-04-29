@@ -184,4 +184,18 @@ class CategoryRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Find top-level categories (no parent), ordered by name
+     */
+    public function findRootCategories(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.children', 'children')
+            ->addSelect('children')
+            ->where('c.parent IS NULL')
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
