@@ -171,6 +171,10 @@ final class ProductController extends AbstractController
         $imagesAdded = 0;
         $errors = [];
 
+        // Allowed MIME types for image uploads
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $maxFileSize = 5 * 1024 * 1024; // 5MB
+
         if (is_array($newImageFiles)) {
             $uploadsDir = $this->getParameter('kernel.project_dir').'/public/uploads/products';
             if (!is_dir($uploadsDir)) {
@@ -180,6 +184,19 @@ final class ProductController extends AbstractController
             foreach ($newImageFiles as $newImageFile) {
                 if ($newImageFile instanceof UploadedFile) {
                     try {
+                        // Validate file type
+                        $mimeType = $newImageFile->getMimeType();
+                        if (!in_array($mimeType, $allowedMimeTypes)) {
+                            $errors[] = 'Invalid file type for ' . $newImageFile->getClientOriginalName() . '. Allowed: JPEG, PNG, GIF, WebP';
+                            continue;
+                        }
+
+                        // Validate file size
+                        if ($newImageFile->getSize() > $maxFileSize) {
+                            $errors[] = 'File ' . $newImageFile->getClientOriginalName() . ' exceeds max size of 5MB';
+                            continue;
+                        }
+
                         $originalFilename = pathinfo($newImageFile->getClientOriginalName(), PATHINFO_FILENAME);
                         $safeFilename = $slugger->slug($originalFilename);
                         $newFilename = $safeFilename.'-'.uniqid().'.'.$newImageFile->guessExtension();

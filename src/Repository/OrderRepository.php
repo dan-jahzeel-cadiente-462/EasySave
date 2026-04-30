@@ -71,18 +71,18 @@ class OrderRepository extends ServiceEntityRepository
         
         // Apply start date filter
         if ($startDate) {
-            $qb->andWhere('o.orderDate >= :start')
+            $qb->andWhere('o.createdAt >= :start')
                ->setParameter('start', $startDate);
         }
 
         // Apply end date filter
         if ($endDate) {
-            $qb->andWhere('o.orderDate <= :end')
+            $qb->andWhere('o.createdAt <= :end')
                ->setParameter('end', $endDate);
         }
         
         // Order by date descending by default
-        $qb->orderBy('o.orderDate', 'DESC');
+        $qb->orderBy('o.createdAt', 'DESC');
 
         return $qb->getQuery()->getResult();
     }
@@ -149,9 +149,11 @@ class OrderRepository extends ServiceEntityRepository
      */
     public function getTotalRevenue(): float
     {
-        return (float) $this->createQueryBuilder('o')
+        $result = $this->createQueryBuilder('o')
             ->select('SUM(o.total)')
             ->getQuery()
             ->getSingleScalarResult();
+        
+        return (float) ($result ?? 0);
     }
 }

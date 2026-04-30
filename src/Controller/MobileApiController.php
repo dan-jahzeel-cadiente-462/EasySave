@@ -312,12 +312,18 @@ class MobileApiController extends AbstractController
 
             $favoritesData = array_map(function ($favorite) {
                 $product = $favorite->getProduct();
+                // Skip if product no longer exists
+                if (!$product) {
+                    return null;
+                }
                 return [
                     'id' => $favorite->getId(),
                     'product' => $this->productToArray($product),
                     'added_at' => $favorite->getCreatedAt()?->format('Y-m-d H:i:s'),
                 ];
             }, $favorites);
+            // Filter out null entries
+            $favoritesData = array_filter($favoritesData);
 
             return $this->json([
                 'success' => true,
@@ -342,6 +348,7 @@ class MobileApiController extends AbstractController
      */
     private function productToArray(Product $p): array
     {
+        $category = $p->getCategory();
         return [
             'id' => $p->getId(),
             'name' => $p->getName(),
@@ -349,10 +356,10 @@ class MobileApiController extends AbstractController
             'price' => (float) $p->getPrice(),
             'stock' => $p->getStock(),
             'image' => $p->getImagePath(),
-            'category' => [
-                'id' => $p->getCategory()->getId(),
-                'name' => $p->getCategory()->getName(),
-            ],
+            'category' => $category ? [
+                'id' => $category->getId(),
+                'name' => $category->getName(),
+            ] : null,
             'is_active' => $p->isIsActive(),
         ];
     }
@@ -362,6 +369,7 @@ class MobileApiController extends AbstractController
      */
     private function productDetailToArray(Product $p): array
     {
+        $category = $p->getCategory();
         return [
             'id' => $p->getId(),
             'name' => $p->getName(),
@@ -370,11 +378,11 @@ class MobileApiController extends AbstractController
             'price' => (float) $p->getPrice(),
             'stock' => $p->getStock(),
             'image' => $p->getImagePath(),
-            'category' => [
-                'id' => $p->getCategory()->getId(),
-                'name' => $p->getCategory()->getName(),
-                'description' => $p->getCategory()->getDescription(),
-            ],
+            'category' => $category ? [
+                'id' => $category->getId(),
+                'name' => $category->getName(),
+                'description' => $category->getDescription(),
+            ] : null,
             'created_at' => $p->getCreatedAt()?->format('Y-m-d H:i:s'),
             'updated_at' => $p->getUpdatedAt()?->format('Y-m-d H:i:s'),
             'is_active' => $p->isIsActive(),

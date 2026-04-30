@@ -110,4 +110,125 @@ class ActivityLogRepository extends ServiceEntityRepository
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
+
+    /**
+     * Get activity data grouped by time period
+     */
+    public function getActivityByDateRange(\DateTime $startDate, \DateTime $endDate, string $groupBy = 'day'): array
+    {
+        try {
+            $qb = $this->createQueryBuilder('al')
+                ->select('COUNT(al.id) as count, al.action')
+                ->where('al.createdAt >= :startDate')
+                ->andWhere('al.createdAt <= :endDate')
+                ->setParameter('startDate', $startDate)
+                ->setParameter('endDate', $endDate)
+                ->groupBy('al.action')
+                ->orderBy('count', 'DESC');
+
+            $results = $qb->getQuery()->getResult();
+            
+            return array_map(function($row) {
+                return [
+                    'action' => $row['action'],
+                    'count' => (int)$row['count']
+                ];
+            }, $results);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get daily activity statistics for a given date range
+     */
+    public function getDailyActivityData(\DateTime $startDate, \DateTime $endDate): array
+    {
+        try {
+            $qb = $this->createQueryBuilder('al')
+                ->select('al.createdAt, COUNT(al.id) as count')
+                ->where('al.createdAt >= :startDate')
+                ->andWhere('al.createdAt <= :endDate')
+                ->setParameter('startDate', $startDate)
+                ->setParameter('endDate', $endDate)
+                ->groupBy('DATE(al.createdAt)')
+                ->orderBy('DATE(al.createdAt)', 'ASC');
+
+            $results = $qb->getQuery()->getResult();
+            
+            $data = [];
+            foreach ($results as $row) {
+                $date = $row['createdAt'] instanceof \DateTimeImmutable ? 
+                    $row['createdAt']->format('Y-m-d') : 
+                    (new \DateTime($row['createdAt']))->format('Y-m-d');
+                
+                $data[] = [
+                    'date' => $date,
+                    'count' => (int)$row['count']
+                ];
+            }
+            
+            return $data;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get action distribution for pie chart
+     */
+    public function getActionDistribution(\DateTime $startDate, \DateTime $endDate): array
+    {
+        try {
+            $qb = $this->createQueryBuilder('al')
+                ->select('al.action, COUNT(al.id) as count')
+                ->where('al.createdAt >= :startDate')
+                ->andWhere('al.createdAt <= :endDate')
+                ->setParameter('startDate', $startDate)
+                ->setParameter('endDate', $endDate)
+                ->groupBy('al.action')
+                ->orderBy('count', 'DESC');
+
+            $results = $qb->getQuery()->getResult();
+            
+            return array_map(function($row) {
+                return [
+                    'action' => $row['action'],
+                    'count' => (int)$row['count']
+                ];
+            }, $results);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get activity by user for a date range
+     */
+    public function getUserActivityData(\DateTime $startDate, \DateTime $endDate): array
+    {
+        try {
+            $qb = $this->createQueryBuilder('al')
+                ->select('COALESCE(u.username, \'System\') as username, COUNT(al.id) as count')
+                ->leftJoin('al.user', 'u')
+                ->where('al.createdAt >= :startDate')
+                ->andWhere('al.createdAt <= :endDate')
+                ->setParameter('startDate', $startDate)
+                ->setParameter('endDate', $endDate)
+                ->groupBy('u.id')
+                ->orderBy('count', 'DESC')
+                ->setMaxResults(10);
+
+            $results = $qb->getQuery()->getResult();
+            
+            return array_map(function($row) {
+                return [
+                    'username' => $row['username'] ?? 'System',
+                    'count' => (int)$row['count']
+                ];
+            }, $results);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
 }

@@ -107,4 +107,62 @@ final class OrderController extends AbstractController
         $this->addFlash('danger', 'Invalid CSRF token.');
         return $this->redirectToRoute('app_admin_order_show', ['order' => $order->getId()]);
     }
+
+    #[Route('/export/csv', name: 'app_admin_order_export_csv', methods: ['GET'])]
+    public function exportCSV(Request $request, OrderRepository $orderRepository, \App\Service\ExportService $exportService): Response
+    {
+        // Extract filter parameters
+        $startDateStr = $request->query->get('start_date');
+        $endDateStr = $request->query->get('end_date');
+        $filterStatus = $request->query->get('status', '');
+
+        $startDate = null;
+        $endDate = null;
+
+        if ($startDateStr) {
+            try {
+                $startDate = new \DateTimeImmutable($startDateStr . ' 00:00:00');
+            } catch (\Exception $e) {}
+        }
+
+        if ($endDateStr) {
+            try {
+                $endDate = new \DateTimeImmutable($endDateStr . ' 23:59:59');
+            } catch (\Exception $e) {}
+        }
+
+        // Get all filtered orders (no pagination limit)
+        $orders = $orderRepository->findFilteredPaginatedOrders($startDate, $endDate, $filterStatus, 10000, 0);
+
+        return $exportService->exportOrdersToCSV($orders);
+    }
+
+    #[Route('/export/json', name: 'app_admin_order_export_json', methods: ['GET'])]
+    public function exportJSON(Request $request, OrderRepository $orderRepository, \App\Service\ExportService $exportService): Response
+    {
+        // Extract filter parameters
+        $startDateStr = $request->query->get('start_date');
+        $endDateStr = $request->query->get('end_date');
+        $filterStatus = $request->query->get('status', '');
+
+        $startDate = null;
+        $endDate = null;
+
+        if ($startDateStr) {
+            try {
+                $startDate = new \DateTimeImmutable($startDateStr . ' 00:00:00');
+            } catch (\Exception $e) {}
+        }
+
+        if ($endDateStr) {
+            try {
+                $endDate = new \DateTimeImmutable($endDateStr . ' 23:59:59');
+            } catch (\Exception $e) {}
+        }
+
+        // Get all filtered orders (no pagination limit)
+        $orders = $orderRepository->findFilteredPaginatedOrders($startDate, $endDate, $filterStatus, 10000, 0);
+
+        return $exportService->exportOrdersToJSON($orders);
+    }
 }

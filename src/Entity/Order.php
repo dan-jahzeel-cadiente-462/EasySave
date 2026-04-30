@@ -150,4 +150,22 @@ class Order
         }
         return $total;
     }
+
+    /**
+     * Synchronizes the 'total' property with the calculated amount from order items.
+     * Call this before persisting if you want to ensure the database field matches item calculations.
+     */
+    public function syncTotalFromItems(): void
+    {
+        $this->total = $this->totalAmount();
+    }
+
+    /**
+     * Validates that the stored total matches the calculated total from items.
+     * Returns true if they match, false if they diverge.
+     */
+    public function isTotalConsistent(): bool
+    {
+        return abs($this->total - $this->totalAmount()) < 0.01;
+    }
 }
