@@ -2,25 +2,39 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {#<title>{% block title %}{% endblock %}</title>#}
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+
+        <script>
+            (function() {
+                const darkMode = localStorage.getItem('darkMode');
+                if (darkMode === 'true') {
+                    document.documentElement.classList.add('dark');
+                }
+            })();
+        </script>
+
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
+            <link rel="stylesheet" href="{{ asset('css/gradient-bg.css') }}">
         {% endblock %}
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
+            <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
         {% endblock %}
     </head>
-    <body class="font-[Poppins]">
+    <body class="font-[Poppins] gradient-bg">
         {% include 'partials/user/user_header.html.twig' %}
 
-        <main>
-            {% block user_body %}{% endblock %}
+        <main class="container mx-auto px-4 py-8 max-w-6xl">
+            <div class="animate-content">
+                {% block user_body %}{% endblock %}
+            </div>
         </main>
-
-        {# {% include 'partials/footer.html.twig' %} #}
     </body>
 </html>

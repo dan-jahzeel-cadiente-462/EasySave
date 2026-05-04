@@ -1,1 +1,16 @@
-# Fix ActivityLogController::show() TypeError\n\n## Steps:\n1. [x] Analyze files and understand error\n2. [x] Create this TODO.md\n3. [x] Edit src/Controller/Admin/ActivityLogController.php\n4. [x] Clear cache\n5. [x] Verify fix\n6. [x] Complete task
+# Landing Page & Catalog Fixes TODO
+
+## Task: Fix the landing page issues
+
+### Issues Identified:
+1. **Landing Page Theme Issues** - Inconsistent light-dark theme styling
+2. **Catalog Grid/List View** - Fix list and grid view in catalogs section
+
+### Fix Plan:
+
+- [x] Fix index.html.twig - Add dark mode classes throughout
+- [x] Fix Categories section - Add dark mode support
+- [x] Fix catalog.html.twig - Ensure view toggle works properly in dark mode
+- [x] Verify all theme styling is consistent
+
+### Current Status: COMPLETED - All fixes implemented

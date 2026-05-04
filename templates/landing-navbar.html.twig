@@ -1,4 +1,4 @@
-{# Landing Page Navigation #}
+{# Landing Page Navigation with Animated White Underline Hover Effect #}
 <nav
     class="sticky top-0 z-50 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-all duration-300"
     x-data="{ mobileMenuOpen: false, darkMode: localStorage.getItem('darkMode') === 'true' }"
@@ -18,31 +18,46 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <!-- Logo -->
-            <a href="{{ path('app_home') }}" class="flex-shrink-0 flex items-center">
+            <a href="{{ path('app_home') }}" class="flex-shrink-0 flex items-center transition-transform duration-200 hover:scale-105">
                 <img src="{{ asset('images/logos/EasySave sidebar logo.png') }}" alt="EasySave" class="h-8 w-auto">
             </a>
 
-            <!-- Desktop Navigation -->
+            <!-- Desktop Navigation with Animated White Underline -->
             <div class="hidden md:flex md:items-center md:space-x-1">
-                <a href="{{ path('app_home') }}" class="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200">Home</a>
-                <a href="{{ path('app_catalog') }}" class="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200">Catalog</a>
-                <a href="{{ path('app_about') }}" class="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200">About</a>
-                <a href="{{ path('app_help') }}" class="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200">Help</a>
-                <a href="{{ path('app_contact') }}" class="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200">Contact</a>
+                <a href="{{ path('app_home') }}" class="group relative px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white transition-colors duration-200">
+                    Home
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
+                </a>
+                <a href="{{ path('app_catalog') }}" class="group relative px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white transition-colors duration-200">
+                    Catalog
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
+                </a>
+                <a href="{{ path('app_about') }}" class="group relative px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white transition-colors duration-200">
+                    About
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
+                </a>
+                <a href="{{ path('app_help') }}" class="group relative px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white transition-colors duration-200">
+                    Help
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
+                </a>
+                <a href="{{ path('app_contact') }}" class="group relative px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white transition-colors duration-200">
+                    Contact
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
+                </a>
             </div>
 
             <!-- Desktop Auth & Theme -->
             <div class="hidden md:flex md:items-center md:gap-3">
-                <a href="{{ path('app_user_login') }}" class="px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 transition-colors duration-200">
+                <a href="{{ path('app_user_login') }}" class="px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-200">
                     Sign In
                 </a>
-                <a href="{{ path('app_register') }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 dark:bg-green-600 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 transition-colors duration-200">
+                <a href="{{ path('app_register') }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 dark:bg-green-600 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 hover:scale-105 hover:shadow-md transition-all duration-200">
                     Sign Up
                 </a>
                 <button
                     @click="darkMode = !darkMode"
                     type="button"
-                    class="p-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
+                    class="p-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
                     aria-label="Toggle dark mode"
                 >
                     <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,28 +114,28 @@
         class="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
     >
         <div class="px-4 pt-2 pb-4 space-y-1">
-            <a href="{{ path('app_home') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 text-sm font-medium">
+            <a href="{{ path('app_home') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 text-sm font-medium hover:translate-x-1">
                 Home
             </a>
-            <a href="{{ path('app_catalog') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 text-sm font-medium">
+            <a href="{{ path('app_catalog') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 text-sm font-medium hover:translate-x-1">
                 Catalog
             </a>
-            <a href="{{ path('app_about') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 text-sm font-medium">
+            <a href="{{ path('app_about') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 text-sm font-medium hover:translate-x-1">
                 About
             </a>
-            <a href="{{ path('app_help') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 text-sm font-medium">
+            <a href="{{ path('app_help') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 text-sm font-medium hover:translate-x-1">
                 Help
             </a>
-            <a href="{{ path('app_contact') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 text-sm font-medium">
+            <a href="{{ path('app_contact') }}" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 text-sm font-medium hover:translate-x-1">
                 Contact
             </a>
 
             <!-- Mobile Auth -->
             <div class="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4 space-y-2">
-                <a href="{{ path('app_user_login') }}" class="block px-3 py-2 text-center text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 transition-colors duration-200">
+                <a href="{{ path('app_user_login') }}" class="block px-3 py-2 text-center text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 transition-all duration-200 hover:scale-105">
                     Sign In
                 </a>
-                <a href="{{ path('app_register') }}" class="block px-3 py-2 text-center text-sm font-medium text-white bg-green-600 dark:bg-green-600 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 transition-colors duration-200">
+                <a href="{{ path('app_register') }}" class="block px-3 py-2 text-center text-sm font-medium text-white bg-green-600 dark:bg-green-600 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 transition-all duration-200 hover:scale-105 hover:shadow-md">
                     Sign Up
                 </a>
             </div>
@@ -140,11 +155,31 @@
 
     button:focus-visible,
     a:focus-visible {
-        outline: 2px solid #3bad59;
+        outline: 2px solid #ffffff;
         outline-offset: 2px;
     }
 
     html.dark {
         color-scheme: dark;
+    }
+    
+    /* Additional smoothness for the underline animation */
+    .group span {
+        transform-origin: left;
+    }
+    
+    .group:hover span {
+        animation: underline-slide 0.3s ease-out forwards;
+    }
+    
+    @keyframes underline-slide {
+        0% {
+            width: 0%;
+            opacity: 0.5;
+        }
+        100% {
+            width: 100%;
+            opacity: 1;
+        }
     }
 </style>

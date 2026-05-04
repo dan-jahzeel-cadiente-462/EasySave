@@ -1,62 +1,60 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ 
-    sidebarOpen: window.innerWidth >= 1024,
-    isDesktop: window.innerWidth >= 1024
-}" 
-      x-init="
-        window.addEventListener('resize', () => { 
-            const isLg = window.innerWidth >= 1024;
-            sidebarOpen = isLg;
-            isDesktop = isLg;
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Force light mode */
+        html {
+            color-scheme: light !important;
+        }
+        html.dark {
+            color-scheme: light !important;
+        }
+        html.dark * {
+            all: initial !important;
+            color-scheme: light !important;
+        }
+    </style>
+</head>
+
+<body class="font-[Poppins] bg-gray-100 h-screen w-screen overflow-hidden flex" style="font-family:'Poppins', sans-serif">
+    
+    <!-- Sidebar -->
+    {% include 'partials/admin/sidebar.html.twig' %}
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden w-full">
+        
+        <!-- Navbar -->
+        {% include 'partials/admin/navbar.html.twig' %}
+        
+        <!-- Flash Messages -->
+        {% include 'partials/admin/_flashes.html.twig' %}
+        
+        <!-- Main Body -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-white">
+            <div class="container mx-auto px-4 py-1">
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Persist sidebar state
+        document.addEventListener('alpine:init', () => {
+            Alpine.effect(() => {
+                const open = Alpine.store('sidebarOpen');
+                localStorage.setItem('sidebarOpen', open);
+            });
         });
-        // Restore sidebar state from localStorage
-        const saved = localStorage.getItem('sidebarOpen');
-        if (saved !== null) sidebarOpen = saved === 'true';
-      " 
-      @mouseenter="if (window.innerWidth >= 1024) sidebarOpen = true"
-      x-cloak>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Admin</title>
-		<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="{{ asset('build/app.css') }}">
-		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-	</head>
-
-	<body class="font-[Poppins] bg-gray-100 h-screen w-screen overflow-hidden flex" style="font-family:'Poppins', sans-serif">
-		
-		<!-- Sidebar -->
-		{% include 'partials/admin/sidebar.html.twig' %}
-
-		<!-- Main Content -->
-		<div class="flex-1 flex flex-col overflow-hidden w-full">
-			
-			<!-- Navbar -->
-			{% include 'partials/admin/navbar.html.twig' %}
-			
-			<!-- Flash Messages -->
-			{% include 'partials/admin/_flashes.html.twig' %}
-			
-			<!-- Main Body -->
-			<main class="flex-1 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-800 transition-all duration-300">
-				<div class="container mx-auto px-4 py-1">
-					{% block body %}{% endblock %}
-				</div>
-			</main>
-		</div>
-
-		<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-		<script>
-			// Persist sidebar state
-			document.addEventListener('alpine:init', () => {
-				Alpine.effect(() => {
-					const open = Alpine.store('sidebarOpen');
-					localStorage.setItem('sidebarOpen', open);
-				});
-			});
-		</script>
-	</body>
+    </script>
+</body>
 </html>

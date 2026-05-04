@@ -1,5 +1,5 @@
 {# List View Product Card #}
-<div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500">
+<div class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg dark:shadow-xl hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-500">
     <div class="flex">
         <!-- Product Image -->
         <div class="relative w-48 h-48 flex-shrink-0 overflow-hidden rounded-l-2xl">
@@ -52,7 +52,7 @@
         <div class="flex-1 p-6">
             <!-- Category & Brand -->
             <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-medium text-indigo-600 uppercase tracking-wide">
+                <span class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">
                     {{ product.brand }}
                 </span>
                 <!-- Star Rating -->
@@ -63,39 +63,39 @@
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                         </svg>
                         {% else %}
-                        <svg class="h-4 w-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                        <svg class="h-4 w-4 text-gray-300 dark:text-gray-600 fill-current" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                         </svg>
                         {% endif %}
                     {% endfor %}
-                    <span class="ml-1 text-sm text-gray-500">({{ random(15, 245) }})</span>
+                    <span class="ml-1 text-sm text-gray-500 dark:text-gray-400">({{ random(15, 245) }})</span>
                 </div>
             </div>
 
             <!-- Product Name -->
-            <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
                 <a href="{{ path('app_user_shop_show', {'id': product.id}) }}">
                     {{ product.name }}
                 </a>
             </h3>
 
             <!-- Product Description -->
-            <p class="text-gray-600 text-sm mb-4">
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
                 {{ product.description|default('Premium quality product with excellent features and durability.')|slice(0, 150) }}...
             </p>
 
             <!-- Price Section -->
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <span class="text-2xl font-bold text-gray-900">
+                    <span class="text-2xl font-bold text-gray-900 dark:text-white">
                         {{ (product.price * (100 - discount) / 100)|number_format(2, '.', ',') }} AED
                     </span>
                     {% if discount > 0 %}
                     <div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-500 line-through">
+                        <span class="text-sm text-gray-500 dark:text-gray-400 line-through">
                             {{ product.price|number_format(2, '.', ',') }} AED
                         </span>
-                        <span class="text-sm font-medium text-red-600">
+                        <span class="text-sm font-medium text-red-600 dark:text-red-400">
                             Save {{ (product.price * discount / 100)|number_format(2, '.', ',') }} AED
                         </span>
                     </div>
@@ -108,7 +108,7 @@
                 {% if product.stock > 0 %}
                 <form method="post" action="{{ path('app_user_cart_add', {'id': product.id}) }}" class="flex-1">
                     <button type="submit"
-                            class="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-gray-900 to-black text-white font-semibold rounded-xl hover:from-gray-800 hover:to-black hover:shadow-lg transition-all duration-300 group/cart">
+                            class="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 dark:from-green-600 dark:to-green-700 text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-800 dark:hover:from-green-700 dark:hover:to-green-800 hover:shadow-lg dark:hover:shadow-xl transition-all duration-300 group/cart">
                         <svg class="h-5 w-5 mr-3 group-hover/cart:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
@@ -117,14 +117,14 @@
                 </form>
                 {% else %}
                 <button disabled
-                        class="flex-1 px-6 py-3 bg-gray-100 text-gray-400 font-semibold rounded-xl cursor-not-allowed">
+                        class="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-semibold rounded-xl cursor-not-allowed">
                     Out of Stock
                 </button>
                 {% endif %}
 
                 <!-- Quick View -->
                 <a href="{{ path('app_user_shop_show', {'id': product.id}) }}"
-                   class="px-6 py-3 border-2 border-gray-200 text-gray-700 font-medium rounded-xl hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-300">
+                   class="px-6 py-3 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:border-green-400 dark:hover:border-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-300">
                     View Details
                 </a>
             </div>

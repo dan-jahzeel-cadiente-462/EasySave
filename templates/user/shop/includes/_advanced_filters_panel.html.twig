@@ -1,12 +1,12 @@
 {# Advanced Filters Panel Component #}
-<div id="advanced-filters" class="hidden bg-white border-2 border-gray-200 rounded-2xl shadow-lg mb-8 overflow-hidden">
+<div id="advanced-filters" class="hidden bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg dark:shadow-xl mb-8 overflow-hidden">
     <div class="p-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Price Range Filter -->
             <div class="space-y-6">
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <svg class="h-5 w-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <svg class="h-5 w-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         Price Range
@@ -14,34 +14,34 @@
                     <div class="space-y-4">
                         <div class="relative pt-1">
                             <input type="range" min="0" max="5000" value="0" 
-                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
+                                   class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
                                    id="price-min">
                             <input type="range" min="0" max="5000" value="5000" 
-                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb mt-2"
+                                   class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb mt-2"
                                    id="price-max">
-                            <div class="absolute h-2 bg-indigo-500 rounded-lg left-0 right-0 top-1/2 transform -translate-y-1/2 pointer-events-none"></div>
+                            <div class="absolute h-2 bg-green-500 dark:bg-green-600 rounded-lg left-0 right-0 top-1/2 transform -translate-y-1/2 pointer-events-none"></div>
                         </div>
                         <div class="flex items-center justify-between pt-4">
                             <div class="flex-1 mr-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Min Price</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Min Price</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500">AED</span>
+                                        <span class="text-gray-500 dark:text-gray-400">AED</span>
                                     </div>
                                     <input type="number" 
-                                           class="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                                           class="w-full pl-12 pr-4 py-2 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg focus:border-green-500 dark:focus:border-green-400 focus:ring-2 focus:ring-green-100 dark:focus:ring-green-900"
                                            value="0"
                                            id="price-min-input">
                                 </div>
                             </div>
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max Price</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500">AED</span>
+                                        <span class="text-gray-500 dark:text-gray-400">AED</span>
                                     </div>
                                     <input type="number" 
-                                           class="w-full pl-12 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                                           class="w-full pl-12 pr-4 py-2 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg focus:border-green-500 dark:focus:border-green-400 focus:ring-2 focus:ring-green-100 dark:focus:ring-green-900"
                                            value="5000"
                                            id="price-max-input">
                                 </div>
@@ -53,8 +53,8 @@
             
             <!-- Category Filter -->
             <div class="space-y-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <svg class="h-5 w-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <svg class="h-5 w-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                     </svg>
                     Categories
@@ -62,10 +62,10 @@
                 <div class="grid grid-cols-2 gap-3">
                     {% if categories is defined %}
                         {% for category in categories|slice(0, 6) %}
-                        <label class="flex items-center p-3 border-2 border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all duration-200">
+                        <label class="flex items-center p-3 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl hover:border-green-400 dark:hover:border-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer transition-all duration-200">
                             <input type="checkbox" name="categories[]" value="{{ category.id }}"
-                                   class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <span class="ml-3 text-gray-700 font-medium">{{ category.name }}</span>
+                                   class="h-5 w-5 text-green-600 dark:text-green-400 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500 dark:focus:ring-green-400">
+                            <span class="ml-3 text-gray-700 dark:text-gray-300 font-medium">{{ category.name }}</span>
                         </label>
                         {% endfor %}
                     {% endif %}
@@ -73,7 +73,7 @@
                 {% if categories is defined and categories|length > 6 %}
                 <button type="button" 
                         onclick="toggleMoreCategories()"
-                        class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center transition-colors">
+                        class="text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 flex items-center transition-colors">
                     Show all categories
                     <svg class="h-4 w-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -84,8 +84,8 @@
             
             <!-- Additional Filters -->
             <div class="space-y-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <svg class="h-5 w-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <svg class="h-5 w-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                     </svg>
                     More Filters
@@ -93,7 +93,7 @@
                 <div class="space-y-4">
                     <!-- Rating Filter -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Minimum Rating</label>
                         <div class="flex items-center space-x-1">
                             {% for i in 5..1 %}
                             <button type="button" 
@@ -104,28 +104,28 @@
                                 </svg>
                             </button>
                             {% endfor %}
-                            <span class="ml-2 text-sm text-gray-600">& above</span>
+                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">& above</span>
                         </div>
                     </div>
                     
                     <!-- Availability Filter -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Availability</label>
                         <div class="space-y-2">
                             <label class="flex items-center">
-                                <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <span class="ml-2 text-gray-700">In Stock</span>
-                                <span class="ml-auto text-sm text-gray-500">({{ random(50, 150) }})</span>
+                                <input type="checkbox" class="h-4 w-4 text-green-600 dark:text-green-400 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500 dark:focus:ring-green-400">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">In Stock</span>
+                                <span class="ml-auto text-sm text-gray-500 dark:text-gray-400">({{ random(50, 150) }})</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <span class="ml-2 text-gray-700">On Sale</span>
-                                <span class="ml-auto text-sm text-gray-500">({{ random(10, 30) }})</span>
+                                <input type="checkbox" class="h-4 w-4 text-green-600 dark:text-green-400 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500 dark:focus:ring-green-400">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">On Sale</span>
+                                <span class="ml-auto text-sm text-gray-500 dark:text-gray-400">({{ random(10, 30) }})</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <span class="ml-2 text-gray-700">Fast Delivery</span>
-                                <span class="ml-auto text-sm text-gray-500">({{ random(80, 120) }})</span>
+                                <input type="checkbox" class="h-4 w-4 text-green-600 dark:text-green-400 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500 dark:focus:ring-green-400">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">Fast Delivery</span>
+                                <span class="ml-auto text-sm text-gray-500 dark:text-gray-400">({{ random(80, 120) }})</span>
                             </label>
                         </div>
                     </div>
@@ -134,20 +134,20 @@
         </div>
         
         <!-- Filter Actions -->
-        <div class="mt-8 pt-8 border-t border-gray-100 flex justify-between">
+        <div class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 flex justify-between">
             <button type="button" 
                     onclick="resetAdvancedFilters()"
-                    class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all duration-300">
+                    class="px-6 py-3 border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300">
                 Reset All Filters
             </button>
             <div class="space-x-4">
                 <button type="button" 
                         onclick="toggleAdvancedFilters()"
-                        class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all duration-300">
+                        class="px-6 py-3 border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300">
                     Cancel
                 </button>
                 <button type="submit" 
-                        class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg transition-all duration-300">
+                        class="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-600 dark:to-emerald-600 text-white font-semibold rounded-xl hover:from-green-700 hover:to-emerald-700 dark:hover:from-green-700 dark:hover:to-emerald-700 hover:shadow-lg dark:hover:shadow-xl transition-all duration-300">
                     Apply Filters
                 </button>
             </div>
