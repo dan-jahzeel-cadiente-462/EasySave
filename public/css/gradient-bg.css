@@ -1,14 +1,10 @@
 /* ============================================
-   LANDING PAGE THEME - Light and Dark Mode
+   LANDING PAGE THEME - Light Mode Only
    ============================================ */
 
 /* Reset and Base Styles */
 html {
     color-scheme: light;
-}
-
-html.dark {
-    color-scheme: dark;
 }
 
 /* ============================================
@@ -107,111 +103,14 @@ body p, body span, body label {
 }
 
 /* ============================================
-   DARK MODE
-   ============================================ */
-
-html.dark .gradient-bg {
-    background: linear-gradient(180deg, #0f1419 0%, #064e3b 50%, #047857 100%);
-}
-
-html.dark .gradient-section {
-    background: linear-gradient(180deg, transparent 0%, rgba(34, 197, 94, 0.2) 100%);
-}
-
-html.dark body {
-    color: #e5e7eb;
-    background-color: transparent;
-}
-
-html.dark h1, 
-html.dark h2, 
-html.dark h3, 
-html.dark h4, 
-html.dark h5, 
-html.dark h6 {
-    color: #f3f4f6;
-}
-
-html.dark p, 
-html.dark span, 
-html.dark label {
-    color: #d1d5db;
-}
-
-/* Glassmorphism - Dark Mode */
-html.dark .glass-container {
-    background: rgba(31, 41, 55, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-
-html.dark .glass-button {
-    background: rgba(34, 197, 94, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    color: #f3f4f6;
-}
-
-html.dark .glass-button:hover {
-    background: rgba(34, 197, 94, 1);
-    box-shadow: 0 8px 32px 0 rgba(34, 197, 94, 0.4);
-}
-
-html.dark .glass-input {
-    background: rgba(31, 41, 55, 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    color: #e5e7eb;
-}
-
-html.dark .glass-input::placeholder {
-    color: rgba(209, 213, 219, 0.5);
-}
-
-html.dark .glass-input:focus {
-    background: rgba(31, 41, 55, 0.9);
-    border-color: rgba(34, 197, 94, 0.5);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-    outline: none;
-}
-
-/* Dark Mode Navbar */
-html.dark .landing-nav {
-    background: rgba(31, 41, 55, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-html.dark .landing-nav a {
-    color: #e5e7eb;
-}
-
-html.dark .landing-nav a:hover {
-    color: #4ade80;
-}
-
-/* ============================================
    Additional Styling for Components
    ============================================ */
 
-/* Cards in Dark/Light Mode */
+/* Cards in Light Mode */
 .glass-card {
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.3s ease;
-}
-
-html.dark .glass-card {
-    background: rgba(31, 41, 55, 0.6);
-    border: 1px solid rgba(34, 197, 94, 0.1);
-}
-
-.glass-card {
     background: rgba(255, 255, 255, 0.6);
     border: 1px solid rgba(34, 197, 94, 0.1);
 }
@@ -224,14 +123,6 @@ html.dark .glass-card {
     border-radius: 16px;
     padding: 2rem;
     transition: all 0.3s ease;
-}
-
-html.dark .glass-form {
-    background: rgba(31, 41, 55, 0.7);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.glass-form {
     border: 1px solid rgba(34, 197, 94, 0.1);
 }
 
@@ -244,21 +135,9 @@ html.dark .glass-form {
     transition: all 0.3s ease;
 }
 
-html.dark .glass-badge {
-    background: rgba(34, 197, 94, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #4ade80;
-}
-
 /* Overlays */
 .glass-overlay {
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-html.dark .glass-overlay {
-    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -267,8 +146,7 @@ html.dark .glass-overlay {
    Ensure Admin Pages Are NOT Affected
    ============================================ */
 
-html.admin,
-html.admin.dark {
+html.admin {
     color-scheme: light;
 }
 

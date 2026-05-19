@@ -1,16 +1,44 @@
-# Landing Page & Catalog Fixes TODO
+# Email-as-Login Implementation TODO
 
-## Task: Fix the landing page issues
+## Overview
+- Non-admin users (ROLE_USER, ROLE_STAFF): Login with email (username field populated as email automatically)
+- Admin (ROLE_ADMIN): Login with username (email optional)
+- Keep username NOT NULL in DB
+- Exempt admin from email verification (already handled)
 
-### Issues Identified:
-1. **Landing Page Theme Issues** - Inconsistent light-dark theme styling
-2. **Catalog Grid/List View** - Fix list and grid view in catalogs section
+## Steps (in order):
 
-### Fix Plan:
 
-- [x] Fix index.html.twig - Add dark mode classes throughout
-- [x] Fix Categories section - Add dark mode support
-- [x] Fix catalog.html.twig - Ensure view toggle works properly in dark mode
-- [x] Verify all theme styling is consistent
+### 1. Update User Entity constraints [COMPLETE]
 
-### Current Status: COMPLETED - All fixes implemented
+- Add NotBlank to username
+- Ensure email handling
+
+
+### 2. Update templates [COMPLETE]
+
+- security/login.html.twig: Label to 'Email'
+- admin/login.html.twig: Emphasize 'Username'
+- registration/register.html.twig: Hide username field or label as 'Email'
+
+
+### 3. Update Registration [COMPLETE]
+
+- RegistrationFormType.php: Remove/hide username field
+- RegistrationController.php: Force $user->setUsername($user->getEmail())
+
+### 4. Update API Registration/Login [PENDING]
+- ApiRegistrationController.php: username = email
+- ApiLoginController.php: Accept 'email' field
+
+### 5. Update Google OAuth [PENDING]
+- GoogleAuthenticator.php: $user->setUsername($email)
+
+### 6. Clear cache & Test [PENDING]
+- php bin/console cache:clear
+- Test user/staff register/login (email)
+- Test admin login (username)
+- Test API
+- Test Brevo emails (mailer config unchanged)
+
+### 7. Complete [PENDING]

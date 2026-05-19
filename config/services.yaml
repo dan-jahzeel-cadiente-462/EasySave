@@ -9,6 +9,7 @@
 parameters:
     profilePictureDirectory: '%kernel.project_dir%/public/uploads/profiles'
 
+
 services:
     # default configuration for services in *this* file
     _defaults:

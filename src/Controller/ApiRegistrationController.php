@@ -30,29 +30,25 @@ class ApiRegistrationController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
+
         // Validate required fields
-        if (!isset($data['username']) || !isset($data['email']) || !isset($data['password'])) {
+        if (!isset($data['email']) || !isset($data['password'])) {
             return $this->json([
                 'success' => false,
-                'message' => 'Username, email, and password are required'
+                'message' => 'Email and password are required'
             ], 400);
         }
 
-        // Basic validation
-        if (strlen($data['username']) < 3) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Username must be at least 3 characters long'
-            ], 400);
-        }
+
 
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             return $this->json([
-
                 'success' => false,
                 'message' => 'Invalid email address'
             ], 400);
         }
+
+
 
         if (strlen($data['password']) < 6) {
             return $this->json([
@@ -61,34 +57,36 @@ class ApiRegistrationController extends AbstractController
             ], 400);
         }
 
-        // Check if username already exists
+        // Check if email already exists (username = email)
         $existingUser = $this->entityManager
             ->getRepository(User::class)
-            ->findOneBy(['username' => $data['username']]);
+            ->findOneBy(['username' => $data['email']]);
+
 
         if ($existingUser) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Username already exists'
-            ], 409);
-        }
-
-        // Check if email already exists
-        $existingEmail = $this->entityManager
-            ->getRepository(User::class)
-            ->findOneBy(['email' => $data['email']]);
-
-        if ($existingEmail) {
             return $this->json([
                 'success' => false,
                 'message' => 'Email already registered'
             ], 409);
         }
 
+
+
         // Create new user
+
         $user = new User();
-        $user->setUsername($data['username']);
+        // Username should be provided in the form data
+        $username = $data['username'] ?? null;
+        if (!$username) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Username is required'
+            ], 400);
+        }
+        $user->setUsername($username);
         $user->setEmail($data['email']);
+
+
 
         // Hash password
         $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);

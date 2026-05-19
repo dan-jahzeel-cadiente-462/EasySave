@@ -26,13 +26,14 @@ class EmailVerificationService
 
     /**
      * Verify email token and mark user as verified
+     * Returns an error message if verification failed, null if successful
      */
-    public function verifyToken(string $token): ?User
+    public function verifyToken(string $token): ?string
     {
         $user = $this->userRepository->findOneBy(['verificationToken' => $token]);
 
         if (!$user) {
-            return null;
+            return 'Invalid or expired verification token.';
         }
 
         // Mark user as verified
@@ -41,7 +42,7 @@ class EmailVerificationService
 
         $this->entityManager->flush();
 
-        return $user;
+        return null;
     }
 
     /**

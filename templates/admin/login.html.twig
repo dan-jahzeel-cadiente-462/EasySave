@@ -18,8 +18,9 @@
 				<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate_admin') }}">
 
 				<div>
-					<label for="username" class="block text-gray-700 font-medium mb-2">Username</label>
-					<input type="text" value="{{ last_username }}" name="_username" id="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required autofocus>
+				<label for="username" class="block text-gray-700 font-medium mb-2">Email Address</label>
+				<p class="text-xs text-gray-500 mb-2">Admin/Staff email address</p>
+				<input type="email" value="{{ last_username }}" name="_username" id="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required autofocus>
 				</div>
 
 				<div class="relative">

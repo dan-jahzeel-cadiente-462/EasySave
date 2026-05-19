@@ -26,16 +26,18 @@ class ApiLoginController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['username']) || !isset($data['password'])) {
+
+        if (!isset($data['email']) || !isset($data['password'])) {
             return $this->json(['message' => 'missing credentials'], 401);
         }
 
         try {
             /** @var User $user */
-            $user = $this->userProvider->loadUserByIdentifier($data['username']);
+            $user = $this->userProvider->loadUserByIdentifier($data['email']);
         } catch (AuthenticationException) {
             return $this->json(['message' => 'invalid credentials'], 401);
         }
+
 
         if (!$this->passwordHasher->isPasswordValid($user, $data['password'])) {
             return $this->json(['message' => 'invalid credentials'], 401);

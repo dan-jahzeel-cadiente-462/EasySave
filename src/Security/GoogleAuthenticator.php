@@ -52,12 +52,19 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
                     if (!$user) {
                         // 2) Register a new user if they don't exist
+
+
                         $user = new User();
+                        // Generate username from email (first part before @)
+                        $username = explode('@', $email)[0];
+                        $user->setUsername($username);
                         $user->setEmail($email);
                         $user->setFirstName($googleUser->getFirstName() ?? '');
                         $user->setLastName($googleUser->getLastName() ?? '');
                         // Set a dummy password since it's a required field in most User entities
                         $user->setPassword(bin2hex(random_bytes(16)));
+
+
                     }
                     $user->setProvider('google'); // This prevents the 1048 error
                     $user->setGoogleId($googleUser->getId());

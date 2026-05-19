@@ -1,19 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html class="scroll-smooth">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-
-        <script>
-            (function() {
-                const darkMode = localStorage.getItem('darkMode');
-                if (darkMode === 'true') {
-                    document.documentElement.classList.add('dark');
-                }
-            })();
-        </script>
 
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -27,7 +18,10 @@
     </head>
     <body class="gradient-bg">
         {% include 'landing-navbar.html.twig' %}
-        <main class="container mx-auto px-4 py-8 max-w-6xl">
+        
+        {% block hero %}{% endblock %}
+        
+        <main class="container mx-auto px-4 py-12 lg:py-20 max-w-7xl xl:max-w-screen-xl">
             <div class="animate-content">
                 {% block body %}{% endblock %}
             </div>
