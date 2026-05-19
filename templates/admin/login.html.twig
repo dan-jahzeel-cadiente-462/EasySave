@@ -14,18 +14,53 @@
 				</div>
 			{% endif %}
 
-			<form method="post" class="space-y-4">
+			<form method="post" class="space-y-4" x-data="{ loginType: '{{ last_login_type|default('email') }}' }">
 				<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate_admin') }}">
+				<input type="hidden" name="login_type" :value="loginType">
+
+				<fieldset class="space-y-2">
+					<legend class="block text-gray-700 font-medium">Sign in with</legend>
+					<div class="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1" role="radiogroup" aria-label="Login method">
+						<button
+							type="button"
+							@click="loginType = 'email'"
+							:class="loginType === 'email' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'"
+							class="rounded-md px-3 py-2 text-sm font-medium transition"
+							:aria-pressed="loginType === 'email'"
+						>
+							Email
+						</button>
+						<button
+							type="button"
+							@click="loginType = 'username'"
+							:class="loginType === 'username' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'"
+							class="rounded-md px-3 py-2 text-sm font-medium transition"
+							:aria-pressed="loginType === 'username'"
+						>
+							Username
+						</button>
+					</div>
+				</fieldset>
 
 				<div>
-				<label for="username" class="block text-gray-700 font-medium mb-2">Email Address</label>
-				<p class="text-xs text-gray-500 mb-2">Admin/Staff email address</p>
-				<input type="email" value="{{ last_username }}" name="_username" id="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required autofocus>
+					<label for="username" class="block text-gray-700 font-medium mb-2" x-text="loginType === 'email' ? 'Email Address' : 'Username'"></label>
+					<p class="text-xs text-gray-500 mb-2" x-show="loginType === 'email'">Admin or staff email address</p>
+					<p class="text-xs text-gray-500 mb-2" x-show="loginType === 'username'" x-cloak>Your admin username</p>
+					<input
+						:type="loginType === 'email' ? 'email' : 'text'"
+						value="{{ last_username }}"
+						name="_username"
+						id="username"
+						class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						:autocomplete="loginType === 'email' ? 'email' : 'username'"
+						required
+						autofocus
+					>
 				</div>
 
 				<div class="relative">
 					<label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
-					<input type="password" name="_password" id="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10" required>
+					<input type="password" name="_password" id="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10" required autocomplete="current-password">
 
 					<div class="absolute inset-y-0 right-0 flex items-center pr-3">
 						<input type="checkbox" id="show_password" class="hidden">

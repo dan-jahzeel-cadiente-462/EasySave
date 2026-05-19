@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Security\AdminLoginAuthenticator;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
@@ -15,7 +17,7 @@ class SecurityController extends AbstractController
      * Admin login page (form-based only, no OAuth)
      */
     #[Route(path: '/admin/login', name: 'app_admin_login')]
-    public function adminLogin(AuthenticationUtils $authenticationUtils): Response
+    public function adminLogin(Request $request, AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_admin_dashboard');
@@ -23,9 +25,14 @@ class SecurityController extends AbstractController
 
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
+        $lastLoginType = $request->getSession()->get(
+            AdminLoginAuthenticator::SESSION_LAST_LOGIN_TYPE,
+            'email'
+        );
 
         return $this->render('admin/login.html.twig', [
             'last_username' => $lastUsername,
+            'last_login_type' => $lastLoginType,
             'error' => $error,
         ]);
     }

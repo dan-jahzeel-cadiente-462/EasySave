@@ -1,0 +1,80 @@
+<div class="space-y-6">
+    {% for message in app.flashes('success') %}
+        <div class="p-3 text-sm text-green-700 bg-green-100 rounded-lg">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="p-3 text-sm text-red-700 bg-red-100 rounded-lg">{{ message }}</div>
+    {% endfor %}
+
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+        <h2 class="text-xl font-semibold mb-2">Export Data</h2>
+        <p class="text-sm text-gray-600 mb-4">Download a copy of your account data.</p>
+        <form method="POST" action="{{ path('app_admin_account_export_data') }}" class="flex flex-wrap items-end gap-4">
+            <div>
+                <label for="export_format" class="block text-sm font-semibold text-gray-700 mb-2">Format</label>
+                <select id="export_format" name="format" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                    <option value="sql">SQL</option>
+                    <option value="excel">Excel</option>
+                </select>
+            </div>
+            <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition">
+                Export
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+        <h2 class="text-xl font-semibold mb-2">Import Data</h2>
+        <p class="text-sm text-gray-600 mb-4">Restore profile fields from a JSON or CSV export file.</p>
+        <form method="POST" action="{{ path('app_admin_account_import_data') }}" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label for="import_file" class="block text-sm font-semibold text-gray-700 mb-2">File</label>
+                <input type="file" id="import_file" name="import_file" accept=".json,.csv" required
+                       class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+            </div>
+            <div class="flex flex-wrap gap-6">
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="merge_data" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    Merge with existing data
+                </label>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="skip_duplicates" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    Skip duplicates
+                </label>
+            </div>
+            <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition">
+                Import
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-amber-50 shadow rounded-lg p-6 border border-amber-200">
+        <h2 class="text-xl font-semibold mb-2 text-amber-900">Delete Account Data</h2>
+        <p class="text-sm text-amber-800 mb-4">Permanently delete your account and all associated data. This action cannot be undone.</p>
+        <button type="button" id="delete-account-data-btn"
+                class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition">
+            Delete My Account
+        </button>
+    </div>
+</div>
+
+<script>
+document.getElementById('delete-account-data-btn')?.addEventListener('click', async function () {
+    if (!confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) {
+        return;
+    }
+
+    const response = await fetch('{{ path('app_admin_account_delete_data') }}', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    });
+
+    if (response.ok) {
+        window.location.href = '{{ path('app_user_login') }}';
+    } else {
+        alert('Unable to delete account. Please try again.');
+    }
+});
+</script>

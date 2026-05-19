@@ -10,15 +10,15 @@
     <!-- Tab Content -->
     <div class="mt-6">
         {% if app.current_route == 'app_admin_account_view_profile_details' %}
-            {% include 'admin/profile/view-profile-details.html.twig' %}
+            {% include 'admin/account/view-profile-details.html.twig' %}
         {% elseif app.current_route == 'app_admin_account_edit_profile_details' %}
-            {% include 'admin/profile/edit-profile-details.html.twig' %}
+            {% include 'admin/account/edit-profile-details.html.twig' %}
         {% elseif app.current_route == 'app_admin_account_manage_data' %}
-            {% include 'admin/profile/manage-data.html.twig' %}
+            {% include 'admin/account/manage-data.html.twig' %}
         {% elseif app.current_route == 'app_admin_account_change_password' %}
             {% include 'admin/profile/change-password.html.twig' %}
         {% else %}
-            {% include 'admin/profile/view-profile-details.html.twig' %}
+            {% include 'admin/account/view-profile-details.html.twig' %}
         {% endif %}
     </div>
 </div>
