@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\EmailVerificationService;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Entity\ActivityLog;
 use App\Repository\ActivityLogRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +18,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class UserManagementController extends AbstractController
 {
+    public function __construct(
+        private EmailVerificationService $emailVerificationService
+    ) {
+    }
     #[Route('/user/management', name: 'app_user_management')]
     public function index(UserRepository $userRepository, ActivityLogRepository $activityLogRepository, Request $request): Response
     {
@@ -76,8 +82,35 @@ final class UserManagementController extends AbstractController
             $user->setCreatedAt(new \DateTime());
             $user->setIsActive(true);
 
+            // Set verification state based on role: admins and staff are exempt and considered verified
+            if ($this->emailVerificationService->isExemptFromEmailVerification($user)) {
+                $user->setIsVerified(true);
+                $user->setVerificationToken(null);
+            } else {
+                // Regular users require email verification
+                $verificationToken = $this->emailVerificationService->generateVerificationToken();
+                $user->setVerificationToken($verificationToken);
+                $user->setIsVerified(false);
+            }
+
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Send appropriate email notification
+            if ($user->isVerified()) {
+                try {
+                    $this->emailVerificationService->sendConfirmationEmail($user);
+                } catch (\Exception $e) {
+                    error_log('Admin-created user confirmation email failed: ' . $e->getMessage());
+                }
+            } else {
+                try {
+                    $verificationUrl = $this->generateUrl('app_verify_email', ['token' => $user->getVerificationToken()], UrlGeneratorInterface::ABSOLUTE_URL);
+                    $this->emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+                } catch (\Exception $e) {
+                    error_log('Admin-created user verification email failed: ' . $e->getMessage());
+                }
+            }
 
             // Activity logging removed to avoid authentication side-effects
 

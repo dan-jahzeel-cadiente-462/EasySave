@@ -37,6 +37,11 @@ security:
                 - App\Security\LoginAuthenticator
                 - App\Security\GoogleAuthenticator
             entry_point: App\Security\LoginAuthenticator
+            remember_me:
+                secret: '%env(APP_SECRET)%'
+                lifetime: 2592000  # 30 days in seconds
+                path: /
+                always_remember_me: false
             logout:
                 path: app_logout
                 target: app_user_login

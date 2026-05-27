@@ -3,12 +3,18 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Service\EmailVerificationService;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserChecker implements UserCheckerInterface
 {
+    public function __construct(
+        private EmailVerificationService $emailVerificationService,
+    ) {
+    }
+
     public function checkPreAuth(UserInterface $user): void
     {
         if (!$user instanceof User) {
@@ -28,18 +34,12 @@ class UserChecker implements UserCheckerInterface
             // The route-level access control will prevent unauthorized access
         }
 
-        // 3) Email verification logic based on role and provider
+        // 3) Email verification: required for users and staff; admins exempt
         if (!$user->isVerified()) {
-            // Skip email verification for:
-            // - Users who logged in via Google OAuth
-            // - Admin and Staff users (exempt from email verification)
-            $provider = $user->getProvider();
-            
-            $isGoogleOAuth = $provider === 'google';
-            $isStaffOrAdmin = in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true);
-            
-            if (!$isGoogleOAuth && !$isStaffOrAdmin) {
-                // Regular users on traditional login MUST verify email
+            $isGoogleOAuth = $user->getProvider() === 'google';
+            $isAdmin = $this->emailVerificationService->isExemptFromEmailVerification($user);
+
+            if (!$isGoogleOAuth && !$isAdmin) {
                 throw new CustomUserMessageAuthenticationException('Please verify your email before logging in. Check your inbox for the verification link.');
             }
         }

@@ -57,11 +57,10 @@ class ApiRegistrationController extends AbstractController
             ], 400);
         }
 
-        // Check if email already exists (username = email)
+        // Check if email already exists
         $existingUser = $this->entityManager
             ->getRepository(User::class)
-            ->findOneBy(['username' => $data['email']]);
-
+            ->findOneBy(['email' => $data['email']]);
 
         if ($existingUser) {
             return $this->json([
@@ -95,9 +94,10 @@ class ApiRegistrationController extends AbstractController
         // Set default role
         $user->setRoles(['ROLE_USER']);
 
-        // Auto-verify user (email verification disabled)
-        $user->setIsVerified(true);
-        $user->setVerificationToken(null);
+        // Require email verification for new users
+        $verificationToken = $this->emailVerificationService->generateVerificationToken();
+        $user->setVerificationToken($verificationToken);
+        $user->setIsVerified(false);
 
         // Validate entity
         $errors = $this->validator->validate($user);
@@ -118,9 +118,19 @@ class ApiRegistrationController extends AbstractController
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
+        // Send verification email
+        $verificationUrl = $this->generateUrl('app_verify_email', ['token' => $verificationToken], UrlGeneratorInterface::ABSOLUTE_URL);
+        try {
+            $this->emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+            $message = 'Registration successful! A verification email has been sent to your inbox.';
+        } catch (\Exception $e) {
+            error_log('API registration email send failed: ' . $e->getMessage());
+            $message = 'Registration successful! Please check your email for a verification link. If you do not receive it, use resend verification.';
+        }
+
         return $this->json([
             'success' => true,
-            'message' => 'Registration successful. You can now login.',
+            'message' => $message,
             'user' => [
                 'id' => $user->getId(),
                 'username' => $user->getUsername(),

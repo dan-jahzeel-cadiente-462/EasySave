@@ -1,0 +1,133 @@
+# 🚀 QUICK START - Email Fix in 3 Minutes
+
+## The Problem
+```
+❌ User sees: "Verification link sent to dcadiente463@gmail.com"
+❌ Reality: No email received (MAILER_DSN=native://default)
+```
+
+---
+
+## The Fix (Pick One)
+
+### Option 1: Brevo (Recommended) ⭐
+```bash
+# 1. Create file: EasySave/.env.local
+
+# 2. Add this:
+MAILER_DSN=brevo+api://YOUR_API_KEY@default
+
+# 3. Get API Key from: https://www.brevo.com/
+#    Settings → API Key → Copy
+
+# 4. Clear cache:
+php bin/console cache:clear
+
+# 5. Test: Register new user, check email
+```
+
+---
+
+### Option 2: Gmail
+```bash
+# 1. Create file: EasySave/.env.local
+
+# 2. Add this:
+MAILER_DSN=smtp://YOUR_EMAIL@gmail.com:YOUR_APP_PASSWORD@smtp.gmail.com:587?encryption=tls
+
+# 3. Get App Password from: https://myaccount.google.com/apppasswords
+#    (Not your regular Gmail password!)
+
+# 4. Clear cache:
+php bin/console cache:clear
+
+# 5. Test: Register new user, check email
+```
+
+---
+
+### Option 3: MailHog (Local Testing Only)
+```bash
+# 1. Download: https://github.com/mailhog/MailHog/releases
+# 2. Run MailHog executable
+# 3. Create file: EasySave/.env.local
+
+# 4. Add this:
+MAILER_DSN=smtp://localhost:1025
+
+# 5. Clear cache:
+php bin/console cache:clear
+
+# 6. Test: Register new user, check http://localhost:8025
+```
+
+---
+
+## Verify It Works
+
+```bash
+# Check config loaded
+php bin/console debug:config framework.mailer
+
+# Should show YOUR_API_KEY or your_email, NOT "native://default"
+
+# Watch logs while testing
+tail -f var/log/dev.log
+
+# Look for:
+# ✅ "Verification email sent successfully"
+# ❌ "Failed to send verification email" = wrong config
+```
+
+---
+
+## File Structure
+
+```
+EasySave/
+├── .env                    ← Has native://default (old)
+├── .env.local   🆕         ← CREATE THIS (has your config)
+└── var/log/dev.log         ← Check here for logs
+```
+
+---
+
+## What Was Done
+
+✅ **Enhanced Code:**
+- Better logging for debugging
+- Clearer error messages to users
+- Improved error handling
+
+✅ **Created Documentation:**
+- `QUICK_EMAIL_FIX.md` - 5-min guide
+- `EMAIL_VISUAL_GUIDE.md` - Visual flow diagrams
+- `EMAIL_SETUP_GUIDE.md` - Complete setup guide
+- `EMAIL_DIAGNOSTIC_GUIDE.md` - Troubleshooting
+- `EMAIL_FIX_SUMMARY.md` - Full summary
+- `CODE_CHANGES_REFERENCE.md` - What changed in code
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Still says `native://default` | `.env.local` in wrong location? Should be root |
+| "Invalid API key" | Copy exact key from service (no typos) |
+| Email not sent | Check logs: `tail -f var/log/dev.log` |
+| Gmail auth failed | Use **App Password** not regular password |
+| No error, email works now | ✅ Success! Done |
+
+---
+
+## Support References
+
+- **Brevo:** https://www.brevo.com
+- **Gmail App Password:** https://myaccount.google.com/apppasswords
+- **MailHog:** https://github.com/mailhog/MailHog
+
+---
+
+**That's it!** 🎉 After creating `.env.local` and running `php bin/console cache:clear`, emails should work.
+

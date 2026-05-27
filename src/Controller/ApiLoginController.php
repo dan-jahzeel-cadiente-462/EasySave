@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ProductRepository;
+use App\Service\EmailVerificationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,8 @@ class ApiLoginController extends AbstractController
     public function __construct(
         private UserProviderInterface $userProvider,
         private UserPasswordHasherInterface $passwordHasher,
-        private JWTTokenManagerInterface $jwtManager
+        private JWTTokenManagerInterface $jwtManager,
+        private EmailVerificationService $emailVerificationService
     ) {}
 
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
@@ -27,13 +29,13 @@ class ApiLoginController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
 
-        if (!isset($data['email']) || !isset($data['password'])) {
+        if (!isset($data['username']) || !isset($data['password'])) {
             return $this->json(['message' => 'missing credentials'], 401);
         }
 
         try {
             /** @var User $user */
-            $user = $this->userProvider->loadUserByIdentifier($data['email']);
+            $user = $this->userProvider->loadUserByIdentifier($data['username']);
         } catch (AuthenticationException) {
             return $this->json(['message' => 'invalid credentials'], 401);
         }
@@ -41,6 +43,16 @@ class ApiLoginController extends AbstractController
 
         if (!$this->passwordHasher->isPasswordValid($user, $data['password'])) {
             return $this->json(['message' => 'invalid credentials'], 401);
+        }
+
+        if (!$user->isVerified()
+            && !$this->emailVerificationService->isExemptFromEmailVerification($user)
+            && $user->getProvider() !== 'google'
+        ) {
+            return $this->json([
+                'message' => 'Please verify your email before logging in. Check your inbox for the verification link.',
+                'code' => 'EMAIL_NOT_VERIFIED'
+            ], 401);
         }
 
         $token = $this->jwtManager->create($user);

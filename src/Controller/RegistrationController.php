@@ -51,9 +51,12 @@ class RegistrationController extends AbstractController
                 $this->emailVerificationService->sendVerificationEmail($user, $verificationUrl);
                 $this->addFlash('success', 'Registration successful! Please check your email to verify your account.');
             } catch (\Exception $e) {
-                // If email fails, still allow registration but notify user
+                // Log the detailed error for debugging
                 error_log('Email verification sending failed: ' . $e->getMessage());
-                $this->addFlash('warning', 'Registration successful, but we could not send a verification email. Please contact support.');
+                error_log('Stack trace: ' . $e->getTraceAsString());
+                
+                // Provide helpful message to user
+                $this->addFlash('warning', 'Registration successful! However, we could not send the verification email. Please check: 1) Your email address is correct, 2) Check your spam folder, 3) Contact support if problems persist.');
             }
 
             return $this->redirectToRoute('app_user_login');

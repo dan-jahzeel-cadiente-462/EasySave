@@ -26,11 +26,18 @@ class EmailVerificationController extends AbstractController
     #[Route('/verify-email/{token}', name: 'app_verify_email', methods: ['GET'])]
     public function verifyEmail(string $token): Response
     {
-        $error = $this->emailVerificationService->verifyToken($token);
+        $user = $this->emailVerificationService->verifyToken($token);
 
-        if ($error !== null) {
-            $this->addFlash('error', $error);
+        if (!$user) {
+            $this->addFlash('error', 'Invalid or expired verification token.');
             return $this->redirectToRoute('app_user_login');
+        }
+
+        try {
+            $this->emailVerificationService->sendConfirmationEmail($user);
+        } catch (\Exception $e) {
+            // Log error but don't fail the verification
+            $this->addFlash('warning', 'Your email has been verified, but the confirmation email could not be sent.');
         }
 
         $this->addFlash('success', 'Your email has been verified successfully! You can now log in.');
@@ -53,7 +60,10 @@ class EmailVerificationController extends AbstractController
             
             if (!$user) {
                 $this->addFlash('warning', 'If an account exists with this email, a verification link will be sent.');
-            } else if ($user->isVerified()) {
+            } elseif ($this->emailVerificationService->isExemptFromEmailVerification($user)) {
+                $this->addFlash('info', 'Admin accounts do not require email verification. You can log in directly.');
+                return $this->redirectToRoute('app_user_login');
+            } elseif ($user->isVerified()) {
                 $this->addFlash('info', 'This email address is already verified. You can log in directly.');
                 return $this->redirectToRoute('app_user_login');
             } else {
@@ -69,7 +79,8 @@ class EmailVerificationController extends AbstractController
                     $this->addFlash('success', 'A verification link has been sent to ' . htmlspecialchars($email) . '. Please check your email.');
                 } catch (\Exception $e) {
                     error_log('Email verification resend failed: ' . $e->getMessage());
-                    $this->addFlash('error', 'Failed to send verification email. Please try again later.');
+                    error_log('Stack trace: ' . $e->getTraceAsString());
+                    $this->addFlash('error', 'Failed to send verification email. Please check your email configuration or try again later.');
                 }
             }
             

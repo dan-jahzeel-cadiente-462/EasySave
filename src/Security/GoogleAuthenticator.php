@@ -36,12 +36,24 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function authenticate(Request $request): Passport
     {
         $client = $this->clientRegistry->getClient('google');
-        $accessToken = $this->fetchAccessToken($client);
+        try {
+            $accessToken = $this->fetchAccessToken($client);
+        } catch (\Exception $e) {
+            error_log('Failed to fetch Google access token: ' . $e->getMessage());
+            error_log('Stack trace: ' . $e->getTraceAsString());
+            throw new CustomUserMessageAuthenticationException('Google authentication failed due to a network error. Please try again later.');
+        }
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function () use ($accessToken, $client) {
                 /** @var GoogleUser $googleUser */
-                $googleUser = $client->fetchUserFromToken($accessToken);
+                try {
+                    $googleUser = $client->fetchUserFromToken($accessToken);
+                } catch (\Exception $e) {
+                    error_log('Failed to fetch Google user from token: ' . $e->getMessage());
+                    error_log('Stack trace: ' . $e->getTraceAsString());
+                    throw new CustomUserMessageAuthenticationException('Google authentication failed while fetching user info. Please try again.');
+                }
                 $email = $googleUser->getEmail();
 
                 // 1) Find user by Google ID or Email
@@ -52,8 +64,6 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
                     if (!$user) {
                         // 2) Register a new user if they don't exist
-
-
                         $user = new User();
                         // Generate username from email (first part before @)
                         $username = explode('@', $email)[0];
@@ -63,8 +73,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
                         $user->setLastName($googleUser->getLastName() ?? '');
                         // Set a dummy password since it's a required field in most User entities
                         $user->setPassword(bin2hex(random_bytes(16)));
-
-
+                        // Auto-verify Google OAuth users (Google validates the email)
+                        $user->setIsVerified(true);
                     }
                     $user->setProvider('google'); // This prevents the 1048 error
                     $user->setGoogleId($googleUser->getId());
@@ -94,11 +104,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
             return new RedirectResponse($this->router->generate('app_admin_dashboard'));
         }
 
-        if ($this->hasRole($user, 'ROLE_MODERATOR')) {
-            return new RedirectResponse($this->router->generate('app_user_page'));
-        }
-
-        return new RedirectResponse($this->router->generate('app_user_page'));
+        // Redirect moderators and regular users to the user dashboard
+        return new RedirectResponse($this->router->generate('app_user_dashboard'));
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
