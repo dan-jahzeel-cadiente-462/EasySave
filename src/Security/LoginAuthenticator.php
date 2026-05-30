@@ -70,9 +70,8 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
             }
             
             // Check roles and redirect to appropriate dashboard
-            $roles = $user->getRoles();
-
-            if (in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true)) {
+            // Admins and Staff go to Admin Dashboard
+            if ($this->isAdministrativeUser($user)) {
                 return new RedirectResponse($this->urlGenerator->generate('app_admin_dashboard'));
             }
 
@@ -81,9 +80,14 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
             
         } catch (\Exception $e) {
             error_log('Authentication success redirect error: ' . $e->getMessage());
-            // Default fallback redirect
             return new RedirectResponse($this->urlGenerator->generate('app_user_dashboard'));
         }
+    }
+
+    private function isAdministrativeUser(User $user): bool
+    {
+        $roles = $user->getRoles();
+        return in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true);
     }
 
     protected function getLoginUrl(Request $request): string

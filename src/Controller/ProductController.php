@@ -56,12 +56,18 @@ final class ProductController extends AbstractController
             default => $query->orderBy('p.createdAt', 'DESC'),
         };
 
-        $queryTotal = clone $query;
-        $total = count($queryTotal->getQuery()->getResult());
+        // Efficiently count total results
+        $countQuery = clone $query;
+        $total = (int) $countQuery->select('COUNT(DISTINCT p.id)')
+            ->resetDQLPart('groupBy')
+            ->getQuery()
+            ->getSingleScalarResult();
+
         $pages = ceil($total / $limit);
         $offset = ($page - 1) * $limit;
 
         $products = $query
+            ->select('p') // Ensure we only select the main entity for the final result
             ->setMaxResults($limit)
             ->setFirstResult($offset)
             ->getQuery()

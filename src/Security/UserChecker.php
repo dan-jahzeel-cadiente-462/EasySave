@@ -37,7 +37,7 @@ class UserChecker implements UserCheckerInterface
         // 3) Email verification: required for users and staff; admins exempt
         if (!$user->isVerified()) {
             $isGoogleOAuth = $user->getProvider() === 'google';
-            $isAdmin = $this->emailVerificationService->isExemptFromEmailVerification($user);
+            $isAdmin = in_array('ROLE_ADMIN', $user->getRoles(), true);
 
             if (!$isGoogleOAuth && !$isAdmin) {
                 throw new CustomUserMessageAuthenticationException('Please verify your email before logging in. Check your inbox for the verification link.');

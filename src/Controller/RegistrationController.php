@@ -45,18 +45,14 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Send verification email
+            // Send verification email asynchronously
             $verificationUrl = $this->urlGenerator->generate('app_verify_email', ['token' => $verificationToken], UrlGeneratorInterface::ABSOLUTE_URL);
             try {
-                $this->emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+                $this->emailVerificationService->queueSendVerificationEmail($user, $verificationUrl);
                 $this->addFlash('success', 'Registration successful! Please check your email to verify your account.');
             } catch (\Exception $e) {
-                // Log the detailed error for debugging
-                error_log('Email verification sending failed: ' . $e->getMessage());
-                error_log('Stack trace: ' . $e->getTraceAsString());
-                
-                // Provide helpful message to user
-                $this->addFlash('warning', 'Registration successful! However, we could not send the verification email. Please check: 1) Your email address is correct, 2) Check your spam folder, 3) Contact support if problems persist.');
+                error_log('Email verification queueing failed: ' . $e->getMessage());
+                $this->addFlash('warning', 'Registration successful! However, we encountered an issue queueing your verification email. Please contact support.');
             }
 
             return $this->redirectToRoute('app_user_login');

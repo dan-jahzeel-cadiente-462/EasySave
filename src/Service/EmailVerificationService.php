@@ -210,7 +210,7 @@ class EmailVerificationService
                                             </div>
                                             <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">If you have any questions or need assistance, feel free to reach out to our support team.</p>
                                             <p style="text-align:center;margin:30px 0;">
-                                                <a href="http://localhost:3000/login" style="display:inline-block;padding:14px 28px;background-color:#16a34a;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:700;">Go to EasySave</a>
+                                                <a href="https://easysave.up.railway.app/login" style="display:inline-block;padding:14px 28px;background-color:#16a34a;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:700;">Go to EasySave</a>
                                             </p>
                                             <p style="margin:0;font-size:14px;line-height:1.6;color:#555;">Welcome to the EasySave community!</p>
                                         </td>
@@ -240,7 +240,7 @@ class EmailVerificationService
         return sprintf(
             "Hello %s,\n\n" .
                 "Your email address has been successfully verified. Your EasySave account is now active and ready to use.\n\n" .
-                "Visit EasySave to log in and get started: http://localhost:3000/login\n\n" .
+                "Visit EasySave to log in and get started: https://easysave.up.railway.app/login\n\n" .
                 "© 2026 EasySave. All rights reserved.",
             $user->getUsername(),
         );

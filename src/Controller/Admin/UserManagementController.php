@@ -87,7 +87,7 @@ final class UserManagementController extends AbstractController
                 $user->setIsVerified(true);
                 $user->setVerificationToken(null);
             } else {
-                // Regular users and staff require email verification
+                // Regular users AND staff require email verification
                 $verificationToken = $this->emailVerificationService->generateVerificationToken();
                 $user->setVerificationToken($verificationToken);
                 $user->setIsVerified(false);
@@ -96,19 +96,22 @@ final class UserManagementController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Send appropriate email notification
+            // Send appropriate email notification via Brevo
             if ($user->isVerified()) {
                 try {
+                    // Admin confirmation
                     $this->emailVerificationService->sendConfirmationEmail($user);
                 } catch (\Exception $e) {
                     error_log('Admin-created user confirmation email failed: ' . $e->getMessage());
                 }
             } else {
                 try {
+                    // Staff or User verification link
                     $verificationUrl = $this->generateUrl('app_verify_email', ['token' => $user->getVerificationToken()], UrlGeneratorInterface::ABSOLUTE_URL);
-                    $this->emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+                    // Use queue to prevent dashboard lag
+                    $this->emailVerificationService->queueSendVerificationEmail($user, $verificationUrl);
                 } catch (\Exception $e) {
-                    error_log('Admin-created user verification email failed: ' . $e->getMessage());
+                    error_log('Admin-created user verification email queue failed: ' . $e->getMessage());
                 }
             }
 
