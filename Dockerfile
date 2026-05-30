@@ -22,6 +22,9 @@ RUN apk add --no-cache \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Allow Composer to run as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Increase composer timeout
 ENV COMPOSER_PROCESS_TIMEOUT=2000
 
