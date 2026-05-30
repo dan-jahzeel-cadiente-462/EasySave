@@ -41,7 +41,7 @@ FROM php:8.3-fpm-alpine AS runtime
 
 # Install system dependencies for runtime
 # Update repository index and install packages
-# Need development headers for compiling PHP extensions (gd, etc.)
+# Need development headers for compiling PHP extensions (gd, zip, etc.)
 RUN apk update && apk add --no-cache \
     curl \
     mysql-client \
@@ -52,6 +52,7 @@ RUN apk update && apk add --no-cache \
     freetype \
     freetype-dev \
     libzip \
+    libzip-dev \
     zlib-dev \
     nginx \
     supervisor \
