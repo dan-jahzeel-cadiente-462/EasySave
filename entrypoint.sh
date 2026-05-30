@@ -22,8 +22,8 @@ sed -i "s/LISTEN_PORT/$RAILWAY_PORT/g" $NGINX_CONF
 
 # Unconditionally replace upstreams with localhost. 
 # In this production image, Nginx and PHP run in the SAME container.
-echo "⚙️  Mapping Nginx upstreams to localhost..."
-sed -i 's/server php:9000;/server 127.0.0.1:9000;/g' $NGINX_CONF
+echo "⚙️  Mapping Nginx upstreams to localhost (Port 9001)..."
+sed -i 's/server php:9000;/server 127.0.0.1:9001;/g' $NGINX_CONF
 sed -i 's/server websocket:8080;/server 127.0.0.1:8080;/g' $NGINX_CONF
 
 # 3. Database Connectivity Check
@@ -65,8 +65,15 @@ chmod 1777 /var/lib/php/sessions
 # 5. Database Migrations
 # Force run in production on Railway
 if [ "$APP_ENV" = "prod" ] || [ "${RUN_MIGRATIONS:-0}" = "1" ]; then
-    echo "🔄 Running database migrations..."
-    php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || echo "⚠️  Migration failed - check DB credentials"
+    echo "🔄 Preparing database..."
+    # Ensure database exists (mostly for local, Railway does this, but safer to have)
+    php bin/console doctrine:database:create --if-not-exists --no-interaction || echo "ℹ️  Database already exists or cannot be created manually."
+    
+    echo "🔄 Running migrations to create tables..."
+    php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || {
+        echo "⚠️  Migration failed! Dumping current DB state info..."
+        php bin/console doctrine:schema:validate || true
+    }
 fi
 
 echo "✨ Initialization complete. Launching services..."
