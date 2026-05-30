@@ -43,7 +43,8 @@ RUN mkdir -p var/cache var/log
 FROM php:8.3-fpm-alpine AS runtime
 
 # Install system dependencies for runtime
-RUN apk add --no-cache \
+# Force cache invalidation to ensure correct packages are installed
+RUN echo "bust-cache-$(date +%s)" > /dev/null && apk add --no-cache \
     curl \
     mysql-client \
     libpng \
