@@ -34,7 +34,8 @@ WORKDIR /app
 COPY . .
 
 # Install PHP dependencies (production)
-RUN XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+# Create a temporary .env file to allow cache:clear to run
+RUN touch .env && XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist && rm .env
 
 # Create cache directories
 RUN mkdir -p var/cache var/log
