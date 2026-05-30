@@ -10,12 +10,21 @@ if [ ! -f .env ]; then
     touch .env
 fi
 
-# 2. Configure Nginx Port for Railway
-# Railway provides a dynamic $PORT environment variable.
-# If not provided, we default to 80.
+# 2. Configure Nginx Port and Upstreams for Single-Container Production
+# Railway provides a dynamic $PORT environment variable. Default to 80.
 RAILWAY_PORT="${PORT:-80}"
-echo "🌐 Configuring Nginx to listen on port: $RAILWAY_PORT"
-sed -i "s/LISTEN_PORT/$RAILWAY_PORT/g" /etc/nginx/conf.d/nginx-main.conf
+NGINX_CONF="/etc/nginx/conf.d/nginx-main.conf"
+
+echo "🌐 Configuring Nginx (Port: $RAILWAY_PORT)..."
+
+# Replace the port placeholder
+sed -i "s/LISTEN_PORT/$RAILWAY_PORT/g" $NGINX_CONF
+
+# Unconditionally replace upstreams with localhost. 
+# In this production image, Nginx and PHP run in the SAME container.
+echo "⚙️  Mapping Nginx upstreams to localhost..."
+sed -i 's/server php:9000;/server 127.0.0.1:9000;/g' $NGINX_CONF
+sed -i 's/server websocket:8080;/server 127.0.0.1:8080;/g' $NGINX_CONF
 
 # 3. Database Connectivity Check
 echo "⏳ Checking database connectivity..."
@@ -58,13 +67,6 @@ chmod 1777 /var/lib/php/sessions
 if [ "$APP_ENV" = "prod" ] || [ "${RUN_MIGRATIONS:-0}" = "1" ]; then
     echo "🔄 Running database migrations..."
     php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || echo "⚠️  Migration failed - check DB credentials"
-fi
-
-# 6. Final Production Tuning
-if [ "$APP_ENV" = "prod" ]; then
-    echo "⚙️  Optimizing Nginx for production (single-container)..."
-    sed -i 's/server php:9000;/server 127.0.0.1:9000;/g' /etc/nginx/conf.d/nginx-main.conf
-    sed -i 's/server websocket:8080;/server 127.0.0.1:8080;/g' /etc/nginx/conf.d/nginx-main.conf
 fi
 
 echo "✨ Initialization complete. Launching services..."
