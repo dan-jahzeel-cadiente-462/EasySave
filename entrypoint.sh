@@ -3,32 +3,36 @@ set -e
 
 echo "🚀 Starting EasySave Application..."
 
-echo "⏳ Waiting for database connection to be ready..."
+echo "⏳ Checking database connectivity..."
 # Use DATABASE_URL to parse host and port, or default to db:3306
-DB_HOST_URL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_HOST) ?: "db";')
-DB_PORT_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_PORT) ?: "3306";')
-DB_USER_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_USER) ?: "easysave";')
-DB_PASS_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_PASS) ?: "easysave_pass";')
+# We handle the parse failure gracefully to avoid shell errors
+DB_HOST_URL=$(php -r 'echo parse_url(getenv("DATABASE_URL") ?: "", PHP_URL_HOST) ?: "db";')
+DB_PORT_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL") ?: "", PHP_URL_PORT) ?: "3306";')
+DB_USER_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL") ?: "", PHP_URL_USER) ?: "easysave";')
+DB_PASS_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL") ?: "", PHP_URL_PASS) ?: "easysave_pass";')
 
-echo "   Connecting to $DB_HOST_URL:$DB_PORT_VAL as $DB_USER_VAL..."
+echo "   Target: $DB_HOST_URL:$DB_PORT_VAL (User: $DB_USER_VAL)"
 
 # Use mariadb-admin if available (newer Alpine), fallback to mysqladmin
 ADMIN_CMD=$(command -v mariadb-admin || command -v mysqladmin)
 
-# Always ping the database before proceeding, regardless of environment
-# Use a timeout of 60 seconds to avoid infinite loops on Railway
-TIMEOUT=60
+# Wait for database, but DO NOT EXIT on failure. 
+# We want the container to start so we don't get 502/504 gateway errors.
+TIMEOUT=30
 while ! "$ADMIN_CMD" ping -h"$DB_HOST_URL" -P"$DB_PORT_VAL" -u"$DB_USER_VAL" -p"$DB_PASS_VAL" --silent; do
-    echo "   Database is unavailable - sleeping..."
+    echo "   Database not yet ready - retrying ($TIMEOUT seconds remaining)..."
     sleep 2
     TIMEOUT=$((TIMEOUT-2))
     if [ $TIMEOUT -le 0 ]; then
-        echo "❌ Database connection timed out!"
-        echo "   TIP: Check if your MySQL service is linked and DATABASE_URL is set in Railway Variables."
-        exit 1
+        echo "⚠️  Database connection check timed out!"
+        echo "   The application will try to start anyway to provide better error pages."
+        break
     fi
 done
-echo "✅ Database is ready!"
+
+if [ $TIMEOUT -gt 0 ]; then
+    echo "✅ Database is ready!"
+fi
 
 # Set permissions
 echo "🔐 Setting directory permissions..."
