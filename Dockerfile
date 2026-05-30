@@ -1,6 +1,6 @@
 # Multi-stage build for production-ready Symfony application
 # Stage 1: Builder - Prepare application dependencies and assets
-FROM php:8.3-fpm-alpine as builder
+FROM php:8.3-fpm-alpine AS builder
 
 # Install system dependencies
 RUN apk add --no-cache \
@@ -40,7 +40,7 @@ RUN XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interac
 RUN mkdir -p var/cache var/log
 
 # Stage 2: Runtime - Minimal production image
-FROM php:8.3-fpm-alpine
+FROM php:8.3-fpm-alpine AS runtime
 
 # Install system dependencies for runtime
 RUN apk add --no-cache \

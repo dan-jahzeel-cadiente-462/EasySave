@@ -25,9 +25,8 @@ public/bundles/
 public/build/
 .npm/
 
-# Development files
-docker/
-Dockerfile.dev
+# Development files (We need docker/ dir now)
+# We only ignore specific dev compose/docker files
 docker-compose.override.yaml
 .dockerignore
 
