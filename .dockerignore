@@ -1,55 +1,20 @@
+# Explicitly do NOT ignore the docker directory
+!docker/
+
 # Version control
 .git
 .gitignore
-.gitattributes
 
-# IDE and editor
-.vscode
-.idea
-.sublime-text
-*.code-workspace
-*.swp
-*.swo
-*~
-
-# Environment
-.env.local
-.env.*.local
-
-# Dependencies and caches
+# Dependencies
 node_modules/
 vendor/
+
+# Caches
 var/cache/
 var/log/
-public/bundles/
-public/build/
-.npm/
 
-# Development files (We need docker/ dir now)
-# We only ignore specific dev compose/docker files
-docker-compose.override.yaml
-.dockerignore
-
-# Testing and documentation
-tests/
-docs/
-*.md
-phpunit.xml*
-.phpunit.result.cache
-coverage/
-
-# OS
+# OS/Temp
 .DS_Store
-Thumbs.db
-.directory
-
-# Temporary files
-*.tmp
-*.temp
-*.bak
-*.swp
 *.log
+*.tmp
 
-# Other
-.editorconfig
-.php-cs-fixer.cache
