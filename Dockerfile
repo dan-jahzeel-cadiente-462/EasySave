@@ -2,7 +2,7 @@
 # Stage 1: Builder - Prepare application dependencies and assets
 FROM php:8.3-fpm-alpine AS builder
 
-# Install system dependencies
+# Install system dependencies and PHP extensions in a single layer
 RUN apk add --no-cache \
     curl \
     git \
@@ -12,15 +12,12 @@ RUN apk add --no-cache \
     freetype-dev \
     libzip-dev \
     zip \
-    unzip
-
-# Install PHP extensions
-RUN docker-php-ext-install -j2 \
+    unzip && \
+    docker-php-ext-install -j2 \
     pdo_mysql \
     gd \
     zip \
     opcache
-
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -53,15 +50,12 @@ RUN echo "bust-cache-$(date +%s)" > /dev/null && apk add --no-cache \
     libzip \
     nginx \
     supervisor \
-    bash
-
-# Install PHP extensions
-RUN docker-php-ext-install -j2 \
+    bash && \
+    docker-php-ext-install -j2 \
     pdo_mysql \
     gd \
     zip \
     opcache
-
 
 # Copy PHP configuration
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
