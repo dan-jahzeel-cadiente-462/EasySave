@@ -106,11 +106,9 @@ WORKDIR /app
 
 # Create necessary directories
 RUN mkdir -p var/cache var/log /var/log/php-fpm public && \
-    chown -R www-data:www-data var public /var/log/php-fpm
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+    chown -R www-data:www-data var public /var/log/php-fpm && \
+    ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
 
 # Expose port
 EXPOSE 80
