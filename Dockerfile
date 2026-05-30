@@ -11,12 +11,14 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     libzip-dev \
+    icu-dev \
     zip \
     unzip && \
     docker-php-ext-install -j2 \
     pdo_mysql \
     gd \
     zip \
+    intl \
     opcache
 
 # Install Composer
