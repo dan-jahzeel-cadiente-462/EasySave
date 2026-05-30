@@ -4,20 +4,27 @@ set -e
 echo "🚀 Starting EasySave Application..."
 
 echo "⏳ Waiting for database connection to be ready..."
-# Use DATABASE_URL to parse host, or default to db service
+# Use DATABASE_URL to parse host and port, or default to db:3306
 DB_HOST_URL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_HOST) ?: "db";')
+DB_PORT_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_PORT) ?: "3306";')
 DB_USER_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_USER) ?: "easysave";')
 DB_PASS_VAL=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_PASS) ?: "easysave_pass";')
+
+echo "   Connecting to $DB_HOST_URL:$DB_PORT_VAL as $DB_USER_VAL..."
+
+# Use mariadb-admin if available (newer Alpine), fallback to mysqladmin
+ADMIN_CMD=$(command -v mariadb-admin || command -v mysqladmin)
 
 # Always ping the database before proceeding, regardless of environment
 # Use a timeout of 60 seconds to avoid infinite loops on Railway
 TIMEOUT=60
-while ! mysqladmin ping -h"$DB_HOST_URL" -u"$DB_USER_VAL" -p"$DB_PASS_VAL" --silent; do
+while ! "$ADMIN_CMD" ping -h"$DB_HOST_URL" -P"$DB_PORT_VAL" -u"$DB_USER_VAL" -p"$DB_PASS_VAL" --silent; do
     echo "   Database is unavailable - sleeping..."
     sleep 2
     TIMEOUT=$((TIMEOUT-2))
     if [ $TIMEOUT -le 0 ]; then
         echo "❌ Database connection timed out!"
+        echo "   TIP: Check if your MySQL service is linked and DATABASE_URL is set in Railway Variables."
         exit 1
     fi
 done
