@@ -34,8 +34,10 @@ WORKDIR /app
 COPY . .
 
 # Install PHP dependencies (production)
-# Create a temporary .env file to allow cache:clear to run
-RUN touch .env && XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist && rm .env
+# Create a temporary .env file and set APP_ENV to prod to allow cache:clear to run safely
+RUN touch .env && \
+    APP_ENV=prod XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist && \
+    rm .env
 
 # Create cache directories
 RUN mkdir -p var/cache var/log
