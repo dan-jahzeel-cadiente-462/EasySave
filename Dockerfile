@@ -36,9 +36,12 @@ WORKDIR /app
 COPY . .
 
 # Install PHP dependencies (production)
-# Create a temporary .env file and set APP_ENV to prod to allow cache:clear to run safely
+# Set required env vars to dummy values to allow cache:clear to run during build
 RUN touch .env && \
-    APP_ENV=prod XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist && \
+    APP_ENV=prod \
+    DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
+    APP_SECRET=dummy_secret_for_build \
+    XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist && \
     rm .env
 
 # Create cache directories
@@ -50,6 +53,7 @@ FROM php:8.3-fpm-alpine AS runtime
 # Install system dependencies for runtime
 # Update repository index and install packages
 # Need development headers for compiling PHP extensions (gd, zip, etc.)
+# icu-libs is required for the intl extension at runtime
 RUN apk update && apk add --no-cache \
     curl \
     mysql-client \
@@ -62,6 +66,8 @@ RUN apk update && apk add --no-cache \
     libzip \
     libzip-dev \
     zlib-dev \
+    icu-dev \
+    icu-libs \
     nginx \
     supervisor \
     bash && \
@@ -69,6 +75,7 @@ RUN apk update && apk add --no-cache \
     pdo_mysql \
     gd \
     zip \
+    intl \
     opcache
 
 # Copy PHP configuration
