@@ -48,6 +48,7 @@ RUN apk update && apk add --no-cache \
     libjpeg-turbo \
     freetype \
     libzip \
+    zlib-dev \
     nginx \
     supervisor \
     bash && \
