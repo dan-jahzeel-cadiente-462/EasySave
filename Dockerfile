@@ -11,6 +11,7 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     libzip-dev \
+    zlib-dev \
     icu-dev \
     zip \
     unzip && \
@@ -36,11 +37,18 @@ WORKDIR /app
 COPY . .
 
 # Install PHP dependencies (production)
-# Set required env vars to dummy values to allow cache:clear to run during build
+# Set all required env vars to dummy values to allow cache:clear/warmup to run during build
 RUN touch .env && \
     APP_ENV=prod \
     DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     APP_SECRET=dummy_secret_for_build \
+    DEFAULT_URI=http://localhost \
+    MAILER_DSN=null://null \
+    MESSENGER_TRANSPORT_DSN=null://null \
+    GOOGLE_CLIENT_ID=dummy \
+    GOOGLE_CLIENT_SECRET=dummy \
+    CORS_ALLOW_ORIGIN=dummy \
+    JWT_PASSPHRASE=dummy \
     XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist && \
     rm .env
 
