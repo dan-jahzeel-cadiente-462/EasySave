@@ -1,8 +1,10 @@
 #!/bin/sh
 set -e
+
+# Export all required environment variables for the build process
 export APP_ENV=prod
 export DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
-export APP_SECRET=dummy
+export APP_SECRET=dummy_secret_for_build
 export DEFAULT_URI=https://easysave.up.railway.app
 export MAILER_DSN=null://null
 export MESSENGER_TRANSPORT_DSN=null://null
@@ -12,6 +14,19 @@ export CORS_ALLOW_ORIGIN=dummy
 export JWT_PASSPHRASE=dummy
 export XDEBUG_MODE=off
 
+# Create a valid .env file to satisfy Symfony Runtime's boot check
+cat <<EOF > .env
+APP_ENV=prod
+DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
+APP_SECRET=dummy_secret_for_build
+EOF
+
+# Install dependencies without running scripts initially
 composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist
+
+# Manually run the scripts that would have been triggered by composer
 php bin/console cache:clear --env=prod
 php bin/console assets:install
+
+# Cleanup
+rm .env
