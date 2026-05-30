@@ -1,19 +1,21 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Starting EasySave Application (Final Production Build)..."
+echo "🚀 Starting EasySave Application (Final Stable v5)..."
 
 # 1. Ensure .env exists for Symfony Runtime
 if [ ! -f .env ]; then
     touch .env
 fi
 
-# 2. Alpine Nginx directories
+# 2. Alpine Nginx & PHP Socket Setup
+# We ensure the run directory exists and both nginx/www-data can access the socket
 mkdir -p /run/nginx /var/lib/nginx/tmp/client_body
+chown -R nginx:www-data /run
+chmod 775 /run
 chown -R nginx:nginx /var/lib/nginx
 
 # 3. DB Connectivity & Migrations
-# We use DATABASE_URL if provided, else skip migrations to avoid boot hang.
 if [ -n "$DATABASE_URL" ]; then
     echo "⏳ Checking database connection..."
     DB_HOST=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_HOST) ?: "";')
@@ -32,12 +34,12 @@ if [ -n "$DATABASE_URL" ]; then
     fi
 fi
 
-# 4. Final Prep
+# 4. Permissions
 echo "🔐 Setting permissions..."
 chmod -R 775 var/cache var/log || true
 chown -R www-data:www-data var/cache var/log public || true
 mkdir -p /var/lib/php/sessions
 chmod 1777 /var/lib/php/sessions
 
-echo "✨ All systems ready. Nginx (8080) -> PHP-FPM (9001)"
+echo "✨ All systems ready. Connection via UNIX Socket."
 exec "$@"
