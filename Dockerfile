@@ -1,6 +1,6 @@
 # Multi-stage build for production-ready Symfony application
 # Stage 1: Builder - Prepare application dependencies and assets
-FROM php:8.3-fpm-alpine AS BUILDER
+FROM php:8.3-fpm-alpine AS builder
 
 # Install system dependencies
 RUN apk add --no-cache \
@@ -40,7 +40,7 @@ RUN XDEBUG_MODE=off composer install --no-dev --optimize-autoloader --no-interac
 RUN mkdir -p var/cache var/log
 
 # Stage 2: Runtime - Minimal production image
-FROM php:8.3-fpm-alpine AS RUNTIME
+FROM php:8.3-fpm-alpine AS runtime
 
 # Install system dependencies for runtime
 RUN apk add --no-cache \
@@ -48,7 +48,7 @@ RUN apk add --no-cache \
     mysql-client \
     libpng \
     libjpeg-turbo \
-    libfreetype \
+    freetype \
     libzip \
     nginx \
     supervisor \
@@ -67,7 +67,7 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
 COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/app.conf
 
 # Copy from builder
-COPY --from=BUILDER /app /app
+COPY --from=builder /app /app
 
 # Copy Nginx and Supervisor configs
 COPY nginx.conf /etc/nginx/nginx.conf
