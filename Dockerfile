@@ -24,29 +24,15 @@ RUN apk add --no-cache \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
-
 WORKDIR /app
 COPY . .
 
-# Build assets and warm cache (with dummy env)
-RUN touch .env && \
-    export APP_ENV=prod && \
-    export DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db && \
-    export APP_SECRET=dummy && \
-    export DEFAULT_URI=https://easysave.up.railway.app && \
-    export MAILER_DSN=null://null && \
-    export MESSENGER_TRANSPORT_DSN=null://null && \
-    export GOOGLE_CLIENT_ID=dummy && \
-    export GOOGLE_CLIENT_SECRET=dummy && \
-    export CORS_ALLOW_ORIGIN=dummy && \
-    export JWT_PASSPHRASE=dummy && \
-    export XDEBUG_MODE=off && \
-    composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist && \
-    php bin/console cache:clear --env=prod && \
-    php bin/console assets:install && \
-    rm .env
+# Use a build script to handle dependencies and cache clearing reliably
+COPY build_deps.sh /app/build_deps.sh
+RUN chmod +x /app/build_deps.sh && /app/build_deps.sh && rm /app/build_deps.sh
 
-# Stage 2: Runtime
+# Create cache directories
+RUN mkdir -p var/cache var/log
 FROM php:8.3-fpm-alpine AS runtime
 
 RUN apk update && apk add --no-cache \
