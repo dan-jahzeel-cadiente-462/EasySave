@@ -94,6 +94,8 @@ COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/app.conf
 COPY --from=builder /app /app
 
 # Copy Nginx and Supervisor configs
+# Clear default configs first
+RUN rm -rf /etc/nginx/conf.d/*
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx-main.conf /etc/nginx/conf.d/nginx-main.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
