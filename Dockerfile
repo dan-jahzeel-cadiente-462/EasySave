@@ -41,12 +41,16 @@ FROM php:8.3-fpm-alpine AS runtime
 
 # Install system dependencies for runtime
 # Update repository index and install packages
+# Need development headers for compiling PHP extensions (gd, etc.)
 RUN apk update && apk add --no-cache \
     curl \
     mysql-client \
     libpng \
+    libpng-dev \
     libjpeg-turbo \
+    libjpeg-turbo-dev \
     freetype \
+    freetype-dev \
     libzip \
     zlib-dev \
     nginx \
