@@ -78,9 +78,9 @@ final class DashboardController extends AbstractController
         // server info
         $phpVersion = phpversion();
         $memoryLimit = ini_get('memory_limit');
-        $request = $this->requestStack->getCurrentRequest();
-        $uploadsPath = $request ? $request->server->get('DOCUMENT_ROOT').'/uploads' : null;
-        $freeDisk = $uploadsPath && file_exists($uploadsPath) ? round(disk_free_space($uploadsPath) / (1024*1024), 2) : null;
+        
+        // Removed disk_free_space check as it can be very slow on cloud/container filesystems
+        $freeDisk = null;
 
         $recentActivityLogs = $this->activityLogRepository->findBy([], ['createdAt' => 'DESC'], 5);
         
@@ -91,7 +91,6 @@ final class DashboardController extends AbstractController
             'totalValue' => $totalValue,
             'phpVersion' => $phpVersion,
             'memoryLimit' => $memoryLimit,
-            'uploadsPath' => $uploadsPath,
             'freeDisk' => $freeDisk,
             'recentOrders' => $recentOrders,
             'ordersLast7DaysCount' => $ordersLast7DaysCount,

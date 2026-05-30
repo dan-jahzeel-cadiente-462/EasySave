@@ -74,15 +74,11 @@ class EmailVerificationController extends AbstractController
                 
                 // Send verification email
                 $verificationUrl = $this->urlGenerator->generate('app_verify_email', ['token' => $verificationToken], UrlGeneratorInterface::ABSOLUTE_URL);
-                try {
-                    $this->emailVerificationService->sendVerificationEmail($user, $verificationUrl);
-                    $this->addFlash('success', 'A verification link has been sent to ' . htmlspecialchars($email) . '. Please check your email.');
-                } catch (\Exception $e) {
-                    error_log('Email verification resend failed: ' . $e->getMessage());
-                    error_log('Stack trace: ' . $e->getTraceAsString());
-                    $this->addFlash('error', 'Failed to send verification email. Please check your email configuration or try again later.');
-                }
+                // Queue email send asynchronously (prevents nginx/PHP timeouts)
+                $this->emailVerificationService->queueSendVerificationEmail($user, $verificationUrl);
+                $this->addFlash('success', 'A verification link has been sent to ' . htmlspecialchars($email) . '. Please check your email.');
             }
+
             
             return $this->redirectToRoute('app_user_login');
         }

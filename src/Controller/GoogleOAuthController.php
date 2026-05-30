@@ -39,55 +39,29 @@ class GoogleOAuthController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->redirectToRoute('oauth_connect_check', [
-            'service' => 'google'
-        ]);
+        // IMPORTANT: OAuth callback must match the Google console redirect_uri.
+        // This project uses the KnpU OAuth2 bundle callback: /connect/google/check
+        // so we start OAuth using that flow.
+        return $this->redirectToRoute('connect_google_start');
     }
 
-    /**
-     * Google OAuth callback handler
-     * Handles OAuth response and creates/authenticates user
-     */
-    #[Route('/connect/check', name: 'oauth_connect_check')]
-    public function connectCheckGoogle(): Response
-    {
-        // This endpoint is handled by the OAuth bundle
-        // The authenticator will process the callback
-        $this->createNotFoundException('This code should not be reached');
-    }
+    // NOTE: Callback is handled by KnpU OAuth2 bundle + App\Security\GoogleAuthenticator
+    // and uses route: connect_google_check (/connect/google/check)
+
+    // Keeping this controller around, but the dedicated callback endpoints below should NOT be used for OAuth.
+    
 
     /**
      * Google OAuth callback for Staff/User login
      * Admins cannot authenticate via OAuth and remain offline
      */
-    #[Route('/google/callback', name: 'app_oauth_google_callback')]
-    public function handleGoogleCallback(): Response
-    {
-        $user = $this->getUser();
-
-        if (!$user) {
-            $this->addFlash('error', 'Google authentication failed.');
-            return $this->redirectToRoute('app_login');
-        }
-
-        // Prevent admins from using OAuth - only STAFF and USER roles allowed
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            $this->addFlash('error', 'Admin accounts cannot use OAuth login. Please use your regular credentials.');
-            return $this->redirectToRoute('app_login');
-        }
-
-        // Allow STAFF and USER roles to authenticate via OAuth
-        if (in_array('ROLE_STAFF', $user->getRoles()) || in_array('ROLE_USER', $user->getRoles())) {
-            $user->setIsVerified(true);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', sprintf('Welcome %s! You have been logged in successfully.', $user->getUsername()));
-            return $this->redirectToRoute('app_dashboard');
-        }
-
-        $this->addFlash('error', 'Only staff and user accounts can use Google OAuth login.');
-        return $this->redirectToRoute('app_login');
-    }
+    // Deprecated/unused: kept for legacy routes, but DO NOT configure Google console redirect_uri to this.
+    // #[Route('/google/callback', name: 'app_oauth_google_callback')]
+    // public function handleGoogleCallback(): Response
+    // {
+    //     throw new \LogicException('Unused OAuth callback. Use /connect/google/check instead.');
+    // }
+    
 
     /**
      * Start Google OAuth flow for Staff/User authentication

@@ -14,10 +14,10 @@ class Favorite
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'created_at', type: \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'product')]
+    #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
@@ -69,10 +69,11 @@ class Favorite
     #[ORM\PrePersist]
     public function onPrePersist(): void
     {
-        // This ensures $created_at is set to the current time if it's null, 
+        // This ensures $created_at is set to the current time if it's null,
         // which makes the database happy.
         if ($this->created_at === null) {
             $this->created_at = new \DateTimeImmutable();
         }
     }
 }
+

@@ -13,9 +13,9 @@
     <div class="{% if view == 'list' %}space-y-6{% else %}grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8{% endif %}">
         {% for product in products %}
             {% set is_favorited = product.id in favoriteProductIds %}
-            {% set discount = random(0, 30) %}
-            {% set is_new = random(0, 1) %}
-            {% set rating = random(3, 5) %}
+            {% set discount = (product.id % 25) %}
+            {% set is_new = (product.id % 2 == 0) %}
+            {% set rating = 3 + (product.id % 3) %}
 
             {% if view == 'list' %}
                 {% include 'user/shop/includes/_product_list_card.html.twig' %}

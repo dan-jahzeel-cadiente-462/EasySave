@@ -20,7 +20,9 @@ final class Version20251215110549 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        // Add the constraint and index (data should be cleaned up manually)
+        // First add the column if it doesn't exist
+        $this->addSql('ALTER TABLE category ADD created_by_id INT DEFAULT NULL');
+        // Then add the constraint and index
         $this->addSql('ALTER TABLE category ADD CONSTRAINT FK_64C19C1B03A8386 FOREIGN KEY (created_by_id) REFERENCES user (id)');
         $this->addSql('CREATE INDEX IDX_64C19C1B03A8386 ON category (created_by_id)');
     }
@@ -30,6 +32,6 @@ final class Version20251215110549 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE category DROP FOREIGN KEY FK_64C19C1B03A8386');
         $this->addSql('DROP INDEX IDX_64C19C1B03A8386 ON category');
-        $this->addSql('ALTER TABLE category CHANGE created_by_id created_by_id INT NOT NULL');
+        $this->addSql('ALTER TABLE category DROP COLUMN created_by_id');
     }
 }

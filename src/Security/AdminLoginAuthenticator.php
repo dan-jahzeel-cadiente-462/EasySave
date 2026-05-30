@@ -85,11 +85,14 @@ class AdminLoginAuthenticator extends AbstractLoginFormAuthenticator
         if ($user instanceof User) {
             $roles = $user->getRoles();
             if (!in_array('ROLE_ADMIN', $roles, true) && !in_array('ROLE_STAFF', $roles, true)) {
-                throw new CustomUserMessageAuthenticationException('Admin access required.');
+                // Log them out and redirect with error
+                $request->getSession()->getFlashBag()->add('error', 'Access denied. You do not have administrative privileges.');
+                return new RedirectResponse($this->urlGenerator->generate(self::ADMIN_LOGIN_ROUTE));
             }
         }
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+            $this->removeTargetPath($request->getSession(), $firewallName);
             return new RedirectResponse($targetPath);
         }
 

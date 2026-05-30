@@ -48,12 +48,27 @@
 
             <!-- Desktop Auth & Theme -->
             <div class="hidden md:flex md:items-center md:gap-3">
-                <a href="{{ path('app_user_login') }}" class="px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-200">
-                    Sign In
-                </a>
-                <a href="{{ path('app_register') }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 dark:bg-green-600 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 hover:scale-105 hover:shadow-md transition-all duration-200">
-                    Sign Up
-                </a>
+                {% if app.user %}
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+                        <a href="{{ path('app_admin_dashboard') }}" class="px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-200">
+                            Admin Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_user_dashboard') }}" class="px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-200">
+                            My Dashboard
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('app_logout') }}" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 hover:scale-105 hover:shadow-md transition-all duration-200">
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_user_login') }}" class="px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-200">
+                        Sign In
+                    </a>
+                    <a href="{{ path('app_register') }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 dark:bg-green-600 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 hover:scale-105 hover:shadow-md transition-all duration-200">
+                        Sign Up
+                    </a>
+                {% endif %}
                 <button
                     @click="darkMode = !darkMode"
                     type="button"
@@ -180,6 +195,9 @@
         100% {
             width: 100%;
             opacity: 1;
+        }
+    }
+</style>  opacity: 1;
         }
     }
 </style>

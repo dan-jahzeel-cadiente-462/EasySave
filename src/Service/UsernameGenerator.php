@@ -1,9 +1,16 @@
 <?php
 
+namespace App\Service;
+
 /**
- * This file is deprecated and no longer used.
+ * Deprecated: kept only to satisfy Symfony service discovery.
  * Username is now provided directly in the registration form.
- * 
- * This class can be safely deleted.
  */
+final class UsernameGenerator
+{
+    private function __construct()
+    {
+    }
+}
+
 

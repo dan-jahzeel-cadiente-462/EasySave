@@ -1,0 +1,56 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor
+.vscode
+.idea
+.sublime-text
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# Environment
+.env.local
+.env.*.local
+
+# Dependencies and caches
+node_modules/
+vendor/
+var/cache/
+var/log/
+public/bundles/
+public/build/
+.npm/
+
+# Development files
+docker/
+Dockerfile.dev
+docker-compose.override.yaml
+.dockerignore
+
+# Testing and documentation
+tests/
+docs/
+*.md
+phpunit.xml*
+.phpunit.result.cache
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+.directory
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.log
+
+# Other
+.editorconfig
+.php-cs-fixer.cache

@@ -1,0 +1,9 @@
+.git/
+.wsl/
+node_modules/
+vendor/
+.docker/
+docker/
+*.log
+tmp/
+cache/

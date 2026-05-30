@@ -20,7 +20,12 @@ class SecurityController extends AbstractController
     public function adminLogin(Request $request, AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_admin_dashboard');
+            $user = $this->getUser();
+            $roles = $user->getRoles();
+            if (in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true)) {
+                return $this->redirectToRoute('app_admin_dashboard');
+            }
+            return $this->redirectToRoute('app_user_dashboard');
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();

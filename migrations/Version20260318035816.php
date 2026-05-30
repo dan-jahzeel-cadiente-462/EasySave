@@ -24,7 +24,7 @@ final class Version20260318035816 extends AbstractMigration
         $this->addSql('CREATE TABLE discount_product (discount_id INT NOT NULL, product_id INT NOT NULL, INDEX IDX_654269BC4C7C611F (discount_id), INDEX IDX_654269BC4584665A (product_id), PRIMARY KEY (discount_id, product_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE discount_product ADD CONSTRAINT FK_654269BC4C7C611F FOREIGN KEY (discount_id) REFERENCES discount (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE discount_product ADD CONSTRAINT FK_654269BC4584665A FOREIGN KEY (product_id) REFERENCES product (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE user DROP verification_token_expired_at');
+        // Verification_token_expired_at column might not exist, skip if it doesn't
         $this->addSql('DROP INDEX IDX_75EA56E016BA31DB ON messenger_messages');
         $this->addSql('DROP INDEX IDX_75EA56E0FB7336F0 ON messenger_messages');
         $this->addSql('DROP INDEX IDX_75EA56E0E3BD61CE ON messenger_messages');

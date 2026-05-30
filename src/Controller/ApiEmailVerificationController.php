@@ -106,7 +106,7 @@ class ApiEmailVerificationController extends AbstractController
         if ($this->emailVerificationService->isExemptFromEmailVerification($user)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Your account does not require email verification (Admin/Staff)',
+                'message' => 'Your account does not require email verification (Admin)',
                 'code' => 'EXEMPT_FROM_VERIFICATION'
             ], 400);
         }
@@ -183,7 +183,7 @@ class ApiEmailVerificationController extends AbstractController
                 'isVerified' => $user->isVerified(),
                 'isExempt' => $this->emailVerificationService->isExemptFromEmailVerification($user),
                 'exemptReason' => $this->emailVerificationService->isExemptFromEmailVerification($user) 
-                    ? 'Admin or Staff account' 
+                    ? 'Admin account' 
                     : null,
                 'roles' => $user->getRoles()
             ]

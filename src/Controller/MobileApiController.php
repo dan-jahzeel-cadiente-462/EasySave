@@ -117,7 +117,7 @@ class MobileApiController extends AbstractController
         try {
             $product = $this->productRepository->find($id);
 
-            if (!$product || !$product->isIsActive()) {
+            if (!$product || !$product->getIsActive()) {
                 return $this->json([
                     'success' => false,
                     'error' => 'Product not found',
@@ -209,8 +209,8 @@ class MobileApiController extends AbstractController
                     'email' => $user->getEmail(),
                     'first_name' => $user->getFirstName(),
                     'last_name' => $user->getLastName(),
-                    'is_verified' => $user->isIsVerified(),
-                    'is_active' => $user->isIsActive(),
+                    'is_verified' => $user->isVerified(),
+                    'is_active' => $user->isActive(),
                     'roles' => $user->getRoles(),
                     'created_at' => $user->getCreatedAt()?->format('Y-m-d H:i:s'),
                     'profile_picture' => $user->getProfilePicture(),
@@ -360,7 +360,7 @@ class MobileApiController extends AbstractController
                 'id' => $category->getId(),
                 'name' => $category->getName(),
             ] : null,
-            'is_active' => $p->isIsActive(),
+            'is_active' => $p->getIsActive(),
         ];
     }
 
@@ -385,7 +385,7 @@ class MobileApiController extends AbstractController
             ] : null,
             'created_at' => $p->getCreatedAt()?->format('Y-m-d H:i:s'),
             'updated_at' => $p->getUpdatedAt()?->format('Y-m-d H:i:s'),
-            'is_active' => $p->isIsActive(),
+            'is_active' => $p->getIsActive(),
             'created_by' => $p->getCreatedBy() ? [
                 'id' => $p->getCreatedBy()->getId(),
                 'username' => $p->getCreatedBy()->getUsername(),

@@ -55,7 +55,7 @@ class Category
     #[Groups(['category:read', 'category:write'])]
     private Collection $children;
 
-    #[ORM\ManyToOne(inversedBy: 'category')]
+    #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['category:read'])]
     private ?User $created_by = null;

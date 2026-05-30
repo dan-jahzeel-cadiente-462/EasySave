@@ -85,7 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
-    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Category::class)]
+    #[ORM\OneToMany(mappedBy: 'created_by', targetEntity: Category::class)]
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Review::class)]

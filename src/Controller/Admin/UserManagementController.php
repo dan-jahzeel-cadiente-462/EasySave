@@ -82,12 +82,12 @@ final class UserManagementController extends AbstractController
             $user->setCreatedAt(new \DateTime());
             $user->setIsActive(true);
 
-            // Set verification state based on role: admins and staff are exempt and considered verified
+            // Set verification state based on role: admins are exempt and considered verified
             if ($this->emailVerificationService->isExemptFromEmailVerification($user)) {
                 $user->setIsVerified(true);
                 $user->setVerificationToken(null);
             } else {
-                // Regular users require email verification
+                // Regular users and staff require email verification
                 $verificationToken = $this->emailVerificationService->generateVerificationToken();
                 $user->setVerificationToken($verificationToken);
                 $user->setIsVerified(false);

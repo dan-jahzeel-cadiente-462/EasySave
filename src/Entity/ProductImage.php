@@ -6,6 +6,9 @@ use App\Repository\ProductImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
 
+
+
+
 #[ORM\Entity(repositoryClass: ProductImageRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ProductImage

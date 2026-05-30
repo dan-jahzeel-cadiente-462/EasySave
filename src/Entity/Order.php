@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
+#[ORM\Index(columns: ['created_at'], name: 'idx_order_created_at')]
 class Order
 {
     #[ORM\Id]

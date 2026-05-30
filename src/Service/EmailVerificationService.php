@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Email;
 
 class EmailVerificationService
@@ -17,145 +18,103 @@ class EmailVerificationService
         private UserRepository $userRepository,
         private MailerInterface $mailer,
         private LoggerInterface $logger,
+        private MessageBusInterface $bus,
         #[Autowire('%env(MAILER_FROM)%')]
-        private string $mailerFrom
-    ) {}
-
-    /**
-     * Only admins and staff are exempt from email verification; users must verify.
-     */
-    public function isExemptFromEmailVerification(User $user): bool
-    {
-        $roles = $user->getRoles();
-        return in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true);
+        private string $mailerFrom,
+    ) {
     }
 
-    /**
-     * Generate a unique verification token
-     */
+    public function isExemptFromEmailVerification(User $user): bool
+    {
+        // Only ROLE_ADMIN is exempt from email verification; ROLE_STAFF and ROLE_USER must verify
+        return in_array('ROLE_ADMIN', $user->getRoles(), true);
+    }
+
     public function generateVerificationToken(): string
     {
         return bin2hex(random_bytes(32));
     }
 
-    /**
-     * Verify email token and mark user as verified
-     * Returns the verified user, or null if verification failed
-     */
     public function verifyToken(string $token): ?User
     {
         $user = $this->userRepository->findOneBy(['verificationToken' => $token]);
-
         if (!$user) {
             return null;
         }
 
-        // Mark user as verified
         $user->setIsVerified(true);
-        $user->setVerificationToken(null); // Clear the token after use
-
+        $user->setVerificationToken(null);
         $this->entityManager->flush();
 
         return $user;
     }
 
-    /**
-     * Get verified user for sending confirmation email
-     */
     public function getVerifiedUser(string $token): ?User
     {
         return $this->userRepository->findOneBy(['verificationToken' => $token]);
     }
 
+    public function queueSendVerificationEmail(User $user, string $verificationUrl): void
+    {
+        if (!$user->getId()) {
+            return;
+        }
+
+        $this->bus->dispatch(new \App\Message\SendVerificationEmailMessage($user->getId(), $verificationUrl));
+    }
+
     /**
-     * Send verification email to user
-     * @throws \Exception
+     * Synchronous send (called by Messenger handler)
      */
     public function sendVerificationEmail(User $user, string $verificationUrl): void
     {
-        try {
-            $this->logger->info('Starting email verification send', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'username' => $user->getUsername()
-            ]);
+        $this->logger->info('Starting email verification send', [
+            'user_id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'username' => $user->getUsername(),
+        ]);
 
-            $email = (new Email())
-                ->from($this->mailerFrom)
-                ->to($user->getEmail())
-                ->subject('Verify Your Email Address')
-                ->html($this->renderVerificationEmailTemplate($user, $verificationUrl))
-                ->text($this->renderVerificationEmailText($user, $verificationUrl));
+        $email = (new Email())
+            ->from($this->mailerFrom)
+            ->to($user->getEmail())
+            ->subject('Verify Your Email Address')
+            ->html($this->renderVerificationEmailTemplate($user, $verificationUrl))
+            ->text($this->renderVerificationEmailText($user, $verificationUrl));
 
-            $this->logger->debug('Email object created', [
-                'from' => $this->mailerFrom,
-                'to' => $user->getEmail(),
-                'subject' => 'Verify Your Email Address'
-            ]);
+        $this->mailer->send($email);
 
-            $this->mailer->send($email);
-
-            $this->logger->info('Verification email sent successfully', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail()
-            ]);
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to send verification email', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'error' => $e->getMessage(),
-                'code' => $e->getCode()
-            ]);
-            throw $e;
-        }
+        $this->logger->info('Verification email sent successfully', [
+            'user_id' => $user->getId(),
+            'email' => $user->getEmail(),
+        ]);
     }
 
     /**
-     * Send confirmation email after successful verification
-     * @throws \Exception
+     * Synchronous send (called by controller / could be queued later)
      */
     public function sendConfirmationEmail(User $user): void
     {
-        try {
-            $this->logger->info('Starting email confirmation send', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'username' => $user->getUsername()
-            ]);
+        $this->logger->info('Starting email confirmation send', [
+            'user_id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'username' => $user->getUsername(),
+        ]);
 
-            $email = (new Email())
-                ->from($this->mailerFrom)
-                ->to($user->getEmail())
-                ->subject('Email Verified Successfully - Welcome to EasySave!')
-                ->html($this->renderConfirmationEmailTemplate($user))
-                ->text($this->renderConfirmationEmailText($user));
+        $email = (new Email())
+            ->from($this->mailerFrom)
+            ->to($user->getEmail())
+            ->subject('Email Verified Successfully - Welcome to EasySave!')
+            ->html($this->renderConfirmationEmailTemplate($user))
+            ->text($this->renderConfirmationEmailText($user));
 
-            $this->logger->debug('Confirmation email object created', [
-                'from' => $this->mailerFrom,
-                'to' => $user->getEmail(),
-                'subject' => 'Email Verified Successfully'
-            ]);
+        $this->mailer->send($email);
 
-            $this->mailer->send($email);
-
-            $this->logger->info('Confirmation email sent successfully', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail()
-            ]);
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to send confirmation email', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'error' => $e->getMessage(),
-                'code' => $e->getCode()
-            ]);
-            throw $e;
-        }
+        $this->logger->info('Confirmation email sent successfully', [
+            'user_id' => $user->getId(),
+            'email' => $user->getEmail(),
+        ]);
     }
 
-    /**
-     * Render verification email HTML template
-     */
     private function renderVerificationEmailTemplate(User $user, string $verificationUrl): string
     {
         $template = <<<HTML
@@ -200,29 +159,23 @@ class EmailVerificationService
         return str_replace(
             ['{{username}}', '{{verificationUrl}}'],
             [htmlspecialchars($user->getUsername()), htmlspecialchars($verificationUrl)],
-            $template
+            $template,
         );
     }
 
-    /**
-     * Render verification email plain text fallback
-     */
     private function renderVerificationEmailText(User $user, string $verificationUrl): string
     {
         return sprintf(
             "Hello %s,\n\n" .
-            "Thank you for registering with EasySave. To complete your registration and verify your email address, please open the link below:\n\n" .
-            "%s\n\n" .
-            "If you did not create this account, please ignore this message.\n\n" .
-            "© 2026 EasySave. All rights reserved.",
+                "Thank you for registering with EasySave. To complete your registration and verify your email address, please open the link below:\n\n" .
+                "%s\n\n" .
+                "If you did not create this account, please ignore this message.\n\n" .
+                "© 2026 EasySave. All rights reserved.",
             $user->getUsername(),
-            $verificationUrl
+            $verificationUrl,
         );
     }
 
-    /**
-     * Render confirmation email HTML template
-     */
     private function renderConfirmationEmailTemplate(User $user): string
     {
         $template = <<<HTML
@@ -278,21 +231,19 @@ class EmailVerificationService
         return str_replace(
             ['{{username}}'],
             [htmlspecialchars($user->getUsername())],
-            $template
+            $template,
         );
     }
 
-    /**
-     * Render confirmation email plain text fallback
-     */
     private function renderConfirmationEmailText(User $user): string
     {
         return sprintf(
             "Hello %s,\n\n" .
-            "Your email address has been successfully verified. Your EasySave account is now active and ready to use.\n\n" .
-            "Visit EasySave to log in and get started: http://localhost:3000/login\n\n" .
-            "© 2026 EasySave. All rights reserved.",
-            $user->getUsername()
+                "Your email address has been successfully verified. Your EasySave account is now active and ready to use.\n\n" .
+                "Visit EasySave to log in and get started: http://localhost:3000/login\n\n" .
+                "© 2026 EasySave. All rights reserved.",
+            $user->getUsername(),
         );
     }
 }
+

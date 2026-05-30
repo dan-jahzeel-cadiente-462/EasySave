@@ -27,6 +27,8 @@ use ApiPlatform\Metadata\Delete;
     ]
 )]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Table(name: 'product')]
+#[ORM\Index(columns: ['is_active'], name: 'idx_product_is_active')]
 #[ORM\HasLifecycleCallbacks]
 class Product
 {

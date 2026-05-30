@@ -27,7 +27,7 @@ class Review
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $rating = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $created_at = null;
 
     /**

@@ -59,25 +59,44 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 // 1) Find user by Google ID or Email
                 $user = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
 
+                if ($user && in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                    throw new CustomUserMessageAuthenticationException('Administrator accounts are not permitted to use Google authentication. Please use the administrative login form.');
+                }
+
                 if (!$user) {
                     $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+                    if ($user) {
+                        // Check if existing user is an admin
+                        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                            throw new CustomUserMessageAuthenticationException('Administrator accounts are not permitted to use Google authentication. Please use the administrative login form.');
+                        }
+                    }
 
                     if (!$user) {
                         // 2) Register a new user if they don't exist
                         $user = new User();
+
                         // Generate username from email (first part before @)
-                        $username = explode('@', $email)[0];
+                        $username = explode('@', $email, 2)[0] ?: $email;
+                        $username = preg_replace('/[^a-zA-Z0-9_\-]/', '', (string) $username);
                         $user->setUsername($username);
+
                         $user->setEmail($email);
                         $user->setFirstName($googleUser->getFirstName() ?? '');
                         $user->setLastName($googleUser->getLastName() ?? '');
+
                         // Set a dummy password since it's a required field in most User entities
                         $user->setPassword(bin2hex(random_bytes(16)));
-                        // Auto-verify Google OAuth users (Google validates the email)
+
+                        // Auto-verify OAuth users (per requirement)
                         $user->setIsVerified(true);
                     }
+
+                    // Ensure provider linkage + googleId are always updated
                     $user->setProvider('google'); // This prevents the 1048 error
                     $user->setGoogleId($googleUser->getId());
+
                     $this->entityManager->persist($user);
                     $this->entityManager->flush();
                 }
@@ -100,7 +119,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         error_log('Google login successful for user: ' . $user->getEmail());
 
         // 4) Role-based redirect logic (Consistent with LoginFormAuthenticator)
-        if ($this->hasRole($user, 'ROLE_ADMIN')) {
+        if ($this->hasRole($user, 'ROLE_ADMIN') || $this->hasRole($user, 'ROLE_STAFF')) {
             return new RedirectResponse($this->router->generate('app_admin_dashboard'));
         }
 
