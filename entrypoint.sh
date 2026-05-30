@@ -1,45 +1,51 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Starting EasySave Application (Final Stable v5)..."
+echo "🚀 Launching EasySave (Railway Optimized v6)..."
 
-# 1. Ensure .env exists for Symfony Runtime
+# 1. Ensure Symfony runtime file exists
 if [ ! -f .env ]; then
+    echo "📝 Initializing environment file..."
     touch .env
 fi
 
-# 2. Alpine Nginx & PHP Socket Setup
-# We ensure the run directory exists and both nginx/www-data can access the socket
-mkdir -p /run/nginx /var/lib/nginx/tmp/client_body
-chown -R nginx:www-data /run
-chmod 775 /run
-chown -R nginx:nginx /var/lib/nginx
+# 2. Fix Alpine Nginx Runtime Requirements
+# Nginx in Alpine often fails to start if these don't exist
+mkdir -p /run/nginx /var/lib/nginx/tmp/client_body /var/log/php-fpm
+chown -R nginx:nginx /var/lib/nginx /var/log/nginx
+chmod -R 775 /var/lib/nginx
+chown -R www-data:www-data /var/log/php-fpm
 
-# 3. DB Connectivity & Migrations
+# 3. Fast Database Readiness Check & Migrations
+# We run migrations in the background or with a fast timeout to avoid 504 on boot
 if [ -n "$DATABASE_URL" ]; then
-    echo "⏳ Checking database connection..."
+    echo "⏳ Database setup..."
+    ADMIN_CMD=$(command -v mariadb-admin || command -v mysqladmin)
+    
+    # Extract host and port for a quick ping
     DB_HOST=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_HOST) ?: "";')
     DB_PORT=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_PORT) ?: "3306";')
     DB_USER=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_USER) ?: "";')
     DB_PASS=$(php -r 'echo parse_url(getenv("DATABASE_URL"), PHP_URL_PASS) ?: "";')
-    
-    ADMIN_CMD=$(command -v mariadb-admin || command -v mysqladmin)
-    
+
+    # Quick 5s check
     if "$ADMIN_CMD" ping -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USER" -p"$DB_PASS" --silent --connect-timeout=5; then
-        echo "✅ Database reachable. Running migrations..."
+        echo "✅ DB ready. Applying migrations..."
+        # If migration fails, we don't stop the container
         php bin/console doctrine:database:create --if-not-exists --no-interaction || true
-        php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || echo "⚠️ Migration skip/fail."
+        php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || echo "⚠️ Migration failed."
     else
-        echo "⚠️ Database not reachable yet. Starting anyway."
+        echo "⚠️ DB not reachable. Web server will start anyway."
     fi
 fi
 
-# 4. Permissions
-echo "🔐 Setting permissions..."
+# 4. Critical Permissions for Symfony
+echo "🔐 Setting application permissions..."
+mkdir -p var/cache var/log /var/lib/php/sessions
 chmod -R 775 var/cache var/log || true
-chown -R www-data:www-data var/cache var/log public || true
-mkdir -p /var/lib/php/sessions
+chown -R www-data:www-data var/cache var/log || true
 chmod 1777 /var/lib/php/sessions
 
-echo "✨ All systems ready. Connection via UNIX Socket."
+echo "✨ Services starting: Nginx (8080) -> PHP-FPM (127.0.0.1:9001)"
+# 5. Hand over to supervisord
 exec "$@"
