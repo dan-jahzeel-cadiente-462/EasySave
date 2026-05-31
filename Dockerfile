@@ -14,6 +14,8 @@ RUN apk add --no-cache \
     icu-dev \
     libxml2-dev \
     libsodium-dev \
+    nodejs \
+    npm \
     zip \
     unzip && \
     docker-php-ext-install -j2 \

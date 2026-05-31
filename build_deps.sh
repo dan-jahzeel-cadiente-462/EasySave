@@ -22,6 +22,10 @@ EOF
 # Install dependencies without running scripts initially
 composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist
 
+# Build frontend assets
+npm install
+npm run build
+
 # Manually run the scripts that would have been triggered by composer
 php bin/console cache:clear --env=prod
 php bin/console assets:install
