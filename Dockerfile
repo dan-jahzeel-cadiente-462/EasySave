@@ -1,7 +1,7 @@
 # Stage 1: Builder
 FROM php:8.3-fpm-alpine AS builder
 
-# Install system dependencies and PHP extensions
+# Install system dependencies, PHP extensions AND Composer in a single layer
 RUN apk add --no-cache \
     curl \
     git \
@@ -13,7 +13,8 @@ RUN apk add --no-cache \
     zlib-dev \
     icu-dev \
     zip \
-    unzip && \
+    unzip \
+    composer && \
     docker-php-ext-install -j2 \
     pdo_mysql \
     gd \
@@ -21,14 +22,13 @@ RUN apk add --no-cache \
     intl \
     opcache
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Ensure composer runs as superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
 COPY . .
+COPY build_deps.sh /app/build_deps.sh
 
 # Use a build script to handle dependencies and cache clearing reliably
-COPY build_deps.sh /app/build_deps.sh
 RUN chmod +x /app/build_deps.sh && /app/build_deps.sh && rm /app/build_deps.sh
 
 # Create cache directories

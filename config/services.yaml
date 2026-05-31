@@ -9,6 +9,7 @@
 parameters:
     profilePictureDirectory: '%kernel.project_dir%/public/uploads/profiles'
     app.default_uri: 'https://easysave.up.railway.app'
+    app.cors_allow_origin: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
 
 
 services:

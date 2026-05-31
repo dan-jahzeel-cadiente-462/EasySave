@@ -9,7 +9,6 @@ export MAILER_DSN=null://null
 export MESSENGER_TRANSPORT_DSN=null://null
 export GOOGLE_CLIENT_ID=dummy
 export GOOGLE_CLIENT_SECRET=dummy
-export CORS_ALLOW_ORIGIN=dummy
 export JWT_PASSPHRASE=dummy
 export XDEBUG_MODE=off
 
