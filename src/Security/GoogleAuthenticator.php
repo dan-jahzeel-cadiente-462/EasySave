@@ -81,7 +81,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         }
 
         return new SelfValidatingPassport(
-            new UserBadge($user->getUsername())
+            new UserBadge($user->getUsername(), fn() => $user)
         );
     }
 

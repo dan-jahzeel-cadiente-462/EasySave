@@ -62,7 +62,7 @@ class AdminLoginAuthenticator extends AbstractLoginFormAuthenticator
         }
 
         return new Passport(
-            new UserBadge($user->getUsername()),
+            new UserBadge($user->getUsername(), fn() => $user),
             new PasswordCredentials($password),
             [
                 new CsrfTokenBadge('authenticate_admin', $csrfToken),

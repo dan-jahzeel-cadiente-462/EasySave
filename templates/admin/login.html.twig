@@ -2,109 +2,141 @@
 
 {% block title %}Admin Login{% endblock %}
 
+{% block stylesheets %}
+<style>
+    .brand-green {
+        color: #3bad59;
+    }
+    .bg-brand-green {
+        background-color: #3bad59;
+    }
+    .bg-brand-green:hover {
+        background-color: #2e8b46;
+    }
+    .ring-brand-green:focus {
+        --tw-ring-color: #3bad59;
+    }
+    .border-brand-green:focus {
+        border-color: #3bad59;
+    }
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(59, 173, 89, 0.1);
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-	<div class="min-h-screen flex items-center justify-center bg-white">
-		<div class="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
-			<h1 class="text-2xl font-bold mb-6 text-gray-800">Admin Login</h1>
+	<div class="min-h-screen flex items-center justify-center bg-gray-50 bg-opacity-50" style="background-image: radial-gradient(circle at 2px 2px, rgba(59, 173, 89, 0.05) 1px, transparent 0); background-size: 40px 40px;">
+		<div class="max-w-md w-full glass-effect shadow-2xl rounded-2xl p-10 transform transition-all">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                    <svg class="w-8 h-8 brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+			    <h1 class="text-3xl font-extrabold text-gray-900">Admin Portal</h1>
+                <p class="text-gray-500 mt-2">Secure access for EasySave administrators</p>
+            </div>
 
 			{# Show error if login failed #}
 			{% if error %}
-				<div class="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+				<div class="mb-6 p-4 text-sm text-red-700 bg-red-50 border-l-4 border-red-500 rounded-r-lg animate-pulse">
 					{{ error.messageKey|trans(error.messageData, 'security') }}
 				</div>
 			{% endif %}
 
 			{# Flash messages #}
 			{% for message in app.flashes('success') %}
-				<div class="mb-4 p-3 text-sm text-green-700 bg-green-100 rounded-lg">
+				<div class="mb-6 p-4 text-sm text-green-700 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
 					{{ message }}
 				</div>
 			{% endfor %}
 			{% for message in app.flashes('error') %}
-				<div class="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+				<div class="mb-6 p-4 text-sm text-red-700 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
 					{{ message }}
 				</div>
 			{% endfor %}
 			{% for message in app.flashes('warning') %}
-				<div class="mb-4 p-3 text-sm text-yellow-700 bg-yellow-100 rounded-lg">
+				<div class="mb-6 p-4 text-sm text-yellow-700 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
 					⚠️ {{ message }}
 				</div>
 			{% endfor %}
 
-			<form method="post" class="space-y-4" x-data="{ loginType: '{{ last_login_type|default('email') }}' }">
+			<form method="post" class="space-y-6" x-data="{ loginType: '{{ last_login_type|default('email') }}' }">
 				<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate_admin') }}">
 				<input type="hidden" name="login_type" :value="loginType">
 
-				<fieldset class="space-y-2">
-					<legend class="block text-gray-700 font-medium">Sign in with</legend>
-					<div class="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1" role="radiogroup" aria-label="Login method">
+				<div class="space-y-3">
+					<label class="block text-sm font-semibold text-gray-700 uppercase tracking-wider">Authentication Method</label>
+					<div class="grid grid-cols-2 gap-3 rounded-xl bg-gray-100 p-1.5" role="radiogroup">
 						<button
 							type="button"
 							@click="loginType = 'email'"
-							:class="loginType === 'email' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'"
-							class="rounded-md px-3 py-2 text-sm font-medium transition"
-							:aria-pressed="loginType === 'email'"
+							:class="loginType === 'email' ? 'bg-white text-green-700 shadow-md ring-1 ring-black ring-opacity-5' : 'text-gray-500 hover:text-gray-700'"
+							class="rounded-lg px-4 py-2.5 text-sm font-bold transition-all duration-200"
 						>
 							Email
 						</button>
 						<button
 							type="button"
 							@click="loginType = 'username'"
-							:class="loginType === 'username' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'"
-							class="rounded-md px-3 py-2 text-sm font-medium transition"
-							:aria-pressed="loginType === 'username'"
+							:class="loginType === 'username' ? 'bg-white text-green-700 shadow-md ring-1 ring-black ring-opacity-5' : 'text-gray-500 hover:text-gray-700'"
+							class="rounded-lg px-4 py-2.5 text-sm font-bold transition-all duration-200"
 						>
 							Username
 						</button>
 					</div>
-				</fieldset>
+				</div>
 
-				<div>
-					<label for="username" class="block text-gray-700 font-medium mb-2" x-text="loginType === 'email' ? 'Email Address' : 'Username'"></label>
-					<p class="text-xs text-gray-500 mb-2" x-show="loginType === 'email'">Admin or staff email address</p>
-					<p class="text-xs text-gray-500 mb-2" x-show="loginType === 'username'" x-cloak>Your admin username</p>
+				<div class="space-y-2">
+					<label for="username" class="block text-sm font-semibold text-gray-700" x-text="loginType === 'email' ? 'Administrator Email' : 'Admin Username'"></label>
 					<input
 						:type="loginType === 'email' ? 'email' : 'text'"
 						value="{{ last_username }}"
 						name="_username"
 						id="username"
-						class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-						:autocomplete="loginType === 'email' ? 'email' : 'username'"
+						class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ring-brand-green border-brand-green transition-all duration-200"
+						:placeholder="loginType === 'email' ? 'admin@easysave.com' : 'admin_user'"
 						required
 						autofocus
 					>
 				</div>
 
-				<div class="relative">
-					<label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
-					<input type="password" name="_password" id="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10" required autocomplete="current-password">
+				<div class="space-y-2 relative">
+					<label for="password" class="block text-sm font-semibold text-gray-700">Security Password</label>
+					<input type="password" name="_password" id="password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ring-brand-green border-brand-green transition-all duration-200 pr-12" placeholder="••••••••" required autocomplete="current-password">
 
-					<div class="absolute inset-y-0 right-0 flex items-center pr-3">
+					<div class="absolute bottom-3 right-4 flex items-center">
 						<input type="checkbox" id="show_password" class="hidden">
-						<label for="show_password" class="cursor-pointer text-gray-400 hover:text-gray-600 transition duration-150" aria-label="Toggle password visibility">
-							<svg id="eye-open" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+						<label for="show_password" class="cursor-pointer text-gray-400 hover:text-brand-green transition-colors duration-200">
+							<svg id="eye-open" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
 							</svg>
-							<svg id="eye-closed" class="h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+							<svg id="eye-closed" class="h-6 w-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.82L21 12 13.875 5.18M10.125 5.18L3 12l7.125 6.82"/>
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
 							</svg>
 						</label>
 					</div>
 				</div>
 
-				<div class="flex items-center">
-					<input type="checkbox" id="remember_me" name="_remember_me" class="mr-2">
-					<label for="remember_me" class="text-gray-700">Remember me</label>
+				<div class="flex items-center justify-between">
+					<div class="flex items-center">
+						<input type="checkbox" id="remember_me" name="_remember_me" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded transition-all duration-200">
+						<label for="remember_me" class="ml-2 block text-sm text-gray-600 font-medium">Keep me signed in</label>
+					</div>
 				</div>
 
-				<button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition">
-					Login
+				<button type="submit" class="w-full bg-brand-green text-white py-3.5 px-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+					Access Dashboard
 				</button>
 
-				<div class="text-sm text-center text-gray-600 pt-2 border-t border-gray-200 mt-4">
-					<a href="{{ path('app_user_login') }}" class="text-indigo-600 hover:underline">Staff/User Login</a>
+				<div class="text-sm text-center pt-6 border-t border-gray-100">
+					<span class="text-gray-500">Not an admin?</span>
+					<a href="{{ path('app_user_login') }}" class="ml-1 font-bold brand-green hover:underline">Return to User Login</a>
 				</div>
 			</form>
 		</div>

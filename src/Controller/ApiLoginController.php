@@ -35,17 +35,15 @@ class ApiLoginController extends AbstractController
             return $this->json(['message' => 'missing credentials'], 401);
         }
 
-        try {
-            /** @var User $user */
-            // Try finding by email first (as per provider default), then by username
-            $user = $this->userProvider->loadUserByIdentifier($data['username']);
-        } catch (AuthenticationException) {
-            // Fallback: try finding by username manually if loadUserByIdentifier (email) failed
+        // Find user by email OR username
+        /** @var User|null $user */
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $data['username']]);
+        if (!$user) {
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $data['username']]);
-            
-            if (!$user) {
-                return $this->json(['message' => 'invalid credentials'], 401);
-            }
+        }
+
+        if (!$user) {
+            return $this->json(['message' => 'invalid credentials'], 401);
         }
 
 
