@@ -35,7 +35,10 @@ COPY . .
 COPY build_deps.sh /app/build_deps.sh
 
 # Use a build script to handle dependencies and cache clearing reliably
-RUN chmod +x /app/build_deps.sh && /app/build_deps.sh && rm /app/build_deps.sh
+RUN sed -i 's/\r$//' /app/build_deps.sh && \
+    chmod +x /app/build_deps.sh && \
+    /app/build_deps.sh && \
+    rm /app/build_deps.sh
 
 # Create cache directories
 RUN mkdir -p var/cache var/log
