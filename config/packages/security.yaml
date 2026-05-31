@@ -36,7 +36,11 @@ security:
                 - App\Security\AdminLoginAuthenticator
                 - App\Security\LoginAuthenticator
                 - App\Security\GoogleAuthenticator
-            entry_point: App\Security\LoginAuthenticator
+            # SMARTER REDIRECTION:
+            # If session is lost on /admin, go back to /admin/login
+            # Otherwise go to /login
+            entry_point: App\Security\AuthenticationEntryPoint
+
             remember_me:
                 secret: '%env(APP_SECRET)%'
                 lifetime: 2592000  # 30 days in seconds
