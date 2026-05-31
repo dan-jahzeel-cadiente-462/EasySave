@@ -8,6 +8,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     profilePictureDirectory: '%kernel.project_dir%/public/uploads/profiles'
+    app.default_uri: 'https://easysave.up.railway.app'
 
 
 services:

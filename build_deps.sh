@@ -5,7 +5,6 @@ set -e
 export APP_ENV=prod
 export DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
 export APP_SECRET=dummy_secret_for_build
-export DEFAULT_URI=https://easysave.up.railway.app
 export MAILER_DSN=null://null
 export MESSENGER_TRANSPORT_DSN=null://null
 export GOOGLE_CLIENT_ID=dummy
