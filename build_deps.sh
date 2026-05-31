@@ -10,6 +10,7 @@ export MESSENGER_TRANSPORT_DSN=null://null
 export GOOGLE_CLIENT_ID=dummy
 export GOOGLE_CLIENT_SECRET=dummy
 export JWT_PASSPHRASE=dummy
+export TRUSTED_PROXIES=127.0.0.1
 export XDEBUG_MODE=off
 
 # Create a valid .env file to satisfy Symfony Runtime's boot check
@@ -17,6 +18,7 @@ cat <<EOF > .env
 APP_ENV=prod
 DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
 APP_SECRET=dummy_secret_for_build
+TRUSTED_PROXIES=127.0.0.1
 EOF
 
 # Install dependencies without running scripts initially
