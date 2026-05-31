@@ -51,8 +51,8 @@ RUN apk update && apk add --no-cache \
     libzip \
     libzip-dev \
     zlib-dev \
-    libxml2 \
-    libsodium \
+    libxml2-dev \
+    libsodium-dev \
     icu-dev \
     icu-libs \
     nginx \
