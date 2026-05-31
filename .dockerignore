@@ -8,6 +8,7 @@
 # Dependencies
 node_modules/
 vendor/
+package-lock.json
 
 # Caches
 var/cache/
