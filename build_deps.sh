@@ -27,7 +27,8 @@ npm install
 npm run build
 
 # Manually run the scripts that would have been triggered by composer
-php bin/console cache:clear --env=prod
+# Pass env vars explicitly to ensure they are available to the Symfony console process
+APP_ENV=prod DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db DEFAULT_URI=https://easysave.up.railway.app php bin/console cache:clear --env=prod
 php bin/console assets:install
 
 # Cleanup
