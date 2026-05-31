@@ -1,7 +1,7 @@
 # Stage 1: Builder
 FROM php:8.3-fpm-alpine AS builder
 
-# Install system dependencies, PHP extensions AND Composer in a single layer
+# Install system dependencies and PHP extensions
 RUN apk add --no-cache \
     curl \
     git \
@@ -12,17 +12,21 @@ RUN apk add --no-cache \
     libzip-dev \
     zlib-dev \
     icu-dev \
+    libxml2-dev \
+    libsodium-dev \
     zip \
-    unzip \
-    composer && \
+    unzip && \
     docker-php-ext-install -j2 \
     pdo_mysql \
     gd \
     zip \
     intl \
-    opcache
+    opcache \
+    xml \
+    sodium
 
-# Ensure composer runs as superuser
+# Install Composer via official image
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
 COPY . .
@@ -47,6 +51,8 @@ RUN apk update && apk add --no-cache \
     libzip \
     libzip-dev \
     zlib-dev \
+    libxml2 \
+    libsodium \
     icu-dev \
     icu-libs \
     nginx \
@@ -57,7 +63,9 @@ RUN apk update && apk add --no-cache \
     gd \
     zip \
     intl \
-    opcache
+    opcache \
+    xml \
+    sodium
 
 # Configuration
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
