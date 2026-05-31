@@ -19,7 +19,7 @@ class EmailVerificationService
         private MailerInterface $mailer,
         private LoggerInterface $logger,
         private MessageBusInterface $bus,
-        #[Autowire('%env(MAILER_FROM)%')]
+        #[Autowire('%app.mailer_from%')]
         private string $mailerFrom,
     ) {
     }
