@@ -12,6 +12,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 
 class ApiLoginController extends AbstractController
@@ -20,7 +21,8 @@ class ApiLoginController extends AbstractController
         private UserProviderInterface $userProvider,
         private UserPasswordHasherInterface $passwordHasher,
         private JWTTokenManagerInterface $jwtManager,
-        private EmailVerificationService $emailVerificationService
+        private EmailVerificationService $emailVerificationService,
+        private EntityManagerInterface $entityManager
     ) {}
 
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
@@ -35,9 +37,15 @@ class ApiLoginController extends AbstractController
 
         try {
             /** @var User $user */
+            // Try finding by email first (as per provider default), then by username
             $user = $this->userProvider->loadUserByIdentifier($data['username']);
         } catch (AuthenticationException) {
-            return $this->json(['message' => 'invalid credentials'], 401);
+            // Fallback: try finding by username manually if loadUserByIdentifier (email) failed
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $data['username']]);
+            
+            if (!$user) {
+                return $this->json(['message' => 'invalid credentials'], 401);
+            }
         }
 
 

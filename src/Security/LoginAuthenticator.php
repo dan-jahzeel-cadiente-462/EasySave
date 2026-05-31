@@ -2,12 +2,14 @@
 
 namespace App\Security;
 
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Entity\User;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
@@ -22,28 +24,39 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_user_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
     public function supports(Request $request): bool
     {
-        // Only support user/staff login page (POST requests)
         return $request->attributes->get('_route') === self::LOGIN_ROUTE
             && $request->isMethod('POST');
     }
 
     public function authenticate(Request $request): Passport
     {
-        // read form fields from the request (login form uses `_username` and `_password`)
-        $username = (string) $request->request->get('_username', '');
+        $identifier = trim((string) $request->request->get('_username', ''));
         $password = (string) $request->request->get('_password', '');
         $csrfToken = $request->request->get('_csrf_token');
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $username);
+        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $identifier);
+
+        // Find user by email OR username to ensure we can get the canonical email for the badge
+        // This is necessary because the user provider is configured to use the email property.
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $identifier]);
+        if (!$user) {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $identifier]);
+        }
+
+        if (!$user instanceof User) {
+            throw new UserNotFoundException();
+        }
 
         return new Passport(
-            new UserBadge($username),
+            new UserBadge($user->getUsername()),
             new PasswordCredentials($password),
             [
                 new CsrfTokenBadge('authenticate', $csrfToken),

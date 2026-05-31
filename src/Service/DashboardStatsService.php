@@ -25,18 +25,17 @@ class DashboardStatsService
             ? $this->productRepository->count([])
             : ($user ? $this->productRepository->count(['createdBy' => $user]) : 0);
 
-        // Calculate total inventory value (sum of all product prices)
-        $totalValue = 0;
-        $products = $this->productRepository->findAll();
-        foreach ($products as $product) {
-            $totalValue += (float) $product->getPrice();
-        }
+        // Optimize: Use a SUM query instead of loading all products into memory
+        $totalValue = $this->productRepository->createQueryBuilder('p')
+            ->select('SUM(p.price)')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
 
         return [
             'categoryCount' => $this->categoryRepository->count([]),
             'userCount' => $this->userRepository->count([]),
             'productCount' => $productCount,
-            'totalValue' => $totalValue,
+            'totalValue' => (float) $totalValue,
         ];
     }
 }

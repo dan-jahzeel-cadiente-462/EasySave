@@ -34,12 +34,13 @@ class UserChecker implements UserCheckerInterface
             // The route-level access control will prevent unauthorized access
         }
 
-        // 3) Email verification: required for users and staff; admins exempt
+        // 3) Email verification: required for regular users; admins and staff exempt
         if (!$user->isVerified()) {
             $isGoogleOAuth = $user->getProvider() === 'google';
-            $isAdmin = in_array('ROLE_ADMIN', $user->getRoles(), true);
+            $roles = $user->getRoles();
+            $isAdministrative = in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true);
 
-            if (!$isGoogleOAuth && !$isAdmin) {
+            if (!$isGoogleOAuth && !$isAdministrative) {
                 throw new CustomUserMessageAuthenticationException('Please verify your email before logging in. Check your inbox for the verification link.');
             }
         }

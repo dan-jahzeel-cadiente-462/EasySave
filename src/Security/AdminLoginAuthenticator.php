@@ -50,20 +50,19 @@ class AdminLoginAuthenticator extends AbstractLoginFormAuthenticator
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $identifier);
         $request->getSession()->set(self::SESSION_LAST_LOGIN_TYPE, $loginType);
 
+        // IMPORTANT: We must find the user first to get their EMAIL.
+        // The security.yaml provider (app_user_provider) is configured with property: email.
+        // If we pass a username to UserBadge, session reloading will fail when it tries to find email=username.
+        $searchField = ($loginType === 'username') ? 'username' : 'email';
+        $user = $this->userRepository->findOneBy([$searchField => $identifier]);
+
+        if (!$user instanceof User) {
+            error_log("Admin Auth Failed: User not found for $searchField=$identifier");
+            throw new UserNotFoundException();
+        }
+
         return new Passport(
-            new UserBadge($identifier, function (string $userIdentifier) use ($loginType): UserInterface {
-                // Choose search field based on UI selection
-                $searchField = ($loginType === 'username') ? 'username' : 'email';
-                
-                $user = $this->userRepository->findOneBy([$searchField => $userIdentifier]);
-
-                if (!$user instanceof User) {
-                    error_log("Admin Auth Failed: User not found for $searchField=$userIdentifier");
-                    throw new UserNotFoundException();
-                }
-
-                return $user;
-            }),
+            new UserBadge($user->getUsername()),
             new PasswordCredentials($password),
             [
                 new CsrfTokenBadge('authenticate_admin', $csrfToken),

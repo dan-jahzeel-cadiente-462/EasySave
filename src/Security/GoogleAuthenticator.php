@@ -40,74 +40,48 @@ class GoogleAuthenticator extends OAuth2Authenticator
             $accessToken = $this->fetchAccessToken($client);
         } catch (\Exception $e) {
             error_log('Failed to fetch Google access token: ' . $e->getMessage());
-            error_log('Stack trace: ' . $e->getTraceAsString());
-            throw new CustomUserMessageAuthenticationException('Google authentication failed due to a network error. Please try again later.');
+            throw new CustomUserMessageAuthenticationException('Google authentication failed. Please try again.');
+        }
+
+        /** @var GoogleUser $googleUser */
+        $googleUser = $client->fetchUserFromToken($accessToken);
+        $email = $googleUser->getEmail();
+
+        // 1) Find user by Google ID or Email
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
+
+        if (!$user) {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+            if (!$user) {
+                $user = new User();
+                $username = explode('@', $email, 2)[0] ?: $email;
+                $username = preg_replace('/[^a-zA-Z0-9_\-]/', '', (string) $username);
+                $user->setUsername($username);
+                $user->setEmail($email);
+                $user->setFirstName($googleUser->getFirstName() ?? '');
+                $user->setLastName($googleUser->getLastName() ?? '');
+                $user->setPassword(bin2hex(random_bytes(16)));
+                $user->setIsVerified(true);
+            }
+
+            $user->setProvider('google');
+            $user->setGoogleId($googleUser->getId());
+
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        }
+
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+            throw new CustomUserMessageAuthenticationException('Administrator accounts are not permitted to use Google authentication.');
+        }
+
+        if (method_exists($user, 'isActive') && !$user->isActive()) {
+            throw new CustomUserMessageAuthenticationException('Your account has been deactivated.');
         }
 
         return new SelfValidatingPassport(
-            new UserBadge($accessToken->getToken(), function () use ($accessToken, $client) {
-                /** @var GoogleUser $googleUser */
-                try {
-                    $googleUser = $client->fetchUserFromToken($accessToken);
-                } catch (\Exception $e) {
-                    error_log('Failed to fetch Google user from token: ' . $e->getMessage());
-                    error_log('Stack trace: ' . $e->getTraceAsString());
-                    throw new CustomUserMessageAuthenticationException('Google authentication failed while fetching user info. Please try again.');
-                }
-                $email = $googleUser->getEmail();
-
-                // 1) Find user by Google ID or Email
-                $user = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
-
-                if ($user && in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-                    throw new CustomUserMessageAuthenticationException('Administrator accounts are not permitted to use Google authentication. Please use the administrative login form.');
-                }
-
-                if (!$user) {
-                    $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-
-                    if ($user) {
-                        // Check if existing user is an admin
-                        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-                            throw new CustomUserMessageAuthenticationException('Administrator accounts are not permitted to use Google authentication. Please use the administrative login form.');
-                        }
-                    }
-
-                    if (!$user) {
-                        // 2) Register a new user if they don't exist
-                        $user = new User();
-
-                        // Generate username from email (first part before @)
-                        $username = explode('@', $email, 2)[0] ?: $email;
-                        $username = preg_replace('/[^a-zA-Z0-9_\-]/', '', (string) $username);
-                        $user->setUsername($username);
-
-                        $user->setEmail($email);
-                        $user->setFirstName($googleUser->getFirstName() ?? '');
-                        $user->setLastName($googleUser->getLastName() ?? '');
-
-                        // Set a dummy password since it's a required field in most User entities
-                        $user->setPassword(bin2hex(random_bytes(16)));
-
-                        // Auto-verify OAuth users (per requirement)
-                        $user->setIsVerified(true);
-                    }
-
-                    // Ensure provider linkage + googleId are always updated
-                    $user->setProvider('google'); // This prevents the 1048 error
-                    $user->setGoogleId($googleUser->getId());
-
-                    $this->entityManager->persist($user);
-                    $this->entityManager->flush();
-                }
-
-                // 3) Security Check: Prevent deactivated users from logging in
-                if (method_exists($user, 'isActive') && !$user->isActive()) {
-                    throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact support.');
-                }
-
-                return $user;
-            })
+            new UserBadge($user->getUsername())
         );
     }
 

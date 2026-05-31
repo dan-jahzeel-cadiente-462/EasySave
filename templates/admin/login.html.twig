@@ -14,6 +14,23 @@
 				</div>
 			{% endif %}
 
+			{# Flash messages #}
+			{% for message in app.flashes('success') %}
+				<div class="mb-4 p-3 text-sm text-green-700 bg-green-100 rounded-lg">
+					{{ message }}
+				</div>
+			{% endfor %}
+			{% for message in app.flashes('error') %}
+				<div class="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+					{{ message }}
+				</div>
+			{% endfor %}
+			{% for message in app.flashes('warning') %}
+				<div class="mb-4 p-3 text-sm text-yellow-700 bg-yellow-100 rounded-lg">
+					⚠️ {{ message }}
+				</div>
+			{% endfor %}
+
 			<form method="post" class="space-y-4" x-data="{ loginType: '{{ last_login_type|default('email') }}' }">
 				<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate_admin') }}">
 				<input type="hidden" name="login_type" :value="loginType">
