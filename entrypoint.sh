@@ -20,6 +20,9 @@ if [ -n "$DATABASE_URL" ]; then
     # Quick non-blocking attempt to prepare database
     php bin/console doctrine:database:create --if-not-exists --no-interaction || true
     php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || echo "⚠️  Migration deferred."
+    
+    echo "🌱 Running production seed..."
+    php bin/console app:seed-production --no-interaction || echo "⚠️  Seed deferred."
 fi
 
 # 4. Critical Permissions for Symfony

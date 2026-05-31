@@ -6,7 +6,6 @@ export APP_ENV=prod
 export DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
 export APP_SECRET=dummy_secret_for_build
 export MAILER_DSN=null://null
-export MAILER_FROM=noreply@easysave.up.railway.app
 export MESSENGER_TRANSPORT_DSN=null://null
 export GOOGLE_CLIENT_ID=dummy
 export GOOGLE_CLIENT_SECRET=dummy
@@ -25,10 +24,22 @@ composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --
 
 # Build frontend assets: clean lock file to avoid Windows corruption
 rm -f package-lock.json
-npm install --legacy-peer-deps
+
+# Retry mechanism for npm install to handle transient network issues
+n=0
+until [ "$n" -ge 5 ]
+do
+   npm install --legacy-peer-deps && break
+   n=$((n+1))
+   echo "npm install failed, retrying ($n/5) in 5 seconds..."
+   sleep 5
+done
+
+# Run the build
 npm run build
 
 # Manually run the scripts that would have been triggered by composer
+# Pass env vars explicitly to ensure they are available to the Symfony console process
 APP_ENV=prod DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db php bin/console cache:clear --env=prod
 php bin/console assets:install
 

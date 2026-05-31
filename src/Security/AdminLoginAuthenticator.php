@@ -48,27 +48,32 @@ class AdminLoginAuthenticator extends AbstractLoginFormAuthenticator
     public function authenticate(Request $request): Passport
     {
         $loginType = (string) $request->request->get('login_type', 'email');
-        if (!in_array($loginType, ['email', 'username'], true)) {
-            $loginType = 'email';
-        }
-
         $identifier = trim((string) $request->request->get('_username', ''));
         $password = (string) $request->request->get('_password', '');
         $csrfToken = $request->request->get('_csrf_token');
+
+        error_log("Admin Auth Attempt: type=$loginType, identifier=$identifier");
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $identifier);
         $request->getSession()->set(self::SESSION_LAST_LOGIN_TYPE, $loginType);
 
         return new Passport(
-            new UserBadge($identifier, function (string $userIdentifier) use ($loginType): UserInterface {
-                $user = 'username' === $loginType
-                    ? $this->userRepository->findOneBy(['username' => $userIdentifier])
-                    : $this->userRepository->findOneBy(['email' => $userIdentifier]);
+            new UserBadge($identifier, function (string $userIdentifier): UserInterface {
+                // Try username first
+                $user = $this->userRepository->findOneBy(['username' => $userIdentifier]);
+                
+                // Fallback to email
+                if (!$user) {
+                    $user = $this->userRepository->findOneBy(['email' => $userIdentifier]);
+                }
 
                 if (!$user instanceof User) {
+                    error_log("Admin Auth Failed: User not found for identifier=$userIdentifier");
                     throw new UserNotFoundException();
                 }
 
+                // IMPORTANT: We must return the canonical identifier (email) 
+                // so the UserProvider can refresh the session correctly.
                 return $user;
             }),
             new PasswordCredentials($password),
