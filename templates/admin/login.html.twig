@@ -2,64 +2,39 @@
 
 {% block title %}Admin Login{% endblock %}
 
-{% block stylesheets %}
-<style>
-    .brand-green {
-        color: #3bad59;
-    }
-    .bg-brand-green {
-        background-color: #3bad59;
-    }
-    .bg-brand-green:hover {
-        background-color: #2e8b46;
-    }
-    .ring-brand-green:focus {
-        --tw-ring-color: #3bad59;
-    }
-    .border-brand-green:focus {
-        border-color: #3bad59;
-    }
-    .glass-effect {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(59, 173, 89, 0.1);
-    }
-</style>
-{% endblock %}
-
 {% block body %}
 	<div class="min-h-screen flex items-center justify-center bg-gray-50 bg-opacity-50" style="background-image: radial-gradient(circle at 2px 2px, rgba(59, 173, 89, 0.05) 1px, transparent 0); background-size: 40px 40px;">
-		<div class="max-w-md w-full glass-effect shadow-2xl rounded-2xl p-10 transform transition-all">
+		<div class="max-w-md w-full bg-white bg-opacity-95 backdrop-blur-md shadow-2xl rounded-2xl p-10 transform transition-all border border-brand-green/10">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                    <svg class="w-8 h-8 brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-8 h-8 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
                 </div>
-			    <h1 class="text-3xl font-extrabold text-gray-900">Admin Portal</h1>
-                <p class="text-gray-500 mt-2">Secure access for EasySave administrators</p>
+			    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Admin Portal</h1>
+                <p class="text-gray-500 mt-2 font-medium">Secure access for EasySave administrators</p>
             </div>
 
 			{# Show error if login failed #}
 			{% if error %}
-				<div class="mb-6 p-4 text-sm text-red-700 bg-red-50 border-l-4 border-red-500 rounded-r-lg animate-pulse">
+				<div class="mb-6 p-4 text-sm text-red-700 bg-red-50 border-l-4 border-red-500 rounded-r-lg animate-pulse font-medium">
 					{{ error.messageKey|trans(error.messageData, 'security') }}
 				</div>
 			{% endif %}
 
 			{# Flash messages #}
 			{% for message in app.flashes('success') %}
-				<div class="mb-6 p-4 text-sm text-green-700 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+				<div class="mb-6 p-4 text-sm text-green-700 bg-green-50 border-l-4 border-brand-green rounded-r-lg font-medium">
 					{{ message }}
 				</div>
 			{% endfor %}
 			{% for message in app.flashes('error') %}
-				<div class="mb-6 p-4 text-sm text-red-700 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+				<div class="mb-6 p-4 text-sm text-red-700 bg-red-50 border-l-4 border-red-500 rounded-r-lg font-medium">
 					{{ message }}
 				</div>
 			{% endfor %}
 			{% for message in app.flashes('warning') %}
-				<div class="mb-6 p-4 text-sm text-yellow-700 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
+				<div class="mb-6 p-4 text-sm text-yellow-700 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg font-medium">
 					⚠️ {{ message }}
 				</div>
 			{% endfor %}
@@ -69,12 +44,12 @@
 				<input type="hidden" name="login_type" :value="loginType">
 
 				<div class="space-y-3">
-					<label class="block text-sm font-semibold text-gray-700 uppercase tracking-wider">Authentication Method</label>
+					<label class="block text-xs font-bold text-gray-500 uppercase tracking-widest">Authentication Method</label>
 					<div class="grid grid-cols-2 gap-3 rounded-xl bg-gray-100 p-1.5" role="radiogroup">
 						<button
 							type="button"
 							@click="loginType = 'email'"
-							:class="loginType === 'email' ? 'bg-white text-green-700 shadow-md ring-1 ring-black ring-opacity-5' : 'text-gray-500 hover:text-gray-700'"
+							:class="loginType === 'email' ? 'bg-white text-brand-green shadow-md ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700'"
 							class="rounded-lg px-4 py-2.5 text-sm font-bold transition-all duration-200"
 						>
 							Email
@@ -82,7 +57,7 @@
 						<button
 							type="button"
 							@click="loginType = 'username'"
-							:class="loginType === 'username' ? 'bg-white text-green-700 shadow-md ring-1 ring-black ring-opacity-5' : 'text-gray-500 hover:text-gray-700'"
+							:class="loginType === 'username' ? 'bg-white text-brand-green shadow-md ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700'"
 							class="rounded-lg px-4 py-2.5 text-sm font-bold transition-all duration-200"
 						>
 							Username
@@ -97,7 +72,7 @@
 						value="{{ last_username }}"
 						name="_username"
 						id="username"
-						class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ring-brand-green border-brand-green transition-all duration-200"
+						class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all duration-200"
 						:placeholder="loginType === 'email' ? 'admin@easysave.com' : 'admin_user'"
 						required
 						autofocus
@@ -106,7 +81,7 @@
 
 				<div class="space-y-2 relative">
 					<label for="password" class="block text-sm font-semibold text-gray-700">Security Password</label>
-					<input type="password" name="_password" id="password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ring-brand-green border-brand-green transition-all duration-200 pr-12" placeholder="••••••••" required autocomplete="current-password">
+					<input type="password" name="_password" id="password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all duration-200 pr-12" placeholder="••••••••" required autocomplete="current-password">
 
 					<div class="absolute bottom-3 right-4 flex items-center">
 						<input type="checkbox" id="show_password" class="hidden">
@@ -125,18 +100,18 @@
 
 				<div class="flex items-center justify-between">
 					<div class="flex items-center">
-						<input type="checkbox" id="remember_me" name="_remember_me" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded transition-all duration-200">
-						<label for="remember_me" class="ml-2 block text-sm text-gray-600 font-medium">Keep me signed in</label>
+						<input type="checkbox" id="remember_me" name="_remember_me" class="h-4 w-4 text-brand-green focus:ring-brand-green border-gray-300 rounded transition-all duration-200">
+						<label for="remember_me" class="ml-2 block text-sm text-gray-600 font-medium cursor-pointer">Keep me signed in</label>
 					</div>
 				</div>
 
-				<button type="submit" class="w-full bg-brand-green text-white py-3.5 px-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+				<button type="submit" class="w-full bg-brand-green text-white py-3.5 px-4 rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-brand-green-dark transform hover:-translate-y-0.5 transition-all duration-200">
 					Access Dashboard
 				</button>
 
 				<div class="text-sm text-center pt-6 border-t border-gray-100">
-					<span class="text-gray-500">Not an admin?</span>
-					<a href="{{ path('app_user_login') }}" class="ml-1 font-bold brand-green hover:underline">Return to User Login</a>
+					<span class="text-gray-500 font-medium">Not an admin?</span>
+					<a href="{{ path('app_user_login') }}" class="ml-1 font-bold text-brand-green hover:text-brand-green-dark hover:underline transition-colors duration-200">Return to User Login</a>
 				</div>
 			</form>
 		</div>

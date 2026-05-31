@@ -6,7 +6,14 @@ module.exports = {
     './assets/**/*.js',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          green: '#3bad59',
+          'green-dark': '#2e8b46',
+        }
+      }
+    },
   },
   plugins: [],
 }
