@@ -27,19 +27,18 @@ fi
 
 # 4. Critical Permissions for Symfony
 echo "🔐 Setting permissions..."
-mkdir -p var/cache var/log /var/lib/php/sessions /var/run
-# Add nginx user to www-data group so it can access the php-fpm socket (Alpine standard)
-addgroup nginx www-data
+mkdir -p var/cache var/log /var/lib/php/sessions
 chmod -R 775 var/cache var/log || true
-chown -R www-data:www-data var/cache var/log /var/run || true
+chown -R www-data:www-data var/cache var/log || true
 chmod 1777 /var/lib/php/sessions
 
 # 5. Inject Port into Nginx
 echo "🌍 Configuring Nginx for port ${PORT:-8080}..."
-# Use a temporary file for envsubst to avoid issues if files are on same partition
+# Use envsubst to safely inject the PORT variable
+export PORT=${PORT:-8080}
 envsubst '${PORT}' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp
 mv /etc/nginx/conf.d/default.conf.tmp /etc/nginx/conf.d/default.conf
 
-echo "✨ Services launching: Nginx (${PORT:-8080}) -> PHP-FPM (unix socket)"
+echo "✨ Services launching: Nginx (${PORT:-8080}) -> PHP-FPM (127.0.0.1:9000)"
 # 6. Hand over to supervisord
 exec "$@"
