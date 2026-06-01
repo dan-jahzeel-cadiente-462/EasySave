@@ -28,8 +28,8 @@ fi
 # 4. Critical Permissions for Symfony
 echo "🔐 Setting permissions..."
 mkdir -p var/cache var/log /var/lib/php/sessions /var/run
-# Add nginx user to www-data group so it can access the php-fpm socket
-usermod -aG www-data nginx
+# Add nginx user to www-data group so it can access the php-fpm socket (Alpine standard)
+addgroup nginx www-data
 chmod -R 775 var/cache var/log || true
 chown -R www-data:www-data var/cache var/log /var/run || true
 chmod 1777 /var/lib/php/sessions

@@ -78,10 +78,11 @@ COPY docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/app.conf
 COPY --from=builder /app /app
 RUN rm -rf /etc/nginx/conf.d/*
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY nginx-main.conf /etc/nginx/conf.d/nginx-main.conf
+COPY nginx-main.conf /etc/nginx/conf.d/default.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN echo "Force rebuild for configuration stability"
 
 WORKDIR /app
 RUN mkdir -p var/cache var/log /var/log/php-fpm public && \
