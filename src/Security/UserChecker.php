@@ -21,28 +21,29 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
+        error_log("[UserChecker] PreAuth check for: " . $user->getUsername() . " (ID: " . $user->getId() . ")");
+
         // 1) Check if user account is deactivated
         if (!$user->isActive()) {
+            error_log("[UserChecker] Failed: User deactivated");
             throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact support.');
         }
 
-        // 2) Check if user is admin or staff for admin login route
-        // This validation applies during admin panel access
+        // 2) Check roles
         $roles = $user->getRoles();
-        if (!in_array('ROLE_ADMIN', $roles, true) && !in_array('ROLE_STAFF', $roles, true)) {
-            // Only enforce this if accessing admin login - regular users accessing user login should not be blocked here
-            // The route-level access control will prevent unauthorized access
-        }
+        error_log("[UserChecker] User Roles: " . implode(', ', $roles));
 
         // 3) Email verification: required for regular users; admins and staff exempt
         if (!$user->isVerified()) {
+            error_log("[UserChecker] User not verified. Checking exemptions.");
             $isGoogleOAuth = $user->getProvider() === 'google';
-            $roles = $user->getRoles();
             $isAdministrative = in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true);
 
             if (!$isGoogleOAuth && !$isAdministrative) {
+                error_log("[UserChecker] Failed: Not verified and not exempt.");
                 throw new CustomUserMessageAuthenticationException('Please verify your email before logging in. Check your inbox for the verification link.');
             }
+            error_log("[UserChecker] Exempt from verification.");
         }
     }
 

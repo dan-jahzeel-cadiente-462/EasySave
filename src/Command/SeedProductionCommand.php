@@ -29,6 +29,7 @@ class SeedProductionCommand extends Command
         
         $usersToSeed = [
             ['username' => 'admin1', 'email' => 'admin@easysave.com', 'roles' => ['ROLE_ADMIN', 'ROLE_STAFF'], 'password' => 'adminpass1'],
+            ['username' => 'admin2', 'email' => 'admin2@easysave.com', 'roles' => ['ROLE_ADMIN'], 'password' => 'adminpass2'],
             ['username' => 'staff1', 'email' => 'staff@easysave.com', 'roles' => ['ROLE_STAFF'], 'password' => 'staffpass1'],
             ['username' => 'user1',  'email' => 'user@easysave.com',  'roles' => ['ROLE_USER'], 'password' => 'userpass1'],
         ];
