@@ -25,7 +25,8 @@ RUN apk add --no-cache \
     intl \
     opcache \
     xml \
-    sodium
+    sodium \
+    pcntl
 
 # Install Composer via official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -71,7 +72,8 @@ RUN apk update && apk add --no-cache \
     intl \
     opcache \
     xml \
-    sodium
+    sodium \
+    pcntl
 
 # Configuration
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini

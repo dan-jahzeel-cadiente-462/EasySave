@@ -34,11 +34,11 @@ chmod 1777 /var/lib/php/sessions
 
 # 5. Inject Port into Nginx
 echo "🌍 Configuring Nginx for port ${PORT:-8080}..."
-# Use envsubst to safely inject the PORT variable
+# Ensure PORT is set for envsubst
 export PORT=${PORT:-8080}
-envsubst '${PORT}' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp
+envsubst '$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp
 mv /etc/nginx/conf.d/default.conf.tmp /etc/nginx/conf.d/default.conf
 
-echo "✨ Services launching: Nginx (${PORT:-8080}) -> PHP-FPM (127.0.0.1:9000)"
+echo "✨ Services launching: Nginx (${PORT}) -> PHP-FPM (127.0.0.1:9000)"
 # 6. Hand over to supervisord
 exec "$@"
