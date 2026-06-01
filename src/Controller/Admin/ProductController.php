@@ -22,25 +22,45 @@ final class ProductController extends AbstractController
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(
             ProductRepository $productRepository, 
-            CategoryRepository $categoryRepository
+            CategoryRepository $categoryRepository,
+            Request $request
         ): Response
     {
-        $request = Request::createFromGlobals();
         $q = $request->query->get('q');
         $category = $request->query->get('category');
         $sort = $request->query->get('sort');
-        $view = $request->query->get('view', 'list'); // Default to 'list' if not set
+        $view = $request->query->get('view', 'list');
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
 
-        $products = $productRepository->findWithFilters($q, $category ? (int)$category : null, $sort);
+        $qb = $productRepository->getFilterQueryBuilder($q, $category ? (int)$category : null);
+        
+        // Sorting logic
+        switch ($sort) {
+            case 'price_asc': $qb->orderBy('p.price', 'ASC'); break;
+            case 'price_desc': $qb->orderBy('p.price', 'DESC'); break;
+            case 'name': $qb->orderBy('p.name', 'ASC'); break;
+            case 'newest': $qb->orderBy('p.id', 'DESC'); break;
+            default: $qb->orderBy('p.id', 'DESC');
+        }
+
+        // Apply pagination
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($qb);
+        $paginator->getQuery()
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
         $categories = $categoryRepository->findAll();
 
         return $this->render('admin/product/index.html.twig', [
-            'products' => $products,
+            'products' => $paginator,
             'categories' => $categories,
             'q' => $q,
             'selectedCategory' => $category,
             'sort' => $sort,
             'view' => $view,
+            'currentPage' => $page,
+            'totalPages' => ceil(count($paginator) / $limit),
         ]);
     }
 
