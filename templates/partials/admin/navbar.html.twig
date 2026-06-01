@@ -1,96 +1,57 @@
-<nav class="border-b border-gray-200 bg-white py-4 shadow-md transition-all duration-300">
+<nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-4 shadow-sm transition-all duration-300">
     <div class="flex justify-between items-center px-4 md:px-6">
         
         <!-- Left Section: Profile Info -->
         <div class="flex items-center space-x-4">
-            <!-- Profile Image and Role Display -->
             <div class="flex items-center gap-3">
-                <!-- Profile Image -->
                 <div class="relative">
                     {% if is_granted('ROLE_ADMIN') %}
-                        <img src="{{ app.user.profileImageUrl|default('/images/default_user_icons/admin_user_icon.png') }}" alt="Profile Image" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-100 shadow-sm">
+                        <img src="{{ app.user.profileImageUrl|default('/images/default_user_icons/admin_user_icon.png') }}" alt="Admin" class="w-10 h-10 rounded-full object-cover border-2 border-green-100 dark:border-green-900 shadow-sm">
                     {% elseif is_granted('ROLE_STAFF') %}
-                        <img src="{{ app.user.profileImageUrl|default('/images/default_user_icons/staff_user_icon.png') }}" alt="Profile Image" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-100 shadow-sm">
+                        <img src="{{ app.user.profileImageUrl|default('/images/default_user_icons/staff_user_icon.png') }}" alt="Staff" class="w-10 h-10 rounded-full object-cover border-2 border-green-100 dark:border-green-900 shadow-sm">
                     {% endif %}
                 </div>
                 
-                <!-- Name and Role Info -->
                 <div class="hidden sm:block">
-                    <!-- Username and Role Badge -->
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <h2 class="text-sm font-semibold text-gray-800">
-                            {{ app.user.firstName|default('Admin User') }} {{ app.user.lastName|default('') }}
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-sm font-bold text-gray-900 dark:text-white">
+                            {{ app.user.firstName|default('Admin') }}
                         </h2>
-                        
-                        <!-- Primary Role Badge -->
                         {% if is_granted('ROLE_ADMIN') %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
-                                Admin
-                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 uppercase tracking-wide">Admin</span>
                         {% elseif is_granted('ROLE_STAFF') %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
-                                Staff
-                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 uppercase tracking-wide">Staff</span>
                         {% endif %}
                     </div>
-                    
-                    <!-- Username -->
-                    <p class="text-xs text-gray-500 mt-0.5">
-                        {{ app.user.username|default('admin_user') }}
-                    </p>
-                    {#
-                    <!-- Email -->
-                    <p class="text-xs text-gray-500 mt-0.5">
-                        {{ app.user.email|default('No email') }}
-                    </p>
-                    #}
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">@{{ app.user.username|default('user') }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Right Section: Hamburger, Navigation Items & Logout -->
-        <div class="flex items-center space-x-6">
+        <!-- Right Section -->
+        <div class="flex items-center space-x-4">
             <!-- Dark Mode Toggle -->
             <button @click="document.documentElement.classList.toggle('dark'); localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'"
-                class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path class="dark:hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                    <path class="hidden dark:block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-green-100 dark:hover:bg-gray-600 transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path class="dark:hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    <path class="hidden dark:block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                 </svg>
             </button>
 
-            <!-- Hamburger Button (Visible only on small screens) -->
+            <!-- Hamburger (Visible on all screens now for better consistency) -->
             <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('sidebarOpen', sidebarOpen)"
-                class="text-gray-600 hover:text-gray-900 focus:outline-none lg:hidden transition sidebar-toggle">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 6h16M4 12h16M4 18h16" />
+                class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
 
-            <!-- Optional: Navigation Items -->
-            {# Add more navigation items here as needed
-            <a href="#" class="text-gray-600 hover:text-gray-800 text-sm font-semibold transition hidden lg:block">
-                Dashboard
-            </a>
-            <a href="#" class="text-gray-600 hover:text-gray-800 text-sm font-semibold transition hidden lg:block">
-                Settings
-            </a>
-            #}
-
-            <!-- Notifications and Logs -->
-            {#
-            {% include 'partials/admin/navbar_notifications.html.twig' %}
-            {% include 'partials/admin/navbar_logs.html.twig' %}
-            #}
-
-            <!-- Logout Button -->
-            <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-800 text-sm font-semibold transition flex items-center gap-1">
+            <!-- Logout -->
+            <a href="{{ path('app_logout') }}" class="p-2.5 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-all duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span class="hidden sm:inline">Logout</span>
             </a>
         </div>
     </div>
