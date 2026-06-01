@@ -62,7 +62,8 @@ RUN apk update && apk add --no-cache \
     icu-libs \
     nginx \
     supervisor \
-    bash && \
+    bash \
+    gettext && \
     docker-php-ext-install -j2 \
     pdo_mysql \
     gd \
