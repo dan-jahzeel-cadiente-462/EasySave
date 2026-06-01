@@ -8,22 +8,17 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('build/app.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Force light mode */
-        html {
-            color-scheme: light !important;
+    <script>
+        // Set initial theme based on localStorage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
         }
-        html.dark {
-            color-scheme: light !important;
-        }
-        html.dark * {
-            all: initial !important;
-            color-scheme: light !important;
-        }
-    </style>
+    </script>
 </head>
 
-<body class="font-[Poppins] bg-gray-100 h-screen w-screen overflow-hidden flex" style="font-family:'Poppins', sans-serif">
+<body class="font-[Poppins] bg-gray-100 dark:bg-gray-900 h-screen w-screen overflow-hidden flex transition-colors duration-300" style="font-family:'Poppins', sans-serif">
     
     <!-- Sidebar -->
     {% include 'partials/admin/sidebar.html.twig' %}
@@ -38,8 +33,8 @@
         {% include 'partials/admin/_flashes.html.twig' %}
         
         <!-- Main Body -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-white">
-            <div class="container mx-auto px-4 py-1">
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900 transition-colors duration-300">
+            <div class="container mx-auto px-4 py-8">
                 {% block body %}{% endblock %}
             </div>
         </main>
@@ -48,11 +43,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
     <script>
-        // Persist sidebar state
+        // Sidebar state persistence
         document.addEventListener('alpine:init', () => {
+            Alpine.store('sidebarOpen', localStorage.getItem('sidebarOpen') === 'true');
+            
             Alpine.effect(() => {
-                const open = Alpine.store('sidebarOpen');
-                localStorage.setItem('sidebarOpen', open);
+                localStorage.setItem('sidebarOpen', Alpine.store('sidebarOpen'));
             });
         });
     </script>
