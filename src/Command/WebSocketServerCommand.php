@@ -20,7 +20,7 @@ class WebSocketServerCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('port', 'p', InputOption::VALUE_REQUIRED, 'Port to listen on', 8080)
+            ->addOption('port', 'p', InputOption::VALUE_REQUIRED, 'Port to listen on', 8082)
             ->addOption('host', null, InputOption::VALUE_REQUIRED, 'Host to bind to', '0.0.0.0')
         ;
     }
@@ -33,33 +33,21 @@ class WebSocketServerCommand extends Command
 
         $io->success(sprintf('Starting WebSocket server on %s:%d', $host, $port));
 
-        // Create a Worker with WebSocket protocol
         $wsWorker = new Worker("websocket://$host:$port");
+        $wsWorker->count = 1; // 1 process for simplicity in Railway
 
-        // 4 processes
-        $wsWorker->count = 4;
-
-        // Emitted when new connection come
-        $wsWorker->onConnect = function (TcpConnection $connection) {
-            echo "New connection\n";
-        };
-
-        // Emitted when data received
         $wsWorker->onMessage = function (TcpConnection $connection, $data) use ($wsWorker) {
-            // Broadcast to all clients
-            foreach ($wsWorker->connections as $clientConnection) {
-                $clientConnection->send($data);
+            $payload = json_decode($data, true);
+            
+            // Only broadcast valid order events
+            if (isset($payload['type']) && $payload['type'] === 'new_order') {
+                foreach ($wsWorker->connections as $client) {
+                    $client->send($data);
+                }
             }
         };
 
-        // Emitted when connection closed
-        $wsWorker->onClose = function (TcpConnection $connection) {
-            echo "Connection closed\n";
-        };
-
-        // Run all workers
         Worker::runAll();
-
         return Command::SUCCESS;
     }
 }
